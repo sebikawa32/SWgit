@@ -1,9 +1,10 @@
-debug: true
-
 server:
   port: 8080
 
 spring:
+  profiles:
+    active: dev
+
   datasource:
     url: jdbc:mysql://13.125.170.131:3306/ticketplanet?serverTimezone=UTC
     username: jojinse
