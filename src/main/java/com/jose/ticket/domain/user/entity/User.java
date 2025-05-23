@@ -1,5 +1,4 @@
-package com.jose.ticket.domain.user.entity;  
-// 이 파일이 속한 패키지 경로를 지정. 보통 도메인(user) 안에 entity를 둠.
+package com.jose.ticket.domain.user.entity;
 
 
 import jakarta.persistence.Column;
@@ -45,5 +44,11 @@ public class User {
 
     @Column(name = "user_provider_id", unique = true)
     private String providerId; // 소셜 로그인 제공자의 고유 사용자 ID
+
+    @Column(name = "user_realname", nullable = false)
+    private String realname;
+
+    @Column(name = "user_phone_number", nullable = false)
+    private String phoneNumber;
 
 }
