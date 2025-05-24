@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
+@Entity // 테이블과 매핑
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,33 +22,33 @@ import lombok.Setter;
 @Table(name = "user")
 public class User {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id") // DB 컬럼명: user_id
-    private Long id; // 엔티티 내 기본 키 (PK)
-	
-	@Column(name = "user_userid", unique = true)
-	private String userId; // 로컬 로그인용 ID (선택사항)
+    @Column(name = "user_id")
+    private Long id; // PK
+
+    @Column(name = "user_userid", unique = true)
+    private String userId; // 로그인 아이디
 
     @Column(name = "user_email", nullable = false, unique = true)
-    private String email; // 이메일 (필수, 중복 불가)
+    private String email; // 이메일 (필수)
 
     @Column(name = "user_password")
-    private String password; // 비밀번호 (로컬 로그인 시 사용)
+    private String password; // 비밀번호
 
     @Column(name = "user_nickname")
-    private String nickname; // 사용자 닉네임
+    private String nickname; // 닉네임
+
+    @Column(name = "user_realname")
+    private String realname; // 실명
+
+    @Column(name = "user_phone_number", unique = true)
+    private String phoneNumber; // 휴대폰 번호
 
     @Column(name = "user_provider", nullable = false)
-    private String provider; // 로그인 방식 구분: "local", "kakao", "naver" 등
+    private String provider; // 로그인 제공자
 
     @Column(name = "user_provider_id", unique = true)
-    private String providerId; // 소셜 로그인 제공자의 고유 사용자 ID
-
-    @Column(name = "user_realname", nullable = false)
-    private String realname;
-
-    @Column(name = "user_phone_number", nullable = false)
-    private String phoneNumber;
+    private String providerId; // 제공자 고유 ID
 
 }
