@@ -8,11 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-// UserSignupRequest DTO
-// - 회원가입 요청 시 클라이언트가 전달하는 데이터 구조
-// - 필드별 유효성 검증 어노테이션을 통해 입력값 검증 수행
-//- 비밀번호 일치 여부를 커스텀 검증 메서드로 체크
+/**UserSignupRequest DTO
+  - 회원가입 요청 시 클라이언트가 전달하는 데이터 구조
+  - 필드별 유효성 검증 어노테이션을 통해 입력값 검증 수행
+  - 비밀번호 일치 여부를 커스텀 검증 메서드로 체크 **/
 
 @Getter
 @Setter
@@ -33,9 +32,7 @@ public class UserSignupRequest {
     @NotBlank(message = "비밀번호 확인은 필수입니다")
     private String passwordConfirm;
 
-    // 비밀번호와 비밀번호 확인 일치 여부 검증
-    // - @AssertTrue 어노테이션에 의해 true가 아니면 검증 실패
-    // - @return 두 비밀번호가 동일하면 true, 아니면 false
+    /** 비밀번호와 비밀번호 확인 일치 여부 검증**/
 
     @AssertTrue(message = "비밀번호가 일치하지 않습니다")
     public boolean isPasswordMatching() {

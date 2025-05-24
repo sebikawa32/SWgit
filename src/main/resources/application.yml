@@ -21,7 +21,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
 jwt:
-  secret: "wL6jK1m5sP9vRt3xZc8QyFnHsUdGbXEj"
+  secret: "wL6jK1m5sP9vRt3xZc8QyFnHsUdGbXEj"  # 32자 문자열
 
 logging:
   level:
