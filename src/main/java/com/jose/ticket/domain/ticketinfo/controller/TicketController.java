@@ -9,7 +9,9 @@ import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
 import com.jose.ticket.domain.ticketinfo.service.TicketService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 @RequestMapping("/api/tickets") // 이 컨트롤러는 "/api/tickets"로 시작하는 URL 처리
 @RequiredArgsConstructor // 생성자 자동 생성 (final 필드 자동 주입)
 public class TicketController {
