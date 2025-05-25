@@ -1,12 +1,12 @@
-package com.jose.ticket.domain.tickets.controller;
+package com.jose.ticket.domain.ticketinfo.controller;
 
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.jose.ticket.domain.tickets.dto.TicketResponseDto;
-import com.jose.ticket.domain.tickets.service.TicketService;
+import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
+import com.jose.ticket.domain.ticketinfo.service.TicketService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;

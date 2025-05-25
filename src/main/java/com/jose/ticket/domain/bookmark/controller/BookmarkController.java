@@ -2,10 +2,13 @@ package com.jose.ticket.domain.bookmark.controller;
 
 import com.jose.ticket.domain.bookmark.dto.BookmarkCreateRequest;
 import com.jose.ticket.domain.bookmark.dto.BookmarkDeleteRequest;
+import com.jose.ticket.domain.bookmark.dto.BookmarkResponse;
 import com.jose.ticket.domain.bookmark.service.BookmarkService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookmarks")
@@ -37,5 +40,12 @@ public class BookmarkController {
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    // 유저 즐겨찾기 목록 조회 (GET /api/bookmarks/{userId})
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<BookmarkResponse>> getBookmarks(@PathVariable Long userId) {
+        List<BookmarkResponse> bookmarks = bookmarkService.getBookmarksByUserId(userId);
+        return ResponseEntity.ok(bookmarks);
     }
 }
