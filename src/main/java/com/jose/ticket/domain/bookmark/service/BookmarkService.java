@@ -54,22 +54,28 @@ public class BookmarkService {
     }
 
     // 유저가 등록한 즐겨찾기 목록 조회
-     public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
-        List<Bookmark> bookmarks = bookmarkRepository.findAllByUserId(userId);
+    public List<BookmarkResponse> getBookmarksByUserId(Long userId) {
+        // fetch join 적용된 쿼리로 변경
+        List<Bookmark> bookmarks = bookmarkRepository.findAllWithTicketAndCategoryByUserId(userId);
 
-        // Bookmark 엔티티를 DTO로 변환해서 반환
-         return bookmarks.stream()
-                 .map(bookmark -> {
-                     BookmarkResponse response = new BookmarkResponse();
-                     response.setBookmarkId(bookmark.getBookmarkId());
-                     response.setTicketId(bookmark.getTicket().getId());
-                     response.setTicketTitle(bookmark.getTicket().getTitle());
-                     response.setVenue(bookmark.getTicket().getVenue());  // 추가
-                     response.setEventDatetime(bookmark.getTicket().getEventDatetime());  // 추가
-                     response.setImageUrl(bookmark.getTicket().getImageUrl());  // 추가
-                     response.setCreatedAt(bookmark.getBookmarkCreatedAt());
-                     return response;
-                 })
-                 .collect(Collectors.toList());
-     }
+        return bookmarks.stream()
+                .map(bookmark -> {
+                    BookmarkResponse response = new BookmarkResponse();
+                    response.setBookmarkId(bookmark.getId());
+                    response.setTicketId(bookmark.getTicket().getId());
+                    response.setTicketTitle(bookmark.getTicket().getTitle());
+                    response.setVenue(bookmark.getTicket().getVenue());
+                    response.setEventDatetime(bookmark.getTicket().getEventDatetime());
+                    response.setImageUrl(bookmark.getTicket().getImageUrl());
+
+                    if (bookmark.getTicket().getCategory() != null) {
+                        response.setCategoryName(bookmark.getTicket().getCategory().getName());
+                    }
+
+                    response.setCreatedAt(bookmark.getTicket().getCreatedAt());
+
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
 }
