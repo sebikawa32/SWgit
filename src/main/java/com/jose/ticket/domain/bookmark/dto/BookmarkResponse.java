@@ -14,5 +14,6 @@ public class BookmarkResponse {
     private String venue;           // 공연장
     private LocalDateTime eventDatetime; // 공연 날짜시간
     private String imageUrl;        // 공연 이미지 URL
+    private String categoryName;     //추가된 카테고리 이름
     private LocalDateTime createdAt; // 즐겨찾기 생성 시각
 }

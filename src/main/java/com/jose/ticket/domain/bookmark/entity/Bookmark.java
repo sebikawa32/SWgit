@@ -5,35 +5,24 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
+// 즐겨찾기(Bookmark) 엔티티 클래스
+// DB의 bookmark 테이블과 매핑됨
+// 각 즐겨찾기 항목은 사용자(userId)와 티켓(ticketId)의 관계를 나타냄
+
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "bookmark")
 public class Bookmark {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookmark_id")
-    private Long bookmarkId;        // 즐겨찾기 고유 ID
+    private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;            // 즐겨찾기한 사용자 ID
+    private Long userId;
 
-     //티켓과 다대일 관계 매핑 (즐겨찾기는 한 개 티켓에 연결됨)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id")
-    private TicketEntity ticket;          // 즐겨찾기된 티켓 엔티티
-
-    @Column(name = "bookmark_created_at")
-    private LocalDateTime bookmarkCreatedAt;  // 즐겨찾기 생성 시간
-
-    // 생성 시점에 bookmarkCreatedAt 자동 세팅 (옵션)
-    @PrePersist
-    public void prePersist() {
-        if (bookmarkCreatedAt == null) {
-            bookmarkCreatedAt = LocalDateTime.now();
-        }
-    }
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private TicketEntity ticket;
 }
