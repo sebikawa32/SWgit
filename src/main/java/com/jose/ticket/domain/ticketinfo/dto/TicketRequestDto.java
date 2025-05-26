@@ -5,7 +5,7 @@ import com.jose.ticket.domain.category.entity.Category;
 import lombok.Getter;
 import lombok.Setter;
 
-/*******addTicket으로 저장할 DTO 입니다. *******/
+/*******요청 DTO 입니다. *******/
 
 
 @Getter

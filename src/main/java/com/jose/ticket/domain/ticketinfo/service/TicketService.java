@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.jose.ticket.domain.category.entity.Category;
 import com.jose.ticket.domain.category.repository.CategoryRepository;
+import com.jose.ticket.domain.ticketinfo.dto.TicketDetailResponseDto;
 import com.jose.ticket.global.exception.TicketNotFoundException;
 import com.jose.ticket.domain.ticketinfo.dto.TicketRequestDto;
 import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
@@ -85,4 +86,24 @@ public class TicketService {
         TicketEntity updated = ticketRepository.save(ticket);
         return new TicketResponseDto(updated);
     }
+
+    //상세보기 메서드
+    public TicketDetailResponseDto getTicketDetail(Long id) {
+        TicketEntity ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+
+        return new TicketDetailResponseDto(
+                ticket.getImageUrl(),
+                ticket.getTitle(),
+                ticket.getEventDatetime(),
+                ticket.getPrice(),
+                ticket.getDescription(),
+                ticket.getVenue(),
+                ticket.getBookingLink(),
+                ticket.getBookingProvider(),
+                ticket.getBookingDatetime()
+        );
+    }
+
+
 }

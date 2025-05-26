@@ -6,7 +6,7 @@ import com.jose.ticket.domain.ticketinfo.entity.TicketEntity;
 
 import lombok.Getter;
 
-/***********목록에 보일 정보를 담은 DTO 입니다 ******************/
+/***********목록 응답 DTO 입니다 ******************/
 
 @Getter
 public class TicketResponseDto {

@@ -2,6 +2,7 @@ package com.jose.ticket.domain.ticketinfo.controller;
 
 import java.util.List;
 
+import com.jose.ticket.domain.ticketinfo.dto.TicketDetailResponseDto;
 import com.jose.ticket.domain.ticketinfo.dto.TicketRequestDto;
 import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
 import com.jose.ticket.domain.ticketinfo.service.TicketService;
@@ -44,6 +45,13 @@ public class TicketController {
         TicketResponseDto updated = ticketService.updateTicket(id, dto);
         System.out.println("수정할 티켓 ID: " + id);
         return ResponseEntity.ok(updated);
+    }
+
+    //상세보기
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketDetailResponseDto> getTicketDetail(@PathVariable Long id) {
+        TicketDetailResponseDto detail = ticketService.getTicketDetail(id);
+        return ResponseEntity.ok(detail);
     }
 
 }
