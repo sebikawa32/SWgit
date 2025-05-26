@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (API 토큰 기반 인증에 적합)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 없이 무상태 처리
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/**", "/api/bookmarks/**" ,"/api/tickets/**" ).permitAll() // 회원 관련 API는 인증 없이 허용
+                        .requestMatchers("/**").permitAll() // 회원 관련 API는 인증 없이 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .addFilterBefore(

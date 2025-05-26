@@ -1,20 +1,17 @@
 package com.jose.ticket.domain.ticketinfo.entity;
-
+import com.jose.ticket.domain.category.entity.Category;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "ticket")
 public class TicketEntity {
@@ -27,9 +24,9 @@ public class TicketEntity {
     @Column(name = "ticket_title", nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ticket_category", nullable = false)
-    private TicketCategory category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(name = "ticket_event_datetime", nullable = false)
     private LocalDateTime eventDatetime;
@@ -58,10 +55,23 @@ public class TicketEntity {
     @Column(name = "ticket_image_url", length = 1000)
     private String imageUrl;
 
-    // Enum 정의는 엔티티 안이나 별도 파일에 만들어도
-    public enum TicketCategory {
-        concert, exhibition, theaterPlay, musical
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
+    public void update(String title, Category category, LocalDateTime eventDatetime, Integer price, String description,
+                       String venue, String bookingLink, String bookingProvider, LocalDateTime bookingDatetime, String imageUrl) {
+        this.title = title;
+        this.category = category;
+        this.eventDatetime = eventDatetime;
+        this.price = price;
+        this.description = description;
+        this.venue = venue;
+        this.bookingLink = bookingLink;
+        this.bookingProvider = bookingProvider;
+        this.bookingDatetime = bookingDatetime;
+        this.imageUrl = imageUrl;
+    }
 }
 
