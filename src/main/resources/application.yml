@@ -6,7 +6,7 @@ spring:
     active: dev
 
   datasource:
-    url: jdbc:mysql://13.125.170.131:3306/ticketplanet?serverTimezone=UTC
+    url: jdbc:mysql://43.201.218.86:3306/ticketplanet?serverTimezone=UTC
     username: jojinse
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
