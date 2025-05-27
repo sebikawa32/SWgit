@@ -105,5 +105,29 @@ public class TicketService {
         );
     }
 
+    // 마감일 순 티켓 조회 (예매 마감일 기준 오름차순)
+    public List<TicketResponseDto> getTicketsOrderByDeadline() {
+        LocalDateTime now = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        List<TicketEntity> tickets = ticketRepository.findByBookingDatetimeAfter(now);
+        return tickets.stream().map(TicketResponseDto::new).collect(Collectors.toList());
+    }
+
+    //특정 카테고리에 속하는 티켓 목록 조회
+    public List<TicketResponseDto> getTicketsByCategory(Long categoryId) {
+        // 카테고리 존재 여부 확인 (필요시)
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + categoryId));
+
+        // 해당 카테고리에 속하는 티켓 조회
+        List<TicketEntity> tickets = ticketRepository.findByCategoryId(categoryId);
+
+        // DTO 변환 후 반환
+        return tickets.stream()
+                .map(TicketResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+
+
 
 }

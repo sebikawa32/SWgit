@@ -1,5 +1,6 @@
 package com.jose.ticket.domain.ticketinfo.dto;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import com.jose.ticket.domain.ticketinfo.entity.TicketEntity;
@@ -15,6 +16,8 @@ public class TicketResponseDto {
     private final String venue;
     private final LocalDateTime eventDatetime;
     private final String imageUrl;
+    private final LocalDateTime bookingDatetime;
+    private final Long daysUntilDeadline;
 
     // Entity → DTO 변환용 생성자
     public TicketResponseDto(TicketEntity ticket) {
@@ -23,7 +26,11 @@ public class TicketResponseDto {
         this.venue = ticket.getVenue(); // ticket_venue
         this.eventDatetime = ticket.getEventDatetime(); // ticket_event_datetime
         this.imageUrl = ticket.getImageUrl(); // ticket_image_url
-    }
+        this.bookingDatetime = ticket.getBookingDatetime();
 
+        // D-day 계산 (마감일 - 오늘)
+        this.daysUntilDeadline =
+                Duration.between(LocalDateTime.now(), ticket.getBookingDatetime()).toDays();
+    }
 
 }
