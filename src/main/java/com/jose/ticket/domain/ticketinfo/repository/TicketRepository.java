@@ -18,4 +18,10 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
 
     //특정 카테고리에 속하는 티켓들을 조회
     List<TicketEntity> findByCategoryId(Long categoryId);
+
+    // 티켓 제목에 키워드가 포함된 티켓 리스트 검색 (대소문자 무시)
+    List<TicketEntity> findByTitleContainingIgnoreCase(String keyword);
+
+    //  제목 + 카테고리 ID 조건 모두 만족하는 티켓들 검색
+    List<TicketEntity> findByTitleContainingIgnoreCaseAndCategoryId(String keyword, Long categoryId);
 }
