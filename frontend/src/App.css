@@ -1,0 +1,19 @@
+.App-header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 60px;
+  padding: 0 20px;
+  background-color: #1a1a1a;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+}
+
+main.content {
+  padding-top:100px; /* 헤더 높이만큼 공간 확보 */
+  max-width: 1200px;
+  margin: 0 auto;
+}
