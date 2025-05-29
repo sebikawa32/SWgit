@@ -1,0 +1,96 @@
+/* 1️⃣ 전체 화면 중앙 정렬 - 헤더가 있을 경우 대응 */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f2f4f7;
+}
+
+/* 2️⃣ 로그인 페이지 전용 Wrapper */
+.login-page-wrapper {
+  min-height: calc(100vh - 80px); /* 예: 헤더가 80px인 경우 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f2f4f7;
+  box-sizing: border-box;
+  padding: 20px; /* 모바일에서도 여백 유지 */
+}
+
+/* 3️⃣ 로그인 컨테이너 */
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 30px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* 4️⃣ 제목 */
+.login-container h2 {
+  margin-bottom: 30px;
+  color: #222;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.5px;
+}
+
+/* 5️⃣ 입력창 */
+.login-container input {
+  width: 100%;
+  padding: 14px 15px;
+  margin-bottom: 18px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fafafa;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container input:focus {
+  outline: none;
+  border-color: #333;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  background: #fff;
+}
+
+/* 6️⃣ 버튼 */
+.login-container button {
+  width: 100%;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-container button:hover {
+  background: #555;
+  transform: translateY(-2px);
+}
+
+/* 7️⃣ 회원가입 링크 */
+.login-container .signup-text {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+.login-container .signup-text a {
+  color: #333;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.login-container .signup-text a:hover {
+  text-decoration: underline;
+  color: #111;
+}
