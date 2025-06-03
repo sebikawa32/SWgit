@@ -4,6 +4,9 @@ import "./Header.css";
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,7 +15,9 @@ function Header() {
   }, []);
 
   const handleSearch = () => {
-    alert("검색 기능은 아직 구현되지 않았습니다.");
+    if (searchQuery.trim() !== "") {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const handleLogout = () => {
@@ -21,39 +26,70 @@ function Header() {
     navigate("/");
   };
 
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
+
   return (
     <header className="App-header">
       <nav className="navbar">
+        {/* 왼쪽 로고 */}
         <div className="nav-left">
           <Link to="/" className="logo-link">
             <h1>🪐 TicketPlanet</h1>
           </Link>
         </div>
 
+        {/* 가운데 카테고리 */}
         <div className="nav-center">
           <ul className="nav-links">
-            <li><Link to="/Concert">콘서트</Link></li>
-            <li><Link to="/Musical">뮤지컬</Link></li>
-            <li><Link to="/Theater">연극</Link></li>
-            <li><Link to="/Exhibition">전시</Link></li>
+            <li><Link to="/concerts">콘서트</Link></li>
+            <li><Link to="/musicals">뮤지컬</Link></li>
+            <li><Link to="/plays">연극</Link></li>
+            <li><Link to="/exhibitions">전시</Link></li>
           </ul>
         </div>
 
+        {/* 오른쪽 */}
         <div className="nav-right">
+          {/* 검색창 */}
           <div className="search-container">
             <input
               type="text"
               className="search-input"
               placeholder="검색..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button className="search-btn" onClick={handleSearch}>
               🔍
             </button>
           </div>
+
+          {/* 로그인/회원가입 or MY/로그아웃 */}
           <ul className="nav-links">
             {isLoggedIn ? (
               <>
-                <li><Link to="/MyProfile">MY</Link></li>
+                <li className="my-menu">
+                  <button
+                    onClick={toggleDropdown}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#fff",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    MY
+                  </button>
+                  {/* ✅ 조건부 렌더링으로 드롭다운 메뉴 표시 */}
+                  {showDropdown && (
+                    <div className="my-dropdown">
+                      <Link to="/Bookmark">즐겨찾기 목록</Link>
+                      <Link to="/MyProfile">내 프로필</Link>
+                    </div>
+                  )}
+                </li>
                 <li>
                   <button
                     onClick={handleLogout}
@@ -84,16 +120,3 @@ function Header() {
 }
 
 export default Header;
-
-// 배너 컴포넌트도 함께 내보내기
-export function HomeBanner() {
-  return (
-    <section className="home-banner">
-      <img src="/images/banner.jpg" alt="홈 배너" />
-      <div className="home-banner-text">
-        <h1>최신 이벤트 모음</h1>
-        <p>놓치지 마세요! 특별 할인 & 인기 공연 티켓</p>
-      </div>
-    </section>
-  );
-}

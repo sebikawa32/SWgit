@@ -9,7 +9,6 @@ import com.jose.ticket.global.security.JwtProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import com.jose.ticket.domain.user.dto.UserLoginRequest;
 import com.jose.ticket.domain.user.dto.UserSignupRequest;
 import com.jose.ticket.domain.user.entity.User;
@@ -61,8 +60,12 @@ public class UserService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
 
-        // JWT 토큰 생성 후 반환
-        return new TokenResponse(jwtProvider.createToken(user.getUserId()));
+        // JWT 토큰 생성
+        String token = jwtProvider.createToken(user.getUserId());
+
+        // userId(PK)를 함께 반환
+        // TokenResponse에 userId도 포함해서 반환 (프론트에서 localStorage 저장용)
+        return new TokenResponse(token, user.getId());
     }
 
     // 아이디 중복 여부 확인 메서드 (중복확인 API에서 호출)

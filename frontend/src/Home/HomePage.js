@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../Footer/Footer';
 import '../Header/Header.css';
@@ -13,25 +14,28 @@ const categories = [
 ];
 
 const HomePage = () => {
-  // 전체 티켓 (카테고리별 필터링 포함)
   const [allTickets, setAllTickets] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
   const [loadingAll, setLoadingAll] = useState(false);
   const [errorAll, setErrorAll] = useState(null);
+  const [allPageIndex, setAllPageIndex] = useState(0);
 
-  // 슬라이더 인덱스 상태 추가
-  const [slideIndex, setSlideIndex] = useState(0);
-  const visibleCount = 4; // 한 화면에 보여줄 카드 개수
-
-  // 마감일 순 티켓
   const [deadlineTickets, setDeadlineTickets] = useState([]);
   const [loadingDeadline, setLoadingDeadline] = useState(false);
   const [errorDeadline, setErrorDeadline] = useState(null);
+  const [deadlinePageIndex, setDeadlinePageIndex] = useState(0);
+
+  const [rankingTickets, setRankingTickets] = useState([]);
+  const [loadingRanking, setLoadingRanking] = useState(false);
+  const [errorRanking, setErrorRanking] = useState(null);
+  const [rankingPageIndex, setRankingPageIndex] = useState(0);
+
+  const visibleCount = 5;
 
   useEffect(() => {
     setLoadingAll(true);
     setErrorAll(null);
-    setSlideIndex(0); // 카테고리 바뀌면 슬라이더 인덱스 초기화
+    setAllPageIndex(0);
 
     let url = 'http://localhost:8080/api/tickets';
     if (selectedCategoryId !== 0) {
@@ -62,9 +66,8 @@ const HomePage = () => {
         setErrorDeadline('마감일 순 티켓 목록 불러오기 실패');
         setLoadingDeadline(false);
       });
-  }, []); // 컴포넌트 마운트 시 한 번만 호출
+  }, []);
 
-  // D-day 계산 함수 (마감일 기준)
   const calculateDDay = (deadline) => {
     if (!deadline) return '';
     const today = new Date();
@@ -78,25 +81,61 @@ const HomePage = () => {
     else return '마감';
   };
 
-  // 슬라이더 최대 인덱스 계산
-  const maxSlideIndex = Math.max(0, allTickets.length - visibleCount);
+  // ✅ 슬라이더 렌더링 (페이지네이션 기반!)
+  const renderSlider = (tickets, pageIndex, setPageIndex, showDDay) => {
+    const totalPages = Math.ceil(tickets.slice(0, 20).length / visibleCount);
+    const moveX = pageIndex * (100 / totalPages);
 
-  const handlePrev = () => {
-    setSlideIndex((prev) => Math.max(prev - 1, 0));
-  };
+    return (
+      <div className="slider-wrapper">
+        <button
+          onClick={() => setPageIndex(Math.max(pageIndex - 1, 0))}
+          disabled={pageIndex === 0}
+          className="slide-btn"
+        >
+          ◀
+        </button>
 
-  const handleNext = () => {
-    setSlideIndex((prev) => Math.min(prev + 1, maxSlideIndex));
+        <div className="event-list-wrapper">
+          <div
+            className="event-list"
+            style={{
+              transform: `translateX(-${moveX}%)`,
+              width: `${(tickets.slice(0, 20).length / visibleCount) * 100}%`,
+              transition: 'transform 0.5s ease-in-out'
+            }}
+          >
+            {tickets.slice(0, 20).map(ticket => (
+              <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+                <div className="event-card">
+                  {showDDay && ticket.bookingDatetime && (
+                    <p className="dday">{calculateDDay(ticket.bookingDatetime)}</p>
+                  )}
+                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <h3>{ticket.title}</h3>
+                  <p>{ticket.eventDatetime}</p>
+                  <p>{ticket.venue}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={() => setPageIndex(Math.min(pageIndex + 1, totalPages - 1))}
+          disabled={pageIndex === totalPages - 1}
+          className="slide-btn"
+        >
+          ▶
+        </button>
+      </div>
+    );
   };
 
   return (
-    <main className="content" style={{ paddingTop: '140px' }}>
-      <img src="/images/banner.jpg" alt="홈 배너" className="home-banner" />
-
-      {/* 전체 티켓 목록 */}
+    <main className="content">
       <section>
-        <h2>Tickets </h2>
-        {/* 카테고리 선택 버튼 */}
+        <h2>Tickets</h2>
         <div className="category-buttons">
           {categories.map(cat => (
             <button
@@ -108,56 +147,27 @@ const HomePage = () => {
             </button>
           ))}
         </div>
-
-        {loadingAll && <p>전체 티켓 로딩 중...</p>}
+        {loadingAll && <p>로딩 중...</p>}
         {errorAll && <p style={{ color: 'red' }}>{errorAll}</p>}
-
-        {/* 슬라이더 컨테이너 */}
-        <div className="slider-wrapper">
-          <button onClick={handlePrev} disabled={slideIndex === 0} className="slide-btn">◀</button>
-
-          <div
-            className="event-list"
-            style={{
-              transform: `translateX(-${slideIndex * (100 / visibleCount)}%)`,
-              transition: 'transform 0.5s ease',
-              width: `${(allTickets.length / visibleCount) * 100}%`,
-            }}
-          >
-            {allTickets.map(event => (
-              <div key={event.id} className="event-card">
-                <img src={event.image} alt={event.title} />
-                <h3>{event.title}</h3>
-                <p>{event.date}</p>
-                <p>{event.location}</p>
-              </div>
-            ))}
-          </div>
-
-          <button onClick={handleNext} disabled={slideIndex === maxSlideIndex} className="slide-btn">▶</button>
-        </div>
+        {renderSlider(allTickets, allPageIndex, setAllPageIndex, false)}
       </section>
 
       <hr style={{ margin: '50px 0' }} />
 
-      {/* 마감일 순 티켓 목록 */}
       <section>
-        <h2>Comming soon</h2>
-        {loadingDeadline && <p>마감일 순 티켓 로딩 중...</p>}
+        <h2>Coming soon</h2>
+        {loadingDeadline && <p>로딩 중...</p>}
         {errorDeadline && <p style={{ color: 'red' }}>{errorDeadline}</p>}
-        <div className="event-list">
-          {deadlineTickets.map(event => (
-            <div key={event.id} className="event-card">
-              {event.bookingDatetime && (
-                <p className="dday">{calculateDDay(event.bookingDatetime)}</p>
-              )}
-              <img src={event.imageUrl} alt={event.title} />
-              <h3>{event.title}</h3>
-              <p>{event.eventDatetime}</p>
-              <p>{event.venue}</p>
-            </div>
-          ))}
-        </div>
+        {renderSlider(deadlineTickets, deadlinePageIndex, setDeadlinePageIndex, true)}
+      </section>
+
+      <hr style={{ margin: '50px 0' }} />
+
+      <section>
+        <h2>Top Ranking</h2>
+        {loadingRanking && <p>로딩 중...</p>}
+        {errorRanking && <p style={{ color: 'red' }}>{errorRanking}</p>}
+        {renderSlider(rankingTickets, rankingPageIndex, setRankingPageIndex, false)}
       </section>
 
       <Footer />
@@ -166,4 +176,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
