@@ -5,26 +5,31 @@ import "./LoginPage.css";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState("");   // 로그인 입력 아이디
   const [password, setPassword] = useState("");
 
-const onLogin = () => {
-  axios.post("http://localhost:8080/api/users/login", {
-    userId,
-    password,
-  })
-  .then(res => {
-    alert("로그인 성공!");
-    const token = res.data.data.token;
-    localStorage.setItem("token", token);
+  const onLogin = () => {
+    axios.post("http://localhost:8080/api/users/login", {
+      userId,
+      password,
+    })
+    .then(res => {
+      alert("로그인 성공!");
 
-    navigate("/", { replace: true }); // 🚀 홈으로 이동
-    window.location.reload(); // 🚀 새로고침으로 로그인 상태 반영!
-  })
-  .catch(() => {
-    alert("로그인 실패");
-  });
-};
+      // ✅ 백엔드 응답에서 token과 userId(PK)를 받아오기
+      const { token, userId: userPk } = res.data.data;
+
+      // ✅ 토큰과 userId(PK)를 localStorage에 저장
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userPk);   // 🔥 백엔드 응답에서 받은 userId(PK)를 저장!
+
+      navigate("/", { replace: true }); // 🚀 홈으로 이동
+      window.location.reload(); // 🚀 새로고침으로 로그인 상태 반영!
+    })
+    .catch(() => {
+      alert("로그인 실패");
+    });
+  };
 
   return (
     <div className="login-page-wrapper">

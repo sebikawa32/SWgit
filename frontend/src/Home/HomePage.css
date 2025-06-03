@@ -1,4 +1,4 @@
-/* 부모와 body를 100%로 */
+/* ✅ 기존 공통 스타일은 그대로 유지! */
 body, html, #root, .App {
   width: 100%;
   max-width: none;
@@ -9,18 +9,16 @@ body, html, #root, .App {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 메인 컨텐츠 */
 .content {
   width: 90%;
   max-width: 1000px;
   margin: 40px auto;
-  background: #ffffff;
   border-radius: 12px;
   padding: 40px;
-  padding-top: 100px; /* 인라인 스타일 옮겨옴 */
+  padding-top: 0;
+  background: transparent;
 }
 
-/* 제목 중앙정렬 */
 h2 {
   font-size: 2rem;
   margin: 20px 0;
@@ -29,15 +27,13 @@ h2 {
   font-weight: 700;
 }
 
-/* 모든 그림자 제거 */
 * {
   box-shadow: none !important;
 }
 
-/* 🟢 카테고리 버튼 */
 .category-buttons {
   display: flex;
-  justify-content: center; /* 중앙 정렬 */
+  justify-content: center;
   gap: 14px;
   flex-wrap: wrap;
   margin-bottom: 20px;
@@ -65,10 +61,14 @@ h2 {
   color: #fff;
 }
 
-/* 🟢 슬라이드 버튼 */
+/* ✅ 슬라이더 버튼 */
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
 .slide-btn {
-  position: relative;
-  z-index: 10;
   background: #333;
   color: white;
   border: none;
@@ -89,33 +89,31 @@ h2 {
   cursor: not-allowed;
 }
 
-/* 🟢 이벤트 카드 리스트 */
-.slider-wrapper {
-  position: relative;
-  width: 100%;
+/* ✅ 슬라이더 내용 및 스크롤 숨기기 */
+.event-list-wrapper {
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  margin-bottom: 40px;
+  width: 100%;
+  scrollbar-width: none; /* Firefox */
 }
 
+.event-list-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+/* ✅ 부드러운 슬라이드 효과 */
 .event-list {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  transition: transform 0.5s ease-in-out;
 }
 
+/* ✅ 한 화면에 5개씩 보이도록 flex 설정 */
 .event-card {
-  flex: 0 0 calc(20% - 16px); /* 한 줄에 5개 */
-  background: #ffffff;
+  flex: 0 0 calc(100% / 5);
+  box-sizing: border-box;
+  background: #fff;
   border-radius: 8px;
-  padding: 10px;
   cursor: pointer;
   transition: transform 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 280px;
   position: relative;
 }
 
@@ -125,32 +123,25 @@ h2 {
 
 .event-card img {
   width: 100%;
-  height: 150px;
+  height: 220px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  border-radius: 8px 8px 0 0;
 }
 
-.event-card h3 {
-  font-size: 1rem;
-  margin-bottom: 4px;
-  font-weight: 700;
-  color: #222;
-}
-
+.event-card h3,
 .event-card p {
-  margin: 0;
-  color: #666;
-  font-size: 0.85rem;
-  flex-grow: 1;
+  margin: 5px 0;
+  padding: 0 5px;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
-/* 🟢 D-day 배지 */
+/* D-day 배지 */
 .dday {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: #ff5f5f;
+  background-color: #242020b1;
   color: white;
   font-weight: 700;
   padding: 3px 10px;
@@ -158,23 +149,14 @@ h2 {
   font-size: 0.75rem;
 }
 
-/* 🟢 반응형 */
-@media (max-width: 1200px) {
-  .event-card {
-    flex: 0 0 calc(25% - 16px);
-  }
+/* 링크 밑줄 제거 */
+.event-card-link {
+  text-decoration: none;
+  color: inherit;
 }
 
-@media (max-width: 992px) {
-  .event-card {
-    flex: 0 0 calc(33.33% - 12px);
-  }
-}
-
+/* 반응형 */
 @media (max-width: 600px) {
-  .event-card {
-    flex: 0 0 calc(50% - 10px);
-  }
   .category-buttons {
     justify-content: center;
   }

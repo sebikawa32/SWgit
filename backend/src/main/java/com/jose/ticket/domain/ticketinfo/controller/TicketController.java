@@ -2,6 +2,7 @@ package com.jose.ticket.domain.ticketinfo.controller;
 
 import java.util.List;
 
+import com.jose.ticket.domain.ticketinfo.dto.TicketDetailResponseDto;
 import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
 import com.jose.ticket.domain.ticketinfo.service.TicketService;
 
@@ -23,6 +24,14 @@ public class TicketController {
     public List<TicketResponseDto> getAllTickets() {
         return ticketService.getAllTickets();
     }
+
+    // 티켓 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketDetailResponseDto> getTicketById(@PathVariable Long id) {
+        TicketDetailResponseDto response = ticketService.getTicketDetail(id);
+        return ResponseEntity.ok(response);
+    }
+
 
     //  마감일 순 정렬된 티켓 목록 조회
     @GetMapping("/deadline")
