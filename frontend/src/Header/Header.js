@@ -26,7 +26,9 @@ function Header() {
     navigate("/");
   };
 
-  const toggleDropdown = () => setShowDropdown(!showDropdown);
+  const goToNotifications = () => {
+    navigate("/notifications");
+  };
 
   return (
     <header className="App-header">
@@ -49,9 +51,26 @@ function Header() {
         </div>
 
         {/* 오른쪽 */}
-        <div className="nav-right">
+        <div className="nav-right" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {/* 게시판 텍스트 링크 (검색창 왼쪽) */}
+          <div>
+            <Link
+              to="/board"
+              style={{
+                color: "#fff",
+                fontWeight: "500",
+                fontSize: "16px",
+                textDecoration: "none",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}
+            >
+              게시판
+            </Link>
+          </div>
+
           {/* 검색창 */}
-          <div className="search-container">
+          <div className="search-container" style={{ marginRight: "10px" }}>
             <input
               type="text"
               className="search-input"
@@ -64,55 +83,103 @@ function Header() {
             </button>
           </div>
 
-          {/* 로그인/회원가입 or MY/로그아웃 */}
-          <ul className="nav-links">
-            {isLoggedIn ? (
-              <>
-                <li className="my-menu">
-                  <button
-                    onClick={toggleDropdown}
+          {/* 로그인/회원가입 or MY/로그아웃, 알림 버튼 별도 */}
+          {isLoggedIn ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              {/* 알림 버튼 (MY 왼쪽에 배치) */}
+              <button
+                onClick={goToNotifications}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontSize: "20px",
+                  padding: 0,
+                }}
+                aria-label="알림"
+                type="button"
+              >
+                🔔
+              </button>
+
+              {/* MY 메뉴 (드롭다운) */}
+              <div
+                className="my-menu"
+                style={{ position: "relative" }}
+                onMouseEnter={() => setShowDropdown(true)}
+                onMouseLeave={() => setShowDropdown(false)}
+              >
+                <button
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    fontWeight: "500",
+                    padding: 0,
+                  }}
+                  type="button"
+                >
+                  MY
+                </button>
+
+                {showDropdown && (
+                  <div
+                    className="my-dropdown"
                     style={{
-                      background: "none",
-                      border: "none",
-                      color: "#fff",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      fontWeight: "500",
+                      position: "absolute",
+                      top: "100%",
+                      right: 0,
+                      backgroundColor: "#222",
+                      borderRadius: "4px",
+                      padding: "8px",
+                      minWidth: "150px",
+                      zIndex: 1000,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
                     }}
                   >
-                    MY
-                  </button>
-                  {/* ✅ 조건부 렌더링으로 드롭다운 메뉴 표시 */}
-                  {showDropdown && (
-                    <div className="my-dropdown">
-                      <Link to="/Bookmark">즐겨찾기 목록</Link>
-                      <Link to="/MyProfile">내 프로필</Link>
-                    </div>
-                  )}
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      color: "#fff",
-                      cursor: "pointer",
-                      fontSize: "16px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    로그아웃
-                  </button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li><Link to="/login">로그인</Link></li>
-                <li><Link to="/signup">회원가입</Link></li>
-              </>
-            )}
-          </ul>
+                    <Link to="/MyProfile" style={{ color: "#fff", textDecoration: "none" }}>
+                      내 프로필
+                    </Link>
+                    <Link to="/Bookmark" style={{ color: "#fff", textDecoration: "none" }}>
+                      즐겨찾기 목록
+                    </Link>
+                    <Link to="/alarm-settings" style={{ color: "#fff", textDecoration: "none" }}>
+                      알람 설정
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* 로그아웃 버튼 */}
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                  fontWeight: "500",
+                }}
+                type="button"
+              >
+                로그아웃
+              </button>
+            </div>
+          ) : (
+            <ul
+              className="nav-links"
+              style={{ display: "flex", alignItems: "center", gap: "12px", margin: 0, padding: 0, listStyle: "none" }}
+            >
+              <li><Link to="/login">로그인</Link></li>
+              <li><Link to="/signup">회원가입</Link></li>
+            </ul>
+          )}
         </div>
       </nav>
     </header>

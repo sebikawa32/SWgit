@@ -65,7 +65,7 @@ public class BookmarkService {
                     response.setTicketId(bookmark.getTicket().getId());
                     response.setTicketTitle(bookmark.getTicket().getTitle());
                     response.setVenue(bookmark.getTicket().getVenue());
-                    response.setEventDatetime(bookmark.getTicket().getEventDatetime());
+                    response.setEventDatetime(bookmark.getTicket().getEventStartDatetime());
                     response.setImageUrl(bookmark.getTicket().getImageUrl());
 
                     if (bookmark.getTicket().getCategory() != null) {

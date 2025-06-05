@@ -121,6 +121,10 @@ h2 {
   transform: translateY(-4px);
 }
 
+.image-wrapper {
+  position: relative;
+}
+
 .event-card img {
   width: 100%;
   height: 220px;
@@ -136,17 +140,21 @@ h2 {
   text-align: center;
 }
 
-/* D-day 배지 */
-.dday {
+/* ✅ 중앙 둥근 반투명 D-day 뱃지 */
+.dday-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #242020b1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명한 검정색 */
   color: white;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 30px;
-  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 14px;
+  font-size: 0.85rem;
+  border-radius: 50%;
+  z-index: 10;
+  text-align: center;
+  backdrop-filter: blur(2px); /* 부드러운 배경 흐림 효과 */
 }
 
 /* 링크 밑줄 제거 */
