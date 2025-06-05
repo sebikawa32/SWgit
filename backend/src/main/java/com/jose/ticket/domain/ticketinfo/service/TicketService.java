@@ -1,17 +1,18 @@
 package com.jose.ticket.domain.ticketinfo.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.jose.ticket.domain.category.entity.Category;
 import com.jose.ticket.domain.category.repository.CategoryRepository;
 import com.jose.ticket.domain.ticketinfo.dto.TicketDetailResponseDto;
-import com.jose.ticket.global.exception.TicketNotFoundException;
 import com.jose.ticket.domain.ticketinfo.dto.TicketRequestDto;
 import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
 import com.jose.ticket.domain.ticketinfo.entity.TicketEntity;
 import com.jose.ticket.domain.ticketinfo.repository.TicketRepository;
+import com.jose.ticket.global.exception.TicketNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,26 +22,26 @@ import org.springframework.stereotype.Service;
 public class TicketService {
 
     private final TicketRepository ticketRepository;
-    private final CategoryRepository categoryRepository; //  카테고리 리포지토리 주입
+    private final CategoryRepository categoryRepository;
 
-    //  전체 티켓 조회
+    // ✅ 전체 티켓 조회 (최신 등록순 정렬 적용)
     public List<TicketResponseDto> getAllTickets() {
-        List<TicketEntity> all = ticketRepository.findAll();
-        return all.stream()
+        return ticketRepository.findAll().stream()
+                .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
                 .map(TicketResponseDto::new)
                 .collect(Collectors.toList());
     }
 
-    //  티켓 등록
+    // ✅ 티켓 등록
     public TicketResponseDto addTicket(TicketRequestDto requestDto) {
-        // 카테고리 ID로 Category 조회
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + requestDto.getCategoryId()));
 
         TicketEntity ticket = TicketEntity.builder()
                 .title(requestDto.getTitle())
                 .category(category)
-                .eventDatetime(requestDto.getEventDatetime())
+                .eventStartDatetime(requestDto.getEventStartDatetime())
+                .eventEndDatetime(requestDto.getEventEndDatetime())
                 .price(requestDto.getPrice())
                 .description(requestDto.getDescription())
                 .venue(requestDto.getVenue())
@@ -50,30 +51,29 @@ public class TicketService {
                 .imageUrl(requestDto.getImageUrl())
                 .build();
 
-        TicketEntity saved = ticketRepository.save(ticket);
-        return new TicketResponseDto(saved);
+        return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    //  티켓 삭제
+    // ✅ 티켓 삭제
     public void deleteTicket(Long id) {
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
         ticketRepository.delete(ticket);
     }
 
-    // 티켓 수정
+    // ✅ 티켓 수정
     public TicketResponseDto updateTicket(Long id, TicketRequestDto requestDto) {
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
-        // 수정 시에도 categoryId로 Category 찾아서 적용
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + requestDto.getCategoryId()));
 
         ticket.update(
                 requestDto.getTitle(),
                 category,
-                requestDto.getEventDatetime(),
+                requestDto.getEventStartDatetime(),
+                requestDto.getEventEndDatetime(),
                 requestDto.getPrice(),
                 requestDto.getDescription(),
                 requestDto.getVenue(),
@@ -83,51 +83,51 @@ public class TicketService {
                 requestDto.getImageUrl()
         );
 
-        TicketEntity updated = ticketRepository.save(ticket);
-        return new TicketResponseDto(updated);
+        return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    //상세보기 메서드
+    // ✅ 상세보기 - 카테고리도 함께 조회하도록 변경
     public TicketDetailResponseDto getTicketDetail(Long id) {
-        TicketEntity ticket = ticketRepository.findById(id)
+        TicketEntity ticket = ticketRepository.findByIdWithCategory(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
         return new TicketDetailResponseDto(
                 ticket.getImageUrl(),
                 ticket.getTitle(),
-                ticket.getEventDatetime(),
+                ticket.getEventStartDatetime(),
+                ticket.getEventEndDatetime(),
                 ticket.getPrice(),
                 ticket.getDescription(),
                 ticket.getVenue(),
                 ticket.getBookingLink(),
                 ticket.getBookingProvider(),
-                ticket.getBookingDatetime()
+                ticket.getBookingDatetime(),
+                ticket.getCategory() != null ? ticket.getCategory().getName() : null // 카테고리명 추가
         );
     }
 
-    // 마감일 순 티켓 조회 (예매 마감일 기준 오름차순)
+    // ✅ 예매 시작일 기준으로 정렬 + 과거 예매일 필터링
     public List<TicketResponseDto> getTicketsOrderByDeadline() {
-        LocalDateTime now = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        List<TicketEntity> tickets = ticketRepository.findByBookingDatetimeAfter(now);
-        return tickets.stream().map(TicketResponseDto::new).collect(Collectors.toList());
-    }
+        LocalDateTime now = LocalDateTime.now();
 
-    //특정 카테고리에 속하는 티켓 목록 조회
-    public List<TicketResponseDto> getTicketsByCategory(Long categoryId) {
-        // 카테고리 존재 여부 확인 (필요시)
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + categoryId));
-
-        // 해당 카테고리에 속하는 티켓 조회
-        List<TicketEntity> tickets = ticketRepository.findByCategoryId(categoryId);
-
-        // DTO 변환 후 반환
-        return tickets.stream()
+        return ticketRepository.findAll().stream()
+                .filter(ticket -> ticket.getBookingDatetime() != null && ticket.getBookingDatetime().isAfter(now))
+                .sorted(Comparator.comparing(
+                        TicketEntity::getBookingDatetime,
+                        Comparator.nullsLast(LocalDateTime::compareTo)
+                ))
                 .map(TicketResponseDto::new)
                 .collect(Collectors.toList());
     }
 
+    // ✅ 카테고리 기준 조회 (최신 등록순 정렬 적용)
+    public List<TicketResponseDto> getTicketsByCategory(Long categoryId) {
+        categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + categoryId));
 
-
-
+        return ticketRepository.findByCategoryId(categoryId).stream()
+                .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
+                .map(TicketResponseDto::new)
+                .collect(Collectors.toList());
+    }
 }
