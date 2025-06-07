@@ -6,36 +6,89 @@ import './Ticket.css';
 const MusicalPage = () => {
   const [tickets, setTickets] = useState([]);
   const [popularMusicals, setPopularMusicals] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 30;
 
-  // 날짜 직접 포맷팅 함수 (공백 없이 "YYYY.MM.DD" 형태)
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // 1~12 월
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-
     return `${year}.${month}.${day}`;
   };
 
+  const fetchTickets = async (page) => {
+    try {
+      const res = await axios.get(`/api/tickets/category/4/page?page=${page}&size=${pageSize}`);
+      setTickets(res.data.content);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
+    }
+  };
+
+  const fetchPopularMusicals = async () => {
+    try {
+      const res = await axios.get('/api/tickets/popular-musicals');
+      setPopularMusicals(res.data);
+    } catch (err) {
+      console.error('🔥 인기 뮤지컬 불러오기 오류:', err);
+    }
+  };
+
   useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        setPopularMusicals([]); // 인기 뮤지컬 임시
-        const res = await axios.get('/api/tickets/category/2'); // 뮤지컬 카테고리 ID = 2
-        setTickets(res.data);
-      } catch (err) {
-        console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
-      }
-    };
-    fetchTickets();
-  }, []);
+    fetchTickets(currentPage);
+    fetchPopularMusicals();
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page >= 0 && page < totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPagination = () => {
+    const pages = [];
+    const maxVisible = 10;
+    const startPage = Math.floor(currentPage / maxVisible) * maxVisible;
+    const endPage = Math.min(startPage + maxVisible, totalPages);
+
+    if (startPage > 0) {
+      pages.push(
+        <button key="prev" onClick={() => handlePageChange(startPage - 1)}>
+          ← 이전
+        </button>
+      );
+    }
+
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={i === currentPage ? 'active' : ''}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+
+    if (endPage < totalPages) {
+      pages.push(
+        <button key="next" onClick={() => handlePageChange(endPage)}>
+          다음 →
+        </button>
+      );
+    }
+
+    return pages;
+  };
 
   return (
     <div className="concert-page">
-
-      {/* 인기 뮤지컬 섹션 */}
+      {/* 🔥 인기 뮤지컬 섹션 */}
       <section className="popular-concerts">
         <h2>Hot</h2>
         <div className="popular-concerts-grid">
@@ -54,10 +107,8 @@ const MusicalPage = () => {
       {/* 구분선 */}
       <hr className="section-divider" />
 
-      {/* 전체 뮤지컬 제목 */}
       <h1>Musical</h1>
 
-      {/* 전체 뮤지컬 리스트 */}
       {tickets.length === 0 ? (
         <p>뮤지컬 데이터가 없습니다.</p>
       ) : (
@@ -68,10 +119,9 @@ const MusicalPage = () => {
                 <div className="concert-card-image-wrapper">
                   <img src={ticket.imageUrl} alt={ticket.title} />
                 </div>
-
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>
-                  <p style={{ whiteSpace: 'nowrap' }}>
+                  <p>
                     {formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}
                   </p>
                   <p>{ticket.venue}</p>
@@ -82,6 +132,9 @@ const MusicalPage = () => {
           ))}
         </div>
       )}
+
+      {/* 페이지네이션 */}
+      <div className="pagination">{renderPagination()}</div>
     </div>
   );
 };

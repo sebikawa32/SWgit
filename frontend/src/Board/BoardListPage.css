@@ -1,0 +1,129 @@
+/* ─── 게시판 전체 컨테이너 ─── */
+.board-list-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 30px 40px;
+}
+
+/* ─── 제목 ─── */
+.board-list-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* ─── 게시판 테이블 ─── */
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.board-table th,
+.board-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #d4d4d4;
+  text-align: center;
+}
+
+.board-table th {
+  background-color: #141414;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.board-table td a {
+  color: #3e3e3e;
+  text-decoration: none;
+}
+
+.board-table td a:hover {
+  text-decoration: underline;
+}
+
+.board-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.write-button {
+  padding: 8px 16px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ─── 반응형 대응 ─── */
+@media (max-width: 768px) {
+  .board-table thead {
+    display: none;
+  }
+
+  .board-table,
+  .board-table tbody,
+  .board-table tr,
+  .board-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .board-table tr {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .board-table td {
+    text-align: left;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .board-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    font-weight: bold;
+    color: #666;
+  }
+
+  .pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button.active {
+  background-color: #000;
+  color: white;
+  border-color: #000;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+}

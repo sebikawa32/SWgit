@@ -6,8 +6,10 @@ import './Ticket.css';
 const ExhibitionPage = () => {
   const [tickets, setTickets] = useState([]);
   const [popularExhibitions, setPopularExhibitions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 30;
 
-  // 직접 포맷팅 함수 (YYYY.MM.DD)
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
@@ -17,23 +19,76 @@ const ExhibitionPage = () => {
     return `${year}.${month}.${day}`;
   };
 
+  const fetchTickets = async (page) => {
+    try {
+      const res = await axios.get(`/api/tickets/category/2/page?page=${page}&size=${pageSize}`);
+      setTickets(res.data.content);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error('❌ 전시 티켓 불러오기 오류:', err);
+    }
+  };
+
+  const fetchPopularExhibitions = async () => {
+    try {
+      const res = await axios.get('/api/tickets/popular-exhibitions');
+      setPopularExhibitions(res.data);
+    } catch (err) {
+      console.error('🔥 인기 전시 불러오기 오류:', err);
+    }
+  };
+
   useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        setPopularExhibitions([]); // 인기 전시 임시
-        const res = await axios.get('/api/tickets/category/4'); // 전시 카테고리 ID = 4
-        setTickets(res.data);
-      } catch (err) {
-        console.error('❌ 전시 티켓 불러오기 오류:', err);
-      }
-    };
-    fetchTickets();
-  }, []);
+    fetchTickets(currentPage);
+    fetchPopularExhibitions();
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page >= 0 && page < totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPagination = () => {
+    const pages = [];
+    const maxVisible = 10;
+    const startPage = Math.floor(currentPage / maxVisible) * maxVisible;
+    const endPage = Math.min(startPage + maxVisible, totalPages);
+
+    if (startPage > 0) {
+      pages.push(
+        <button key="prev" onClick={() => handlePageChange(startPage - 1)}>
+          ← 이전
+        </button>
+      );
+    }
+
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={i === currentPage ? 'active' : ''}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+
+    if (endPage < totalPages) {
+      pages.push(
+        <button key="next" onClick={() => handlePageChange(endPage)}>
+          다음 →
+        </button>
+      );
+    }
+
+    return pages;
+  };
 
   return (
     <div className="concert-page">
-
-      {/* 인기 전시 섹션 */}
+      {/* 🔥 인기 전시 섹션 */}
       <section className="popular-concerts">
         <h2>Hot</h2>
         <div className="popular-concerts-grid">
@@ -66,10 +121,9 @@ const ExhibitionPage = () => {
                 <div className="concert-card-image-wrapper">
                   <img src={ticket.imageUrl} alt={ticket.title} />
                 </div>
-
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>
-                  <p style={{ whiteSpace: 'nowrap' }}>
+                  <p>
                     {formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}
                   </p>
                   <p>{ticket.venue}</p>
@@ -80,6 +134,9 @@ const ExhibitionPage = () => {
           ))}
         </div>
       )}
+
+      {/* 페이지네이션 */}
+      <div className="pagination">{renderPagination()}</div>
     </div>
   );
 };

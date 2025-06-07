@@ -1,4 +1,4 @@
-/* ✅ 기존 공통 스타일은 그대로 유지! */
+/* ─────────── 전체 공통 레이아웃 ─────────── */
 body, html, #root, .App {
   width: 100%;
   max-width: none;
@@ -12,39 +12,41 @@ body, html, #root, .App {
 .content {
   width: 90%;
   max-width: 1000px;
-  margin: 40px auto;
+  margin: 20px auto;
   border-radius: 12px;
-  padding: 40px;
+  padding: 24px;
   padding-top: 0;
   background: transparent;
-}
-
-h2 {
-  font-size: 2rem;
-  margin: 20px 0;
-  text-align: center;
-  color: #222;
-  font-weight: 700;
 }
 
 * {
   box-shadow: none !important;
 }
 
+/* ─────────── 제목 및 헤더 텍스트 ─────────── */
+h2 {
+  font-size: 1.6rem;
+  margin: 16px 0;
+  text-align: center;
+  color: #222;
+  font-weight: 700;
+}
+
+/* ─────────── 카테고리 버튼 ─────────── */
 .category-buttons {
   display: flex;
   justify-content: center;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .category-button {
   background-color: #e4e7ec;
   border: none;
   border-radius: 30px;
-  padding: 8px 20px;
-  font-size: 1rem;
+  padding: 6px 16px;
+  font-size: 0.95rem;
   cursor: pointer;
   color: #333;
   font-weight: 600;
@@ -61,21 +63,21 @@ h2 {
   color: #fff;
 }
 
-/* ✅ 슬라이더 버튼 */
+/* ─────────── 슬라이더 버튼 ─────────── */
 .slider-wrapper {
   display: flex;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .slide-btn {
   background: #333;
   color: white;
   border: none;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   user-select: none;
   transition: background-color 0.3s ease;
 }
@@ -89,83 +91,120 @@ h2 {
   cursor: not-allowed;
 }
 
-/* ✅ 슬라이더 내용 및 스크롤 숨기기 */
+/* ─────────── 슬라이더 내부 ─────────── */
 .event-list-wrapper {
   overflow: hidden;
   width: 100%;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
-
 .event-list-wrapper::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
 }
 
-/* ✅ 부드러운 슬라이드 효과 */
 .event-list {
   display: flex;
+  flex-wrap: nowrap;
+  width: auto;
+  gap: 6px; /* ✅ 간격을 줄임 */
+  justify-content: flex-start;
   transition: transform 0.5s ease-in-out;
+  padding: 6px 0;
 }
 
-/* ✅ 한 화면에 5개씩 보이도록 flex 설정 */
+/* ─────────── 카드 기본 스타일 ─────────── */
+.event-card-link {
+  display: block;
+  flex: 0 0 auto;
+  width: 240px;
+  max-width: 240px;
+}
+
 .event-card {
-  flex: 0 0 calc(100% / 5);
-  box-sizing: border-box;
+  height: 370px;
   background: #fff;
   border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  position: relative;
   cursor: pointer;
   transition: transform 0.3s ease;
-  position: relative;
 }
 
 .event-card:hover {
-  transform: translateY(-4px);
-}
-
-.image-wrapper {
-  position: relative;
+  transform: translateY(-3px);
 }
 
 .event-card img {
   width: 100%;
-  height: 220px;
+  height: 300px;
   object-fit: cover;
-  border-radius: 8px 8px 0 0;
+  display: block;
 }
 
-.event-card h3,
-.event-card p {
-  margin: 5px 0;
-  padding: 0 5px;
-  font-size: 0.9rem;
+/* 제목 */
+.card-title {
   text-align: center;
+  padding: 4px 6px 0;
 }
 
-/* ✅ 중앙 둥근 반투명 D-day 뱃지 */
+.card-title h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 날짜 및 장소 */
+.card-info {
+  text-align: center;
+  padding: 0 6px;
+}
+
+.card-info p {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 2px 0;
+}
+
+/* 뱃지 위치 */
 .dday-badge {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.5); /* 반투명한 검정색 */
-  color: white;
+  top: 6px;
+  right: 6px;
+  background-color: #ff3b30;
+  color: #fff;
   font-weight: bold;
-  padding: 14px;
-  font-size: 0.85rem;
-  border-radius: 50%;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 12px;
   z-index: 10;
   text-align: center;
-  backdrop-filter: blur(2px); /* 부드러운 배경 흐림 효과 */
+  backdrop-filter: blur(2px);
 }
 
-/* 링크 밑줄 제거 */
-.event-card-link {
-  text-decoration: none;
-  color: inherit;
+/* ─────────── Coming Soon (no-slider) ─────────── */
+.event-list-wrapper.no-slider {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px; /* ✅ 간격을 줄임 */
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding: 6px 0;
 }
 
-/* 반응형 */
-@media (max-width: 600px) {
-  .category-buttons {
-    justify-content: center;
+/* ─────────── 반응형 대응 ─────────── */
+@media (max-width: 1024px) {
+  .event-card-link {
+    width: 200px;
+  }
+
+  .event-card {
+    height: 330px;
+  }
+
+  .event-card img {
+    height: 260px;
   }
 }

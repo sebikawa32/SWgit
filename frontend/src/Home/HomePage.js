@@ -23,9 +23,11 @@ const HomePage = () => {
   const [deadlineTickets, setDeadlineTickets] = useState([]);
   const [loadingDeadline, setLoadingDeadline] = useState(false);
   const [errorDeadline, setErrorDeadline] = useState(null);
-  const [deadlinePageIndex, setDeadlinePageIndex] = useState(0);
 
   const [popularTickets, setPopularTickets] = useState([]);
+
+  const cardWidth = 240;
+  const gap = 12;
   const visibleCount = 5;
 
   useEffect(() => {
@@ -107,7 +109,8 @@ const HomePage = () => {
   const renderSlider = (tickets, pageIndex, setPageIndex, showDDay) => {
     const displayTickets = tickets.slice(0, 20);
     const totalPages = Math.ceil(displayTickets.length / visibleCount);
-    const moveX = pageIndex * (100 / totalPages);
+    const moveX = pageIndex * (cardWidth + gap) * visibleCount;
+    const sliderWidth = displayTickets.length * (cardWidth + gap);
 
     return (
       <div className="slider-wrapper">
@@ -123,8 +126,8 @@ const HomePage = () => {
           <div
             className="event-list"
             style={{
-              transform: `translateX(-${moveX}%)`,
-              width: `${(displayTickets.length / visibleCount) * 100}%`,
+              transform: `translateX(-${moveX}px)`,
+              width: `${sliderWidth}px`,
               transition: 'transform 0.5s ease-in-out'
             }}
           >
@@ -135,9 +138,13 @@ const HomePage = () => {
                     <div className="dday-badge">{calculateDDay(ticket.bookingDatetime)}</div>
                   )}
                   <img src={ticket.imageUrl} alt={ticket.title} />
-                  <h3>{ticket.title}</h3>
-                  <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
-                  <p>{ticket.venue}</p>
+                  <div className="card-title">
+                    <h3>{ticket.title}</h3>
+                  </div>
+                  <div className="card-info">
+                    <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
+                    <p>{ticket.venue}</p>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -181,10 +188,30 @@ const HomePage = () => {
         <h2>Coming soon</h2>
         {loadingDeadline && <p>로딩 중...</p>}
         {errorDeadline && <p style={{ color: 'red' }}>{errorDeadline}</p>}
-        {renderSlider(deadlineTickets, deadlinePageIndex, setDeadlinePageIndex, true)}
+
+        <div className="event-list-wrapper no-slider">
+          {deadlineTickets.slice(0, 5).map(ticket => (
+            <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+              <div className="event-card">
+                {ticket.bookingDatetime && (
+                  <div className="dday-badge">{calculateDDay(ticket.bookingDatetime)}</div>
+                )}
+                <img src={ticket.imageUrl} alt={ticket.title} />
+                <div className="card-title">
+                  <h3>{ticket.title}</h3>
+                </div>
+                <div className="card-info">
+                  <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
+                  <p>{ticket.venue}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <hr style={{ margin: '50px 0' }} />
+
       <section>
         <h2>Ranking</h2>
         {popularTickets.length === 0 ? (

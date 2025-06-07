@@ -6,34 +6,89 @@ import './Ticket.css';
 const PlayPage = () => {
   const [tickets, setTickets] = useState([]);
   const [popularPlays, setPopularPlays] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 30;
 
-  // 직접 포맷팅 함수 (YYYY.MM.DD)
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // 1~12월
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}.${month}.${day}`;
   };
 
+  const fetchTickets = async (page) => {
+    try {
+      const res = await axios.get(`/api/tickets/category/3/page?page=${page}&size=${pageSize}`);
+      setTickets(res.data.content);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error('❌ 연극 티켓 불러오기 오류:', err);
+    }
+  };
+
+  const fetchPopularPlays = async () => {
+    try {
+      const res = await axios.get('/api/tickets/popular-plays');
+      setPopularPlays(res.data);
+    } catch (err) {
+      console.error('🔥 인기 연극 불러오기 오류:', err);
+    }
+  };
+
   useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        setPopularPlays([]); // 인기 연극 임시
-        const res = await axios.get('/api/tickets/category/3'); // 연극 카테고리 ID = 3
-        setTickets(res.data);
-      } catch (err) {
-        console.error('❌ 연극 티켓 불러오기 오류:', err);
-      }
-    };
-    fetchTickets();
-  }, []);
+    fetchTickets(currentPage);
+    fetchPopularPlays();
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    if (page >= 0 && page < totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPagination = () => {
+    const pages = [];
+    const maxVisible = 10;
+    const startPage = Math.floor(currentPage / maxVisible) * maxVisible;
+    const endPage = Math.min(startPage + maxVisible, totalPages);
+
+    if (startPage > 0) {
+      pages.push(
+        <button key="prev" onClick={() => handlePageChange(startPage - 1)}>
+          ← 이전
+        </button>
+      );
+    }
+
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={i === currentPage ? 'active' : ''}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+
+    if (endPage < totalPages) {
+      pages.push(
+        <button key="next" onClick={() => handlePageChange(endPage)}>
+          다음 →
+        </button>
+      );
+    }
+
+    return pages;
+  };
 
   return (
     <div className="concert-page">
-
-      {/* 인기 연극 섹션 */}
+      {/* 🔥 인기 연극 섹션 */}
       <section className="popular-concerts">
         <h2>Hot</h2>
         <div className="popular-concerts-grid">
@@ -52,10 +107,8 @@ const PlayPage = () => {
       {/* 구분선 */}
       <hr className="section-divider" />
 
-      {/* 전체 연극 제목 */}
       <h1>Play</h1>
 
-      {/* 전체 연극 리스트 */}
       {tickets.length === 0 ? (
         <p>연극 데이터가 없습니다.</p>
       ) : (
@@ -66,20 +119,20 @@ const PlayPage = () => {
                 <div className="concert-card-image-wrapper">
                   <img src={ticket.imageUrl} alt={ticket.title} />
                 </div>
-
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>
-                  <p style={{ whiteSpace: 'nowrap' }}>
-                    {formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}
-                  </p>
+                  <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  {ticket.price && <p>{ticket.price}원</p>}
+                  <p>{ticket.price}원</p>
                 </div>
               </div>
             </Link>
           ))}
         </div>
       )}
+
+      {/* 페이지네이션 */}
+      <div className="pagination">{renderPagination()}</div>
     </div>
   );
 };

@@ -1,8 +1,7 @@
-// Bookmark.js
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ 상세 페이지 이동을 위해 추가
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../Ticket/Ticket.css"; // ✅ Ticket 카드 스타일 가져오기!
+import "../Ticket/Ticket.css";
 
 const Bookmark = () => {
   const [bookmarks, setBookmarks] = useState([]);
@@ -10,29 +9,57 @@ const Bookmark = () => {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+
+  // ✅ 날짜 포맷 함수 추가
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}.${month}.${day}`;
+  };
 
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
-        // ✅ 템플릿 리터럴로 URL 작성
-        const res = await axios.get(`/api/bookmarks/${userId}`);
+        if (!token) {
+          console.warn("⚠️ token이 없습니다.");
+          setError("로그인이 필요합니다.");
+          return;
+        }
+
+        const res = await axios.get(`/api/bookmarks/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         setBookmarks(res.data);
       } catch (err) {
-        console.error(err);
+        console.error("❌ 북마크 불러오기 실패:", err);
         setError("즐겨찾기 목록을 불러오지 못했습니다.");
       }
     };
 
     if (userId) {
       fetchBookmarks();
+    } else {
+      console.warn("⚠️ userId가 없습니다.");
     }
-  }, [userId]);
+  }, [userId, token]);
 
-  // ✅ 삭제 처리
   const handleRemove = async (ticketId) => {
     try {
-      await axios.delete("/api/bookmarks", {
-        data: { userId: parseInt(userId), ticketId },
+      await axios.delete(`/api/bookmarks`, {
+        params: {
+          userId: parseInt(userId),
+          ticketId: ticketId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       setBookmarks((prev) => prev.filter((item) => item.ticketId !== ticketId));
     } catch (err) {
@@ -41,13 +68,12 @@ const Bookmark = () => {
     }
   };
 
-  // ✅ 상세 페이지로 이동
   const handleCardClick = (ticketId) => {
     navigate(`/ticket/${ticketId}`);
   };
 
   return (
-    <div className="concert-page"> {/* ✅ TicketPage 스타일 적용 */}
+    <div className="concert-page">
       <h1>내 즐겨찾기 목록</h1>
 
       {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
@@ -60,10 +86,9 @@ const Bookmark = () => {
             <div
               className="concert-card"
               key={item.ticketId}
-              onClick={() => handleCardClick(item.ticketId)} // ✅ 카드 클릭 시 상세 페이지 이동
+              onClick={() => handleCardClick(item.ticketId)}
               style={{ cursor: "pointer" }}
             >
-              {/* ✅ 썸네일 이미지 (없으면 기본 이미지) */}
               <img
                 src={item.imageUrl || "/images/placeholder.jpg"}
                 alt={item.ticketTitle}
@@ -71,8 +96,16 @@ const Bookmark = () => {
 
               <div className="concert-info">
                 <h2>{item.ticketTitle}</h2>
+
+                {/* ✅ 날짜 표시 */}
+                <p style={{ whiteSpace: "nowrap" }}>
+                  {formatDate(item.eventStartDatetime)} ~ {formatDate(item.eventEndDatetime)}
+                </p>
+
                 <p>{item.venue}</p>
-                {/* ✅ 삭제 버튼 클릭 시 부모 클릭 이벤트 막기 */}
+
+                {item.price && <p>{item.price}원</p>}
+
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -80,7 +113,7 @@ const Bookmark = () => {
                   }}
                   style={{
                     marginTop: "10px",
-                    background: "#ff6b6b",
+                    background: "	#4a4a4a", 
                     color: "white",
                     border: "none",
                     borderRadius: "4px",
