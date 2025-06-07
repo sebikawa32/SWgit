@@ -1,34 +1,51 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState("");   // 로그인 입력 아이디
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
   const onLogin = () => {
-    axios.post("http://localhost:8080/api/users/login", {
-      userId,
-      password,
-    })
-    .then(res => {
-      alert("로그인 성공!");
+    axios
+      .post("http://localhost:8080/api/users/login", {
+        userId,
+        password,
+      })
+      .then((res) => {
+        alert("로그인 성공!");
 
-      // ✅ 백엔드 응답에서 token과 userId(PK)를 받아오기
-      const { token, userId: userPk } = res.data.data;
+        // ✅ 백엔드 응답에서 토큰과 userId(PK) 추출
+        const { token, userId: userPk } = res.data.data;
 
-      // ✅ 토큰과 userId(PK)를 localStorage에 저장
-      localStorage.setItem("token", token);
-      localStorage.setItem("userId", userPk);   // 🔥 백엔드 응답에서 받은 userId(PK)를 저장!
+        // ✅ 토큰과 userId(PK) 저장
+       localStorage.setItem("token", token);
+        localStorage.setItem("userId", userPk);
 
-      navigate("/", { replace: true }); // 🚀 홈으로 이동
-      window.location.reload(); // 🚀 새로고침으로 로그인 상태 반영!
-    })
-    .catch(() => {
-      alert("로그인 실패");
-    });
+        // ✅ 닉네임 조회해서 저장
+        axios
+          .get("http://localhost:8080/api/users/me", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((meRes) => {
+            const nickname = meRes.data.data.nickname;
+            localStorage.setItem("nickname", nickname);
+
+            // 홈으로 이동하고 새로고침
+            navigate("/", { replace: true });
+            window.location.reload();
+          })
+          .catch(() => {
+            alert("닉네임 불러오기 실패");
+          });
+      })
+      .catch(() => {
+        alert("로그인 실패");
+      });
   };
 
   return (
@@ -49,7 +66,6 @@ function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {/* ✅ 로그인 버튼 클릭시 onLogin 연결 */}
         <button onClick={onLogin}>로그인</button>
 
         <p className="signup-text">
