@@ -18,7 +18,6 @@ public class TicketRequestDto {
     private LocalDateTime eventStartDatetime; // 시작일
     private LocalDateTime eventEndDatetime;   // 종료일
     private String price;
-    private String description;
     private String venue;
     private String bookingLink;
     private String bookingProvider;

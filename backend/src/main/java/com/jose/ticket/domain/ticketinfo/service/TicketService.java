@@ -15,6 +15,8 @@ import com.jose.ticket.domain.ticketinfo.repository.TicketRepository;
 import com.jose.ticket.global.exception.TicketNotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +26,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
 
-    // ✅ 전체 티켓 조회 (최신 등록순 정렬 적용)
+    // ✅ 전체 티켓 조회
     public List<TicketResponseDto> getAllTickets() {
         return ticketRepository.findAll().stream()
                 .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
@@ -43,7 +45,6 @@ public class TicketService {
                 .eventStartDatetime(requestDto.getEventStartDatetime())
                 .eventEndDatetime(requestDto.getEventEndDatetime())
                 .price(requestDto.getPrice())
-                .description(requestDto.getDescription())
                 .venue(requestDto.getVenue())
                 .bookingLink(requestDto.getBookingLink())
                 .bookingProvider(requestDto.getBookingProvider())
@@ -75,7 +76,6 @@ public class TicketService {
                 requestDto.getEventStartDatetime(),
                 requestDto.getEventEndDatetime(),
                 requestDto.getPrice(),
-                requestDto.getDescription(),
                 requestDto.getVenue(),
                 requestDto.getBookingLink(),
                 requestDto.getBookingProvider(),
@@ -86,7 +86,7 @@ public class TicketService {
         return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    // ✅ 상세보기 - 카테고리도 함께 조회하도록 변경
+    // ✅ 상세보기
     public TicketDetailResponseDto getTicketDetail(Long id) {
         TicketEntity ticket = ticketRepository.findByIdWithCategory(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
@@ -97,16 +97,15 @@ public class TicketService {
                 ticket.getEventStartDatetime(),
                 ticket.getEventEndDatetime(),
                 ticket.getPrice(),
-                ticket.getDescription(),
                 ticket.getVenue(),
                 ticket.getBookingLink(),
                 ticket.getBookingProvider(),
                 ticket.getBookingDatetime(),
-                ticket.getCategory() != null ? ticket.getCategory().getName() : null // 카테고리명 추가
+                ticket.getCategory() != null ? ticket.getCategory().getName() : null
         );
     }
 
-    // ✅ 예매 시작일 기준으로 정렬 + 과거 예매일 필터링
+    // ✅ 마감일 정렬
     public List<TicketResponseDto> getTicketsOrderByDeadline() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -120,14 +119,28 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 카테고리 기준 조회 (최신 등록순 정렬 적용)
-    public List<TicketResponseDto> getTicketsByCategory(Long categoryId) {
-        categoryRepository.findById(categoryId)
+    // ✅ 카테고리 전체 조회 (정렬만) → null 체크 추가됨
+    public List<TicketResponseDto> getTicketsByCategory(Integer categoryId) {
+        if (categoryId == null || categoryId == 0) {
+            // 전체 조회
+            return ticketRepository.findAll().stream()
+                    .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
+                    .map(TicketResponseDto::new)
+                    .collect(Collectors.toList());
+        }
+
+        categoryRepository.findById(Long.valueOf(categoryId))
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + categoryId));
 
         return ticketRepository.findByCategoryId(categoryId).stream()
                 .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
                 .map(TicketResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    // ✅ 카테고리 페이지네이션 조회
+    public Page<TicketResponseDto> getTicketsByCategory(int categoryId, Pageable pageable) {
+        return ticketRepository.findByCategoryId(categoryId, pageable)
+                .map(TicketResponseDto::new);
     }
 }

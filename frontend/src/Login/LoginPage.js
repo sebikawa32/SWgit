@@ -21,7 +21,7 @@ function LoginPage() {
         const { token, userId: userPk } = res.data.data;
 
         // ✅ 토큰과 userId(PK) 저장
-       localStorage.setItem("token", token);
+       localStorage.setItem("accessToken", token); 
         localStorage.setItem("userId", userPk);
 
         // ✅ 닉네임 조회해서 저장

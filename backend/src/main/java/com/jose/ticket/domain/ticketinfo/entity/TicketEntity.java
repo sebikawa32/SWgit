@@ -38,9 +38,6 @@ public class TicketEntity {
     @Column(name = "ticket_price")
     private String price;
 
-    @Column(name = "ticket_description", columnDefinition = "TEXT")
-    private String description;
-
     @Column(name = "ticket_venue")
     private String venue;
 
@@ -59,6 +56,7 @@ public class TicketEntity {
     @Column(name = "ticket_image_url", length = 1000)
     private String imageUrl;
 
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -67,7 +65,7 @@ public class TicketEntity {
     // ✅ 파라미터 타입도 LocalDateTime으로 변경
     public void update(String title, Category category,
                        LocalDateTime eventStartDatetime, LocalDateTime eventEndDatetime,
-                       String price, String description,
+                       String price,
                        String venue, String bookingLink, String bookingProvider,
                        LocalDateTime bookingDatetime, String imageUrl) {
 
@@ -76,7 +74,6 @@ public class TicketEntity {
         this.eventStartDatetime = eventStartDatetime;
         this.eventEndDatetime = eventEndDatetime;
         this.price = price;
-        this.description = description;
         this.venue = venue;
         this.bookingLink = bookingLink;
         this.bookingProvider = bookingProvider;
