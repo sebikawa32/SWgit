@@ -16,19 +16,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    /** 사용자 아이디로 DB에서 사용자 조회 */
+    /**
+     * 사용자 아이디로 DB에서 사용자 조회
+     */
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        // DB에서 사용자 조회, 없으면 예외 발생
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다"));
-
-        // Spring Security의 User 객체로 변환하여 반환 (권한 ROLE_USER 부여)
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUserId())
-                .password(user.getPassword())
-                .roles("USER")
-                .build();
+        return new CustomUserDetails(user);  // ✅ 커스텀 유저 디테일 반환
     }
-}
 
+}

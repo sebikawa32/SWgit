@@ -19,29 +19,42 @@ public class BookmarkController {
         this.bookmarkService = bookmarkService;
     }
 
-    // 즐겨찾기 추가
+    // 🎯 즐겨찾기 추가 (POST) 수정
     @PostMapping
-    public ResponseEntity<String> addBookmark(@RequestBody BookmarkCreateRequest request) {
+    public ResponseEntity<String> addBookmark(
+            @RequestParam Long userId,
+            @RequestParam Long ticketId
+    ) {
         try {
+            BookmarkCreateRequest request = new BookmarkCreateRequest();
+            request.setUserId(userId);
+            request.setTicketId(ticketId);
             bookmarkService.addBookmark(request);
             return ResponseEntity.ok("즐겨찾기에 추가되었습니다.");
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(409).body(e.getMessage());  // 중복 에러 등
+            return ResponseEntity.status(409).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body(e.getMessage());  // 티켓 없음 에러 등
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 
-    // 즐겨찾기 삭제
+    // 🎯 즐겨찾기 삭제 (DELETE) 수정
     @DeleteMapping
-    public ResponseEntity<String> removeBookmark(@RequestBody BookmarkDeleteRequest request) {
+    public ResponseEntity<String> removeBookmark(
+            @RequestParam Long userId,
+            @RequestParam Long ticketId
+    ) {
         try {
+            BookmarkDeleteRequest request = new BookmarkDeleteRequest();
+            request.setUserId(userId);
+            request.setTicketId(ticketId);
             bookmarkService.removeBookmark(request);
             return ResponseEntity.ok("즐겨찾기에서 삭제되었습니다.");
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(404).body(e.getMessage());  // 없는 즐겨찾기 삭제 시도 등
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
+
 
     //즐겨찾기 목록조회
     @GetMapping("/{userId}")

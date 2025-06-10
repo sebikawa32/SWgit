@@ -14,7 +14,6 @@ public class TicketDetailResponseDto {
     private LocalDateTime eventStartDatetime; // 공연 시작일
     private LocalDateTime eventEndDatetime;   // 공연 종료일
     private String price;
-    private String description;
     private String venue;
     private String bookingLink;
     private String bookingProvider;
@@ -32,7 +31,6 @@ public class TicketDetailResponseDto {
                                    LocalDateTime eventStartDatetime,
                                    LocalDateTime eventEndDatetime,
                                    String price,
-                                   String description,
                                    String venue,
                                    String bookingLink,
                                    String bookingProvider,
@@ -43,7 +41,6 @@ public class TicketDetailResponseDto {
         this.eventStartDatetime = eventStartDatetime;
         this.eventEndDatetime = eventEndDatetime;
         this.price = price;
-        this.description = description;
         this.venue = venue;
         this.bookingLink = bookingLink;
         this.bookingProvider = bookingProvider;
