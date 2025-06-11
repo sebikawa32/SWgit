@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "뮤지컬 <레미제라블>",
+    "date": "2025.06.01 ~ 2025.08.31",
+    "location": "예술의전당 오페라극장",
+    "image": "https://via.placeholder.com/300x200?text=레미제라블",
+    "category": "뮤지컬"
+  },
+  {
+    "id": 2,
+    "title": "전시 <모네에서 피카소까지>",
+    "date": "2025.05.15 ~ 2025.09.10",
+    "location": "서울시립미술관",
+    "image": "https://via.placeholder.com/300x200?text=모네+피카소",
+    "category": "전시"
+  },
+  {
+    "id": 3,
+    "title": "2025 KBO 올스타전",
+    "date": "2025.07.20",
+    "location": "고척스카이돔",
+    "image": "https://via.placeholder.com/300x200?text=KBO+올스타전",
+    "category": "스포츠"
+  },
+  {
+    "id": 4,
+    "title": "연극 <햄릿>",
+    "date": "2025.07.01 ~ 2025.07.30",
+    "location": "대학로 예술극장",
+    "image": "https://via.placeholder.com/300x200?text=햄릿",
+    "category": "연극"
+  },
+  {
+    "id": 5,
+    "title": "콘서트 <NewJeans>",
+    "date": "2025.08.15",
+    "location": "KSPO DOME",
+    "image": "https://via.placeholder.com/300x200?text=뉴진스+콘서트",
+    "category": "콘서트"
+  }
+]

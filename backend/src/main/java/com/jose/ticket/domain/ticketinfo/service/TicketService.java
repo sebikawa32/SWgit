@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
 
-    // ✅ 전체 티켓 조회
+    //  전체 티켓 조회
     public List<TicketResponseDto> getAllTickets() {
         return ticketRepository.findAll().stream()
                 .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
@@ -34,7 +35,7 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 티켓 등록
+    // 티켓 등록
     public TicketResponseDto addTicket(TicketRequestDto requestDto) {
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + requestDto.getCategoryId()));
@@ -58,14 +59,14 @@ public class TicketService {
         return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    // ✅ 티켓 삭제
+    // 티켓 삭제
     public void deleteTicket(Long id) {
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
         ticketRepository.delete(ticket);
     }
 
-    // ✅ 티켓 수정
+    // 티켓 수정
     public TicketResponseDto updateTicket(Long id, TicketRequestDto requestDto) {
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
@@ -92,8 +93,11 @@ public class TicketService {
         return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    // ✅ 상세보기
+    //  상세보기 + 상세보기 시 조회수 증가 로직 추가 !
+    @Transactional
     public TicketDetailResponseDto getTicketDetail(Long id) {
+        ticketRepository.increaseViewCount(id); // 👈 조회수 +1 추가!
+
         TicketEntity ticket = ticketRepository.findByIdWithCategory(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
@@ -104,7 +108,8 @@ public class TicketService {
     }
 
 
-    // ✅ 마감일 정렬
+
+    //  마감일 정렬
     public List<TicketResponseDto> getTicketsOrderByDeadline() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -118,7 +123,7 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 카테고리 전체 조회 (정렬만)
+    //  카테고리 전체 조회 (정렬만)
     public List<TicketResponseDto> getTicketsByCategory(Integer categoryId) {
         if (categoryId == null || categoryId == 0) {
             return ticketRepository.findAll().stream()
@@ -136,7 +141,7 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 카테고리 페이지네이션 조회
+    //  카테고리 페이지네이션 조회
     public Page<TicketResponseDto> getTicketsByCategory(int categoryId, Pageable pageable) {
         return ticketRepository.findByCategoryId(categoryId, pageable)
                 .map(TicketResponseDto::new);

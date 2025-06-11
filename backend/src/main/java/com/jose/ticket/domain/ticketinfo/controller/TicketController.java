@@ -22,34 +22,34 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-    // ✅ 전체 티켓 목록 조회
+    //  전체 티켓 목록 조회
     @GetMapping
     public List<TicketResponseDto> getAllTickets() {
         return ticketService.getAllTickets();
     }
 
-    // ✅ 티켓 상세 조회
+    //  티켓 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<TicketDetailResponseDto> getTicketById(@PathVariable Long id) {
         TicketDetailResponseDto response = ticketService.getTicketDetail(id);
         return ResponseEntity.ok(response);
     }
 
-    // ✅ 마감일 순 정렬된 티켓 목록 조회
+    //  마감일 순 정렬된 티켓 목록 조회
     @GetMapping("/deadline")
     public ResponseEntity<List<TicketResponseDto>> getTicketsOrderByDeadline() {
         List<TicketResponseDto> response = ticketService.getTicketsOrderByDeadline();
         return ResponseEntity.ok(response);
     }
 
-    // ✅ 카테고리별 전체 티켓 목록 조회 (페이징 없이)
+    //  카테고리별 전체 티켓 목록 조회 (페이징 없이)
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<TicketResponseDto>> getTicketsByCategory(@PathVariable Long categoryId) {
         List<TicketResponseDto> result = ticketService.getTicketsByCategory(categoryId.intValue());
         return ResponseEntity.ok(result);
     }
 
-    // ✅ 카테고리별 티켓 목록 조회 (페이지네이션)
+    //  카테고리별 티켓 목록 조회 (페이지네이션)
     @GetMapping("/category/{categoryId}/page")
     public Page<TicketResponseDto> getTicketsByCategoryWithPaging(
             @PathVariable int categoryId,
@@ -60,7 +60,7 @@ public class TicketController {
         return ticketService.getTicketsByCategory(categoryId, pageable);
     }
 
-    // ✅ 요약 DTO 조회
+    //  요약 DTO 조회
     @GetMapping("/summaries")
     public List<TicketSummaryDto> getTicketSummaries() {
         return ticketService.getAllTickets().stream()
@@ -68,7 +68,7 @@ public class TicketController {
                 .toList();
     }
 
-    // ✅ 공연 시작일 기준 가까운 순 정렬 (오늘 이후 공연만)
+    //  공연 시작일 기준 가까운 순 정렬 (오늘 이후 공연만)
     @GetMapping("/sorted")
     public ResponseEntity<List<TicketResponseDto>> getTicketsByCategorySorted(@RequestParam int categoryId) {
         return ResponseEntity.ok(ticketService.getUpcomingTicketsByCategory(categoryId));
@@ -83,4 +83,5 @@ public class TicketController {
         Pageable pageable = PageRequest.of(page, size, Sort.by("eventStartDatetime").ascending());
         return ticketService.getUpcomingTicketsByCategoryPaged(categoryId, pageable);
     }
+
 }
