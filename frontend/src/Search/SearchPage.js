@@ -72,10 +72,9 @@ function SearchPage() {
     navigate(`/ticket/${ticketId}`);
   };
 
-  // 여기 boardId를 받아서 이동
- const handleBoardClick = (boardId) => {
-  navigate(`/boards/${boardId}`);
-};
+  const handleBoardClick = (boardId) => {
+    navigate(`/boards/${boardId}`);
+  };
 
   return (
     <main className="content">
@@ -107,9 +106,9 @@ function SearchPage() {
               <div className="event-list">
                 {tickets.map(ticket => (
                   <div
-                    key={ticket.ticketId}
+                    key={ticket.id}
                     className="event-card"
-                    onClick={() => handleTicketClick(ticket.ticketId)}
+                    onClick={() => handleTicketClick(ticket.id)}
                     style={{ cursor: "pointer" }}
                   >
                     <img src={ticket.imageUrl} alt={ticket.title} />
