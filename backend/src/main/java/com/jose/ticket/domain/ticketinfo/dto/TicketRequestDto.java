@@ -28,7 +28,7 @@ public class TicketRequestDto {
 
     private String imageUrl;
 
-    // ✅ 새 필드 3개 추가
+    // 새 필드 3개 추가
     private String ageLimit;
     private String eventTime;
     private String descriptionUrl;

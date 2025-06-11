@@ -56,7 +56,7 @@ public class TicketEntity {
     @Column(name = "ticket_image_url", length = 1000)
     private String imageUrl;
 
-    // ✅ 새로 추가된 필드들
+    //  새로 추가된 필드들
     @Column(name = "ticket_age_limit", length = 50)
     private String ageLimit;
 
@@ -65,6 +65,9 @@ public class TicketEntity {
 
     @Column(name = "ticket_description_url", length = 500)
     private String descriptionUrl;
+
+    @Column(name = "view_count")
+    private Integer viewCount;
 
     @PrePersist
     protected void onCreate() {
