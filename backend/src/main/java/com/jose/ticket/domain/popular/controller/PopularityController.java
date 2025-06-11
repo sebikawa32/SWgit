@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tickets")
+@RequestMapping("/api/tickets")
 public class PopularityController {
 
     private final PopularityService popularityService;

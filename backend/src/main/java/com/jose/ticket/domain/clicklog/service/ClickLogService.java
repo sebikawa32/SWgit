@@ -17,6 +17,7 @@ public class ClickLogService {
 
     @Transactional
     public void logClick(Long ticketId, Long userId) {
+        System.out.println("클릭 로그 저장 시도!");
         TicketEntity ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 티켓입니다."));
         ClickLogEntity clickLog = new ClickLogEntity();
