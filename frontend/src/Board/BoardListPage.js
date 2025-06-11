@@ -6,34 +6,34 @@ import './BoardListPage.css';
 const BoardList = ({ type = "general", ticketId }) => {
   const [boards, setBoards] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState("latest");
   const postsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBoards = async () => {
       try {
-        let res;
-        if (ticketId) {
-          res = await axios.get(`/api/boards/tickets/${ticketId}/boards?type=${type}`);
-        } else {
-          res = await axios.get(`/api/boards?type=${type}`);
-        }
-        const sorted = [...res.data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setBoards(sorted);
-        setCurrentPage(1); // 티켓 변경 시 첫 페이지로 초기화
+        const sortParam = type !== 'notice' ? `&sort=${sort}` : "";
+        const url = ticketId
+          ? `/api/boards/tickets/${ticketId}/boards?type=${type}`
+          : `/api/boards?type=${type}${sortParam}`;
+
+        const res = await axios.get(url);
+        setBoards(res.data);
+        setCurrentPage(1);
       } catch (err) {
         console.error("게시글 불러오기 실패", err);
       }
     };
+
     fetchBoards();
-  }, [type, ticketId]);
+  }, [type, ticketId, sort]);
 
   const handleWriteClick = () => {
     const query = `?type=${type}` + (ticketId ? `&ticketId=${ticketId}` : '');
     navigate(`/boards/new${query}`);
   };
 
-  // ✅ 페이징 계산
   const indexOfLast = currentPage * postsPerPage;
   const indexOfFirst = indexOfLast - postsPerPage;
   const currentBoards = boards.slice(indexOfFirst, indexOfLast);
@@ -41,15 +41,38 @@ const BoardList = ({ type = "general", ticketId }) => {
 
   return (
     <div className="board-list-container">
-      <div className="board-list-header">
-        <h1>{type === 'notice' ? '공지사항' : '게시판'} 목록</h1>
-        <button className="write-button" onClick={handleWriteClick}>글쓰기</button>
+      {/* 제목 중앙 정렬 */}
+      <div className="board-title-wrapper">
+        <h1 className="board-title">{type === 'notice' ? '공지사항' : '게시글'}</h1>
+      </div>
+
+      {/* 정렬 옵션 + 글쓰기 버튼 */}
+      <div className="board-list-controls">
+        {/* 왼쪽: 정렬 드롭다운 / 없으면 공간만 유지 */}
+        {type !== 'notice' && !ticketId ? (
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="sort-select"
+          >
+            <option value="latest">최신순</option>
+            <option value="views">조회수순</option>
+          </select>
+        ) : (
+          <div style={{ width: '120px' }}></div>
+        )}
+
+        {/* 오른쪽: 글쓰기 */}
+        <button className="write-button" onClick={handleWriteClick}>
+          글쓰기
+        </button>
       </div>
 
       <table className="board-table">
         <thead>
           <tr>
             <th>번호</th>
+            <th>티켓</th>
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
@@ -58,9 +81,13 @@ const BoardList = ({ type = "general", ticketId }) => {
         <tbody>
           {currentBoards.map((board, index) => (
             <tr key={board.id}>
-              <td>{boards.length - (indexOfFirst + index)}</td>
+              <td>{board.type === 'notice' ? "공지사항" : boards.length - (indexOfFirst + index)}</td>
+              <td>{board.ticketTitle || ""}</td>
               <td>
-                <Link to={`/boards/${board.id}`}>{board.title}</Link>
+                <Link to={`/boards/${board.id}`}>
+                  {board.type === 'notice' && <span className="notice-label">[공지사항] </span>}
+                  {board.title}
+                </Link>
               </td>
               <td>{board.nickname}</td>
               <td>{board.createdAt?.slice(0, 10)}</td>
@@ -69,7 +96,6 @@ const BoardList = ({ type = "general", ticketId }) => {
         </tbody>
       </table>
 
-      {/* ✅ 페이지네이션 */}
       <div className="pagination">
         <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
           이전

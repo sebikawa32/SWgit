@@ -10,29 +10,49 @@ const BoardDetail = () => {
   const [newComment, setNewComment] = useState('');
   const [error, setError] = useState(null);
 
-  const token = localStorage.getItem('token');
-
   useEffect(() => {
-    axios.get(`/api/boards/${id}`)
-      .then(res => setBoard(res.data))
-      .catch(() => setError('게시글을 불러오지 못했습니다.'));
+    const token = localStorage.getItem('accessToken');
+    console.log("🪪 게시글/댓글 조회 시 토큰:", token);
 
-    axios.get(`/api/comments?boardId=${id}`, {
+    axios.get(`http://localhost:8080/api/boards/${id}`, {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+    })
+      .then(res => setBoard(res.data))
+      .catch(err => {
+        console.error("❌ 게시글 조회 실패", err);
+        setError('게시글을 불러오지 못했습니다.');
+      });
+
+    axios.get(`http://localhost:8080/api/comments?boardId=${id}`, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+      },
     })
       .then(res => setComments(res.data))
-      .catch(() => setError('댓글을 불러오지 못했습니다.'));
-  }, [id, token]);
+      .catch(err => {
+        console.error("❌ 댓글 조회 실패", err);
+        setError('댓글을 불러오지 못했습니다.');
+      });
+  }, [id]);
 
   const handleCommentSubmit = () => {
+    const token = localStorage.getItem('accessToken');
+
     if (!token) {
       alert('로그인이 필요합니다.');
       return;
     }
 
-    axios.post('/api/comments', {
+    if (!newComment.trim()) {
+      alert('댓글을 입력하세요.');
+      return;
+    }
+
+    console.log("📝 댓글 작성 시 토큰:", token);
+
+    axios.post('http://localhost:8080/api/comments', {
       content: newComment,
       boardId: id
     }, {
@@ -41,10 +61,13 @@ const BoardDetail = () => {
       }
     })
       .then(res => {
-        setComments([...comments, res.data]);
+        setComments(prev => [...prev, res.data]);
         setNewComment('');
       })
-      .catch(() => alert('댓글 작성 실패'));
+      .catch((err) => {
+        console.error("❌ 댓글 작성 실패", err);
+        alert('댓글 작성 실패');
+      });
   };
 
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -52,10 +75,7 @@ const BoardDetail = () => {
 
   return (
     <div className="board-detail-container">
-      {/* 제목 */}
       <h1>{board.title}</h1>
-
-      {/* 작성자, 날짜, 공연 */}
       <div className="board-meta">
         <div>작성자: {board.nickname}</div>
         <div>작성일: {new Date(board.createdAt).toLocaleString()}</div>
@@ -69,13 +89,9 @@ const BoardDetail = () => {
         )}
       </div>
 
-   {/* 본문 내용 */}
-<div className="board-content">
-  {board.content}
-</div>
+      <div className="board-content">{board.content}</div>
       <hr />
 
-      {/* 댓글 목록 */}
       <div className="board-comments">
         <h2>댓글</h2>
         <ul>
@@ -90,7 +106,6 @@ const BoardDetail = () => {
         </ul>
       </div>
 
-      {/* 댓글 입력 */}
       <div className="comment-form">
         <textarea
           value={newComment}

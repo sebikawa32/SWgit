@@ -14,9 +14,9 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+"scripts": {
+  "start": "react-scripts start",
+  "build": "react-scripts build && rm -rf /home/ubuntu/frontend-build/* && cp -r build/* /home/ubuntu/frontend-build/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
