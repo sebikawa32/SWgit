@@ -31,10 +31,10 @@ public class TicketDetailResponseDto {
     private String ageLimit;
     private String eventTime;
 
-    // ✅ 수정: String → List<String>
+    //  수정: String → List<String>
     private List<String> descriptionUrl;
 
-    // ✅ Entity 기반 생성자
+    // Entity 기반 생성자
     public TicketDetailResponseDto(TicketEntity ticket, String categoryName) {
         this.imageUrl = ticket.getImageUrl();
         this.title = ticket.getTitle();
@@ -49,7 +49,7 @@ public class TicketDetailResponseDto {
         this.ageLimit = ticket.getAgeLimit();
         this.eventTime = ticket.getEventTime();
 
-        // ✅ JSON 문자열을 List<String>으로 변환
+        // JSON 문자열을 List<String>으로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         List<String> urls = new ArrayList<>();
         try {

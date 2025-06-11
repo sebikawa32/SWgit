@@ -15,4 +15,4 @@ lambda_ticket_crawler/
 # 에디터/환경 관련
 .DS_Store
 .vscode/
-.idea/
+.idea/.DS_Store
