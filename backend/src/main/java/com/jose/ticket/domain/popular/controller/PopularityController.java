@@ -14,9 +14,12 @@ public class PopularityController {
 
     private final PopularityService popularityService;
 
+    // 카테고리 전체 인기순
     @GetMapping("/popular")
     public List<TicketResponseDto> getPopularTickets(
+            @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "20") int size) {
-        return popularityService.getPopularTickets(size);
+        return popularityService.getPopularTickets(categoryId, size);
     }
+
 }

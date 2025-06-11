@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface PopularityRepository extends JpaRepository<TicketPopularity, Long> {
     List<TicketPopularity> findAllByOrderByPopularityScoreDesc();
+
+    List<TicketPopularity> findByTicket_Category_IdOrderByPopularityScoreDesc(Integer categoryId);
+
 }
