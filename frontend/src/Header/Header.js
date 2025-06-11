@@ -32,7 +32,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   // ✅ 검색 처리
   const handleSearch = () => {
     if (searchQuery.trim() !== "") {
-      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+     navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
     }
   };
 
