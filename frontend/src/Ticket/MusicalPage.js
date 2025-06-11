@@ -19,15 +19,15 @@ const MusicalPage = () => {
     return `${year}.${month}.${day}`;
   };
 
-  const fetchTickets = async (page) => {
-    try {
-      const res = await axios.get(`/api/tickets/category/4/page?page=${page}&size=${pageSize}`);
-      setTickets(res.data.content);
-      setTotalPages(res.data.totalPages);
-    } catch (err) {
-      console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
-    }
-  };
+ const fetchTickets = async (page) => {
+  try {
+    const res = await axios.get(`/api/tickets/sorted/page?categoryId=4&page=${page}&size=${pageSize}`);
+    setTickets(res.data.content);
+    setTotalPages(res.data.totalPages);
+  } catch (err) {
+    console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
+  }
+};
 
   const fetchPopularMusicals = async () => {
     try {

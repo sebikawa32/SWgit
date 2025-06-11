@@ -1,11 +1,13 @@
+import json
+import time
+import re
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-import time
-import re
 
 from detail_crawler import crawl_detail
 from db_insert import insert_to_mysql
@@ -20,9 +22,9 @@ def main():
 
     categories = {
         "연극": ("https://www.ticketlink.co.kr/performance/15", 3),
-        "뮤지컬": ("https://www.ticketlink.co.kr/performance/16", 2),
+        "뮤지컬": ("https://www.ticketlink.co.kr/performance/16", 4),
         "콘서트": ("https://www.ticketlink.co.kr/performance/14", 1),
-        "전시": ("https://www.ticketlink.co.kr/exhibition/11", 4)
+        "전시": ("https://www.ticketlink.co.kr/exhibition/11", 2)
     }
 
     for category_name, (url, category_id) in categories.items():
@@ -55,7 +57,7 @@ def main():
                 else:
                     onclick_attr = perf.get("onclick")
                     if onclick_attr and "location.href" in onclick_attr:
-                        href_match = re.search(r"location\.href\s*=\s*[\"']([^\"']+)[\"']", onclick_attr)
+                        href_match = re.search(r"location\.href\s*=\s*['\"]([^'\"]+)['\"]", onclick_attr)
                         if href_match:
                             href = href_match.group(1)
                             detail_url = "https://www.ticketlink.co.kr" + href
@@ -69,15 +71,36 @@ def main():
                 # 상세 페이지 → 크롤링
                 detail_data = crawl_detail(detail_url, driver)
                 detail_data["category_id"] = category_id
+
+                # 리스트인 경우 JSON 문자열로 변환 (DB에 넣을 때 문제 방지용)
+                if isinstance(detail_data.get("ticket_description_url"), list):
+                    detail_data["ticket_description_url"] = json.dumps(detail_data["ticket_description_url"])
+
+                # DB 저장
                 insert_to_mysql(detail_data)
 
-                time.sleep(0.5)  # 서버 부담 방지
+                time.sleep(0.5)
 
             except Exception as e:
                 print(f"❌ 하나의 공연 처리 중 에러 발생: {e}")
 
     driver.quit()
     print("\n✅ 전체 크롤링 및 DB 저장 완료!")
+
+def lambda_handler(event, context):
+    try:
+        print("🚀 Lambda 함수 시작됨")
+        main()
+        return {
+            'statusCode': 200,
+            'body': json.dumps('✅ Lambda에서 크롤링 및 저장 완료!')
+        }
+    except Exception as e:
+        print("❌ Lambda 오류:", str(e))
+        return {
+            'statusCode': 500,
+            'body': json.dumps(f'❌ 오류 발생: {str(e)}')
+        }
 
 if __name__ == "__main__":
     main()

@@ -21,7 +21,7 @@ const PlayPage = () => {
 
   const fetchTickets = async (page) => {
     try {
-      const res = await axios.get(`/api/tickets/category/3/page?page=${page}&size=${pageSize}`);
+     const res = await axios.get(`/api/tickets/sorted/page?categoryId=3&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (err) {
