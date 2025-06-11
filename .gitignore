@@ -1,1 +1,5 @@
-node_modules
+# Node.js 의존성
+node_modules/
+
+# Lambda 크롤러 제외
+lambda_ticket_crawler/
