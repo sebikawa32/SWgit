@@ -22,10 +22,14 @@ public class TicketRequestDto {
     private String bookingLink;
     private String bookingProvider;
 
-    // ✅ 타입 변경 및 포맷 지정
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime bookingDatetime;
 
     private String imageUrl;
+
+    // ✅ 새 필드 3개 추가
+    private String ageLimit;
+    private String eventTime;
+    private String descriptionUrl;
 }

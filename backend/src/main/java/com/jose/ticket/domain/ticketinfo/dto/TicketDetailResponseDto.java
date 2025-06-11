@@ -1,9 +1,14 @@
 package com.jose.ticket.domain.ticketinfo.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jose.ticket.domain.ticketinfo.entity.TicketEntity;
 
 import lombok.Getter;
 
@@ -11,41 +16,52 @@ import lombok.Getter;
 public class TicketDetailResponseDto {
     private String imageUrl;
     private String title;
-    private LocalDateTime eventStartDatetime; // 공연 시작일
-    private LocalDateTime eventEndDatetime;   // 공연 종료일
+    private LocalDateTime eventStartDatetime;
+    private LocalDateTime eventEndDatetime;
     private String price;
     private String venue;
     private String bookingLink;
     private String bookingProvider;
 
-    // ✅ 타입 변경 + 포맷/Null 처리
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime bookingDatetime;
 
-    private String categoryName;  // ✅ 새 필드 추가
+    private String categoryName;
+    private String ageLimit;
+    private String eventTime;
 
-    // ✅ 생성자 수정 - categoryName 파라미터 추가
-    public TicketDetailResponseDto(String imageUrl,
-                                   String title,
-                                   LocalDateTime eventStartDatetime,
-                                   LocalDateTime eventEndDatetime,
-                                   String price,
-                                   String venue,
-                                   String bookingLink,
-                                   String bookingProvider,
-                                   LocalDateTime bookingDatetime,
-                                   String categoryName) {
-        this.imageUrl = imageUrl;
-        this.title = title;
-        this.eventStartDatetime = eventStartDatetime;
-        this.eventEndDatetime = eventEndDatetime;
-        this.price = price;
-        this.venue = venue;
-        this.bookingLink = bookingLink;
-        this.bookingProvider = bookingProvider;
-        this.bookingDatetime = bookingDatetime;
-        this.categoryName = categoryName;  // 생성자에서 초기화
+    // ✅ 수정: String → List<String>
+    private List<String> descriptionUrl;
+
+    // ✅ Entity 기반 생성자
+    public TicketDetailResponseDto(TicketEntity ticket, String categoryName) {
+        this.imageUrl = ticket.getImageUrl();
+        this.title = ticket.getTitle();
+        this.eventStartDatetime = ticket.getEventStartDatetime();
+        this.eventEndDatetime = ticket.getEventEndDatetime();
+        this.price = ticket.getPrice();
+        this.venue = ticket.getVenue();
+        this.bookingLink = ticket.getBookingLink();
+        this.bookingProvider = ticket.getBookingProvider();
+        this.bookingDatetime = ticket.getBookingDatetime();
+        this.categoryName = categoryName;
+        this.ageLimit = ticket.getAgeLimit();
+        this.eventTime = ticket.getEventTime();
+
+        // ✅ JSON 문자열을 List<String>으로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> urls = new ArrayList<>();
+        try {
+            if (ticket.getDescriptionUrl() != null) {
+                urls = objectMapper.readValue(
+                        ticket.getDescriptionUrl(),
+                        new TypeReference<List<String>>() {}
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // 필요시 로깅
+        }
+        this.descriptionUrl = urls;
     }
 }
-

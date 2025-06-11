@@ -8,10 +8,9 @@ const Bookmark = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
-  // ✅ 날짜 포맷 함수 추가
+  // ✅ 날짜 포맷 함수
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -21,6 +20,7 @@ const Bookmark = () => {
     return `${year}.${month}.${day}`;
   };
 
+  // ✅ 즐겨찾기 목록 조회
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
@@ -30,7 +30,7 @@ const Bookmark = () => {
           return;
         }
 
-        const res = await axios.get(`/api/bookmarks/${userId}`, {
+        const res = await axios.get("/api/bookmarks", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -43,20 +43,18 @@ const Bookmark = () => {
       }
     };
 
-    if (userId) {
+    if (token) {
       fetchBookmarks();
     } else {
-      console.warn("⚠️ userId가 없습니다.");
+      setError("로그인이 필요합니다.");
     }
-  }, [userId, token]);
+  }, [token]);
 
+  // ✅ 즐겨찾기 삭제
   const handleRemove = async (ticketId) => {
     try {
-      await axios.delete(`/api/bookmarks`, {
-        params: {
-          userId: parseInt(userId),
-          ticketId: ticketId,
-        },
+      await axios.delete("/api/bookmarks", {
+        params: { ticketId },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,7 +95,6 @@ const Bookmark = () => {
               <div className="concert-info">
                 <h2>{item.ticketTitle}</h2>
 
-                {/* ✅ 날짜 표시 */}
                 <p style={{ whiteSpace: "nowrap" }}>
                   {formatDate(item.eventStartDatetime)} ~ {formatDate(item.eventEndDatetime)}
                 </p>
@@ -113,7 +110,7 @@ const Bookmark = () => {
                   }}
                   style={{
                     marginTop: "10px",
-                    background: "	#4a4a4a", 
+                    background: "#4a4a4a",
                     color: "white",
                     border: "none",
                     borderRadius: "4px",

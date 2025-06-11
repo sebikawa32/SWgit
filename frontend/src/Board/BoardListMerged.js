@@ -40,7 +40,7 @@ const BoardListMerged = ({ ticketId }) => {
   return (
     <div className="board-list-container">
       <div className="board-list-header">
-        <h1>게시글 목록</h1>
+        <h1>게시글</h1>
       </div>
       <table className="board-table">
         <thead>

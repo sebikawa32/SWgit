@@ -44,8 +44,8 @@ public class TicketController {
 
     // ✅ 카테고리별 전체 티켓 목록 조회 (페이징 없이)
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<?> getTicketsByCategory(@PathVariable Long categoryId) {
-        List<TicketResponseDto> result = ticketService.getTicketsByCategory(categoryId.intValue()); // ✅ 형변환 추가
+    public ResponseEntity<List<TicketResponseDto>> getTicketsByCategory(@PathVariable Long categoryId) {
+        List<TicketResponseDto> result = ticketService.getTicketsByCategory(categoryId.intValue());
         return ResponseEntity.ok(result);
     }
 
@@ -66,5 +66,21 @@ public class TicketController {
         return ticketService.getAllTickets().stream()
                 .map(t -> new TicketSummaryDto(t.getId(), t.getTitle()))
                 .toList();
+    }
+
+    // ✅ 공연 시작일 기준 가까운 순 정렬 (오늘 이후 공연만)
+    @GetMapping("/sorted")
+    public ResponseEntity<List<TicketResponseDto>> getTicketsByCategorySorted(@RequestParam int categoryId) {
+        return ResponseEntity.ok(ticketService.getUpcomingTicketsByCategory(categoryId));
+    }
+
+    @GetMapping("/sorted/page")
+    public Page<TicketResponseDto> getSortedTicketsPaged(
+            @RequestParam int categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("eventStartDatetime").ascending());
+        return ticketService.getUpcomingTicketsByCategoryPaged(categoryId, pageable);
     }
 }

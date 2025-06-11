@@ -50,6 +50,9 @@ public class TicketService {
                 .bookingProvider(requestDto.getBookingProvider())
                 .bookingDatetime(requestDto.getBookingDatetime())
                 .imageUrl(requestDto.getImageUrl())
+                .ageLimit(requestDto.getAgeLimit())
+                .eventTime(requestDto.getEventTime())
+                .descriptionUrl(requestDto.getDescriptionUrl())
                 .build();
 
         return new TicketResponseDto(ticketRepository.save(ticket));
@@ -80,7 +83,10 @@ public class TicketService {
                 requestDto.getBookingLink(),
                 requestDto.getBookingProvider(),
                 requestDto.getBookingDatetime(),
-                requestDto.getImageUrl()
+                requestDto.getImageUrl(),
+                requestDto.getAgeLimit(),
+                requestDto.getEventTime(),
+                requestDto.getDescriptionUrl()
         );
 
         return new TicketResponseDto(ticketRepository.save(ticket));
@@ -92,18 +98,11 @@ public class TicketService {
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
         return new TicketDetailResponseDto(
-                ticket.getImageUrl(),
-                ticket.getTitle(),
-                ticket.getEventStartDatetime(),
-                ticket.getEventEndDatetime(),
-                ticket.getPrice(),
-                ticket.getVenue(),
-                ticket.getBookingLink(),
-                ticket.getBookingProvider(),
-                ticket.getBookingDatetime(),
+                ticket,
                 ticket.getCategory() != null ? ticket.getCategory().getName() : null
         );
     }
+
 
     // ✅ 마감일 정렬
     public List<TicketResponseDto> getTicketsOrderByDeadline() {
@@ -119,10 +118,9 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 카테고리 전체 조회 (정렬만) → null 체크 추가됨
+    // ✅ 카테고리 전체 조회 (정렬만)
     public List<TicketResponseDto> getTicketsByCategory(Integer categoryId) {
         if (categoryId == null || categoryId == 0) {
-            // 전체 조회
             return ticketRepository.findAll().stream()
                     .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
                     .map(TicketResponseDto::new)
@@ -143,4 +141,18 @@ public class TicketService {
         return ticketRepository.findByCategoryId(categoryId, pageable)
                 .map(TicketResponseDto::new);
     }
+
+
+    public List<TicketResponseDto> getUpcomingTicketsByCategory(int categoryId) {
+        List<TicketEntity> tickets = ticketRepository.findUpcomingTicketsByCategory(categoryId);
+        return tickets.stream()
+                .map(TicketResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public Page<TicketResponseDto> getUpcomingTicketsByCategoryPaged(int categoryId, Pageable pageable) {
+        return ticketRepository.findUpcomingTicketsByCategoryPaged(categoryId, pageable)
+                .map(TicketResponseDto::new);
+    }
+
 }
