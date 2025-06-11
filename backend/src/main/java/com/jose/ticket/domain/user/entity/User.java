@@ -1,26 +1,21 @@
 package com.jose.ticket.domain.user.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Collection;
+import java.util.Collections;
 
-@Entity // 테이블과 매핑
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,4 +46,35 @@ public class User {
     @Column(name = "user_provider_id", unique = true)
     private String providerId; // 제공자 고유 ID
 
+    // ✅ UserDetails 필수 메서드 구현
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList(); // 권한은 없다고 가정
+    }
+
+    @Override
+    public String getUsername() {
+        return this.userId; // 사용자 식별자 (로그인용)
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // 계정 만료 안됨
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // 계정 잠김 아님
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // 비밀번호 만료 안됨
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true; // 활성화 상태
+    }
 }

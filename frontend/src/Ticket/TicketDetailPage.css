@@ -4,7 +4,7 @@
 .ticket-detail-container {
   width: 90%;
   max-width: 1000px;
-  margin: 80px auto;  /* 배너와의 여백 */
+  margin: 80px auto;
   padding: 20px;
   font-family: 'Noto Sans KR', sans-serif;
   color: #222;
@@ -19,11 +19,11 @@
   color: #222;
 }
 
-/* 구분선 (hr.divider) */
+/* 구분선 */
 hr.divider {
   border: none;
   border-bottom: 3px solid #ccc;
-  width: 600px;    /* 구분선 길이 */
+  width: 600px;
   margin: 0 0 24px 0;
 }
 
@@ -38,35 +38,33 @@ hr.divider {
 .image-and-heart {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* 왼쪽 정렬 */
-  gap: 8px;                /* 이미지와 하트/텍스트 사이 간격 */
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .ticket-detail-image {
   flex: 0 0 300px;
   border-radius: 8px;
   object-fit: cover;
-  width: 300px;    /* 고정 너비 */
-  height: 450px;   /* 고정 높이 */
+  width: 300px;
+  height: 450px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-/* 하트 + 텍스트를 한 줄에 배치 */
+/* 하트 + 텍스트 */
 .heart-row {
   display: flex;
   align-items: center;
-  gap: 4px;          /* 하트와 텍스트 사이 간격 */
+  gap: 4px;
   cursor: pointer;
 }
 
-/* 빈 하트 */
 .heart-icon.bi-heart {
   color: #aaa;
   font-size: 1.5rem;
   transition: transform 0.2s ease;
 }
 
-/* 채워진 하트 */
 .heart-icon.bi-heart-fill {
   color: #ff6b6b;
   font-size: 1.5rem;
@@ -77,7 +75,6 @@ hr.divider {
   transform: scale(1.1);
 }
 
-/* 하트 옆 텍스트 */
 .heart-text {
   font-size: 1rem;
   color: #555;
@@ -90,7 +87,7 @@ hr.divider {
   margin-top: 4px;
 }
 
-/* ─ 정보 영역 (텍스트) ─ */
+/* ─ 정보 영역 ─ */
 .ticket-info {
   flex: 1;
   display: flex;
@@ -107,7 +104,7 @@ hr.divider {
 
 .ticket-info strong {
   display: inline-block;
-  min-width: 90px; /* 레이블 최소 너비 */
+  min-width: 90px;
   color: #555;
   font-weight: 600;
 }
@@ -122,40 +119,7 @@ hr.divider {
   color: #0c6ac2;
 }
 
-
-.back-btn:hover {
-  background: #555;
-}
-
-/* ─ 공통 버튼 스타일 ─ */
-.btn {
-  margin-top: 10px;
-  border: none;
-  border-radius: 4px;
-  /* width: 100%;  기존에 있던 전체 너비 강제 적용을 주석 처리했습니다 */
-  display: inline-block;  /* 콘텐츠 크기에 따라 너비가 자동으로 결정되도록 변경 */
-  padding: 10px 14px;      /* 기본 상하 10px, 좌우 14px */
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-/* ─ 예매 링크 버튼 ─ */
-.btn-booking {
-  background-color: #000000;
-  color: white;
-  /* 좌우 여백을 더 줄이고 싶다면 아래 padding 값을 조절하세요 */
-  padding: 8px 10px;   /* 상하 8px, 좌우 12px */
-  /* 필요하다면 최소 너비를 지정할 수도 있습니다. 예: min-width: 100px; */
-}
-
-/* 예매 링크 버튼 호버 시 배경색 */
-.btn-booking:hover {
-  background-color: #414141;
-}
-
-/* ── 가격 리스트 인라인 정렬 (불릿 완전 제거) ── */
+/* ─ 가격 리스트 ─ */
 .price-row {
   display: flex;
   align-items: flex-start;
@@ -181,7 +145,70 @@ hr.divider {
   list-style: none !important;
 }
 
-/* ─ 반응형 예시(optional) ─ */
+
+/* ─ 공통 버튼 ─ */
+.btn {
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+/* 예매 버튼 */
+.btn-booking {
+  background-color: #000000;
+  color: white;
+  padding: 8px 10px;
+}
+
+.btn-booking:hover {
+  background-color: #414141;
+}
+
+/* ─ 상세정보 / 게시글 탭 버튼 (티켓링크 스타일) ─ */
+.ticket-detail-tabs {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid #ddd;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.ticket-detail-tabs button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  margin-bottom: -2px;
+  cursor: pointer;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.ticket-detail-tabs button:hover {
+  color: #000;
+}
+
+.ticket-detail-tabs button.active {
+  color: #000;
+  border-bottom: 2px solid #000;
+}
+
+/* ─ 상세 이미지 영역 ─ */
+.ticket-description-image img {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 16px;
+}
+
+/* ─ 반응형 예시 ─ */
 /*
 @media (max-width: 600px) {
   .price-row {

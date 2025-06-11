@@ -46,7 +46,7 @@ const BoardCreatePage = () => {
 
   // ✅ 등록
   const handleSubmit = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken"); // 🔥 토큰 이름 수정됨
 
     if (!token) {
       alert("로그인이 필요합니다.");

@@ -13,7 +13,11 @@ public class BoardResponse {
     private String title;
     private String content;
     private Long writerId;
+    private String nickname;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentResponse> comments;
+    private int viewCount;
+    private Long ticketId;
+    private String ticketTitle;
 }

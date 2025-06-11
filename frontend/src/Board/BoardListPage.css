@@ -62,6 +62,52 @@
   border-radius: 6px;
   cursor: pointer;
 }
+.ticket-title {
+  color: #000;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.sort-select {
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 10px;
+}
+
+.notice-row {
+  background-color: #f4f4f4; /* 공지사항 행 배경 회색 */
+}
+
+.notice-label {
+  color: #e60000; /* 공지사항 텍스트 빨간색 */
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.ticket-title {
+  font-weight: 500;
+  color: #333;
+}
+.board-title-wrapper {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.board-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+}
+/* ─── 정렬 & 글쓰기 정렬 영역 ─── */
+.board-list-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 
 /* ─── 반응형 대응 ─── */
 @media (max-width: 768px) {
@@ -125,5 +171,6 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
 
 }

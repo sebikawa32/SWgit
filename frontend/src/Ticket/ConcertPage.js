@@ -19,9 +19,10 @@ const ConcertPage = () => {
     return `${year}.${month}.${day}`;
   };
 
+  // ✅ 오늘 이후 + 정렬된 티켓 조회
   const fetchTickets = async (page) => {
     try {
-      const res = await axios.get(`/api/tickets/category/1/page?page=${page}&size=${pageSize}`);
+      const res = await axios.get(`/api/tickets/sorted/page?categoryId=1&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (err) {
@@ -104,7 +105,6 @@ const ConcertPage = () => {
         </div>
       </section>
 
-      {/* 구분선 */}
       <hr className="section-divider" />
 
       <h1>Concert</h1>
@@ -131,7 +131,6 @@ const ConcertPage = () => {
         </div>
       )}
 
-      {/* 페이지네이션 */}
       <div className="pagination">{renderPagination()}</div>
     </div>
   );
