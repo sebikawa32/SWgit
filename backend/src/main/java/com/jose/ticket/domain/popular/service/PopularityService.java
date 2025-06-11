@@ -15,12 +15,26 @@ public class PopularityService {
 
     private final PopularityRepository popularityRepository;
 
-    public List<TicketResponseDto> getPopularTickets(int size) {
-        return popularityRepository.findAllByOrderByPopularityScoreDesc()
-                .stream()
+    /**
+     * 인기순 티켓 목록 조회 (카테고리별/전체 지원)
+     * @param categoryId 카테고리 ID (null이면 전체)
+     * @param size 최대 조회 개수
+     * @return 인기순 티켓 DTO 리스트
+     */
+    public List<TicketResponseDto> getPopularTickets(Integer categoryId, int size) {
+        List<TicketPopularity> list;
+
+        if (categoryId == null) {
+            // 전체 인기순
+            list = popularityRepository.findAllByOrderByPopularityScoreDesc();
+        } else {
+            // 카테고리별 인기순
+            list = popularityRepository.findByTicket_Category_IdOrderByPopularityScoreDesc(categoryId);
+        }
+
+        return list.stream()
                 .limit(size)
                 .map(popularity -> new TicketResponseDto(popularity.getTicket()))
                 .collect(Collectors.toList());
     }
 }
-
