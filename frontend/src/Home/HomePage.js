@@ -8,9 +8,9 @@ import './HomePage.css';
 const categories = [
   { id: 0, name: '전체' },
   { id: 1, name: '콘서트' },
-  { id: 2, name: '뮤지컬' },
+  { id: 4, name: '뮤지컬' },
   { id: 3, name: '연극' },
-  { id: 4, name: '전시' },
+  { id: 2, name: '전시' },
 ];
 
 const HomePage = () => {
@@ -29,6 +29,21 @@ const HomePage = () => {
   const cardWidth = 240;
   const gap = 12;
   const visibleCount = 5;
+
+  // ✅ 배너 이미지 3장 슬라이드
+  const bannerImages = [
+    '/images/banner1.jpeg',
+    '/images/banner2.jpeg',
+    '/images/banner3.jpeg',
+  ];
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     setLoadingAll(true);
@@ -96,14 +111,16 @@ const HomePage = () => {
     else return '마감';
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
+  const formatDateRange = (start, end) => {
+    const format = (dateStr) => {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      const year = String(date.getFullYear()).slice(2);
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}.${month}.${day}`;
+    };
+    return `${format(start)}~${format(end)}`;
   };
 
   const renderSlider = (tickets, pageIndex, setPageIndex, showDDay) => {
@@ -142,7 +159,7 @@ const HomePage = () => {
                     <h3>{ticket.title}</h3>
                   </div>
                   <div className="card-info">
-                    <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
+                    <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
                     <p>{ticket.venue}</p>
                   </div>
                 </div>
@@ -163,66 +180,96 @@ const HomePage = () => {
   };
 
   return (
-    <main className="content">
-      <section>
-        <h2>Tickets</h2>
-        <div className="category-buttons">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              className={`category-button ${selectedCategoryId === cat.id ? 'active' : ''}`}
-              onClick={() => setSelectedCategoryId(cat.id)}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-        {loadingAll && <p>로딩 중...</p>}
-        {errorAll && <p style={{ color: 'red' }}>{errorAll}</p>}
-        {renderSlider(allTickets, allPageIndex, setAllPageIndex, false)}
-      </section>
-
-      <hr style={{ margin: '50px 0' }} />
-
-      <section>
-        <h2>Coming soon</h2>
-        {loadingDeadline && <p>로딩 중...</p>}
-        {errorDeadline && <p style={{ color: 'red' }}>{errorDeadline}</p>}
-
-        <div className="event-list-wrapper no-slider">
-          {deadlineTickets.slice(0, 5).map(ticket => (
-            <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
-              <div className="event-card">
-                {ticket.bookingDatetime && (
-                  <div className="dday-badge">{calculateDDay(ticket.bookingDatetime)}</div>
-                )}
-                <img src={ticket.imageUrl} alt={ticket.title} />
-                <div className="card-title">
-                  <h3>{ticket.title}</h3>
-                </div>
-                <div className="card-info">
-                  <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
-                  <p>{ticket.venue}</p>
-                </div>
-              </div>
-            </Link>
+    <>
+      {/* ✅ 슬라이드 배너 섹션 */}
+      <section className="banner-slider">
+        <div className="banner-container">
+          {bannerImages.map((src, index) => (
+            <img
+              key={index}
+              src={src}
+              alt={`배너${index + 1}`}
+              className={`banner-image ${index === currentBannerIndex ? 'active' : ''}`}
+            />
           ))}
         </div>
       </section>
 
-      <hr style={{ margin: '50px 0' }} />
+      <main className="content">
+        <section>
+          <h2>Tickets</h2>
+          <div className="category-buttons">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-button ${selectedCategoryId === cat.id ? 'active' : ''}`}
+                onClick={() => setSelectedCategoryId(cat.id)}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+          {loadingAll && <p>로딩 중...</p>}
+          {errorAll && <p style={{ color: 'red' }}>{errorAll}</p>}
+          {renderSlider(allTickets, allPageIndex, setAllPageIndex, false)}
+        </section>
 
-      <section>
-        <h2>Ranking</h2>
-        {popularTickets.length === 0 ? (
-          <p>인기 티켓 정보 준비 중입니다.</p>
-        ) : (
-          renderSlider(popularTickets, 0, () => {}, false)
-        )}
-      </section>
+        <hr style={{ margin: '50px 0' }} />
 
-      <Footer />
-    </main>
+        <section>
+          <h2>Coming soon</h2>
+          {loadingDeadline && <p>로딩 중...</p>}
+          {errorDeadline && <p style={{ color: 'red' }}>{errorDeadline}</p>}
+
+          <div className="event-list-wrapper no-slider">
+            {deadlineTickets.slice(0, 5).map(ticket => (
+              <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+                <div className="event-card">
+                  {ticket.bookingDatetime && (
+                    <div className="dday-badge">{calculateDDay(ticket.bookingDatetime)}</div>
+                  )}
+                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <div className="card-title">
+                    <h3>{ticket.title}</h3>
+                  </div>
+                  <div className="card-info">
+                    <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
+                    <p>{ticket.venue}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <hr style={{ margin: '50px 0' }} />
+
+        <section>
+  <h2>Ranking</h2>
+  {popularTickets.length === 0 ? (
+    <p>인기 티켓 정보 준비 중입니다.</p>
+  ) : (
+    <div className="event-list-wrapper no-slider">
+      {popularTickets.slice(0, 5).map(ticket => (
+        <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+          <div className="event-card">
+            <img src={ticket.imageUrl} alt={ticket.title} />
+            <div className="card-title">
+              <h3>{ticket.title}</h3>
+            </div>
+            <div className="card-info">
+              <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
+              <p>{ticket.venue}</p>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  )}
+</section>
+        <Footer />
+      </main>
+    </>
   );
 };
 
