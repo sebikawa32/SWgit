@@ -25,12 +25,12 @@ const HomePage = () => {
   const [errorDeadline, setErrorDeadline] = useState(null);
 
   const [popularTickets, setPopularTickets] = useState([]);
+  const [popularPageIndex, setPopularPageIndex] = useState(0);
 
   const cardWidth = 240;
   const gap = 12;
   const visibleCount = 5;
 
-  // ✅ 배너 이미지 3장 슬라이드
   const bannerImages = [
     '/images/banner1.jpeg',
     '/images/banner2.jpeg',
@@ -45,6 +45,7 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ 전체 티켓 목록
   useEffect(() => {
     setLoadingAll(true);
     setErrorAll(null);
@@ -69,6 +70,7 @@ const HomePage = () => {
       });
   }, [selectedCategoryId]);
 
+  // ✅ 예매일 기준 티켓
   useEffect(() => {
     setLoadingDeadline(true);
     setErrorDeadline(null);
@@ -93,6 +95,13 @@ const HomePage = () => {
         setErrorDeadline('예매일 순 티켓 목록 불러오기 실패');
         setLoadingDeadline(false);
       });
+  }, []);
+
+  // ✅ 인기 티켓 API 호출
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/tickets/popular?size=20')
+      .then(res => setPopularTickets(res.data))
+      .catch(err => console.error("🔥 인기 티켓 불러오기 실패:", err));
   }, []);
 
   const calculateDDay = (datetime) => {
@@ -245,28 +254,14 @@ const HomePage = () => {
         <hr style={{ margin: '50px 0' }} />
 
         <section>
-  <h2>Ranking</h2>
-  {popularTickets.length === 0 ? (
-    <p>인기 티켓 정보 준비 중입니다.</p>
-  ) : (
-    <div className="event-list-wrapper no-slider">
-      {popularTickets.slice(0, 5).map(ticket => (
-        <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
-          <div className="event-card">
-            <img src={ticket.imageUrl} alt={ticket.title} />
-            <div className="card-title">
-              <h3>{ticket.title}</h3>
-            </div>
-            <div className="card-info">
-              <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
-              <p>{ticket.venue}</p>
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
-  )}
-</section>
+          <h2>Ranking</h2>
+          {popularTickets.length === 0 ? (
+            <p>인기 티켓 정보 준비 중입니다.</p>
+          ) : (
+            renderSlider(popularTickets, popularPageIndex, setPopularPageIndex, false)
+          )}
+        </section>
+
         <Footer />
       </main>
     </>
