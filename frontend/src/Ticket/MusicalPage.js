@@ -19,19 +19,21 @@ const MusicalPage = () => {
     return `${year}.${month}.${day}`;
   };
 
- const fetchTickets = async (page) => {
-  try {
-    const res = await axios.get(`/api/tickets/sorted/page?categoryId=4&page=${page}&size=${pageSize}`);
-    setTickets(res.data.content);
-    setTotalPages(res.data.totalPages);
-  } catch (err) {
-    console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
-  }
-};
+  const fetchTickets = async (page) => {
+    try {
+      const res = await axios.get(`/api/tickets/sorted/page?categoryId=4&page=${page}&size=${pageSize}`);
+      setTickets(res.data.content);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
+    }
+  };
 
   const fetchPopularMusicals = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular-musicals');
+      const res = await axios.get('/api/tickets/popular', {
+        params: { categoryId: 4, size: 5 },
+      });
       setPopularMusicals(res.data);
     } catch (err) {
       console.error('🔥 인기 뮤지컬 불러오기 오류:', err);
@@ -95,16 +97,26 @@ const MusicalPage = () => {
           {popularMusicals.length === 0 ? (
             <p>인기 뮤지컬 정보 준비 중입니다.</p>
           ) : (
-            popularMusicals.map((musical) => (
-              <div key={musical.id} className="popular-concert-card">
-                <p>{musical.title}</p>
-              </div>
+            popularMusicals.slice(0, 5).map((musical, index) => (
+              <Link to={`/ticket/${musical.id}`} key={musical.id} className="concert-card-link">
+                <div className="concert-card">
+                  <div className="ranking-badge">{`${index + 1}위`}</div>
+                  <div className="concert-card-image-wrapper">
+                    <img src={musical.imageUrl} alt={musical.title} />
+                  </div>
+                  <div className="concert-info">
+                    <h2>{musical.title}</h2>
+                    <p>{formatDate(musical.eventStartDatetime)} ~ {formatDate(musical.eventEndDatetime)}</p>
+                    <p>{musical.venue}</p>
+                    <p>{musical.price}원</p>
+                  </div>
+                </div>
+              </Link>
             ))
           )}
         </div>
       </section>
 
-      {/* 구분선 */}
       <hr className="section-divider" />
 
       <h1>Musical</h1>
@@ -121,11 +133,9 @@ const MusicalPage = () => {
                 </div>
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>
-                  <p>
-                    {formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}
-                  </p>
+                  <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  {ticket.price && <p>{ticket.price}원</p>}
+                  <p>{ticket.price}원</p>
                 </div>
               </div>
             </Link>
@@ -133,7 +143,6 @@ const MusicalPage = () => {
         </div>
       )}
 
-      {/* 페이지네이션 */}
       <div className="pagination">{renderPagination()}</div>
     </div>
   );

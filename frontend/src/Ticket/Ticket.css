@@ -1,6 +1,6 @@
 /* ─────────── 전체 페이지 레이아웃 ─────────── */
 .concert-page {
-  padding: 60px 20px 20px; /* ⬅상단 여백 늘려서 배너와 간격 확보 */
+  padding: 60px 20px 20px;
 }
 
 /* ─────────── 섹션 제목 ─────────── */
@@ -18,8 +18,22 @@
   justify-items: start;
 }
 
+/* ─────────── 인기 콘서트 한 줄 정렬 ─────────── */
+.popular-concerts-grid {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 12px 0;
+}
+.popular-concerts-grid::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─────────── 콘서트 카드 스타일 ─────────── */
 .concert-card {
+  position: relative;
   width: 180px;
   height: 360px;
   background: white;
@@ -90,6 +104,21 @@
   text-decoration: none;
   color: inherit;
   display: block;
+}
+
+/* ─────────── 순위 뱃지 ─────────── */
+.ranking-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: gold;
+  color: black;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* ─────────── 페이지 ─────────── */

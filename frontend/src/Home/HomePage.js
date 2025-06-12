@@ -13,6 +13,13 @@ const categories = [
   { id: 2, name: '전시' },
 ];
 
+const rankingCategories = [
+  { id: 1, name: '콘서트' },
+  { id: 2, name: '전시' },
+  { id: 3, name: '연극' },
+  { id: 4, name: '뮤지컬' },
+];
+
 const HomePage = () => {
   const [allTickets, setAllTickets] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
@@ -24,7 +31,8 @@ const HomePage = () => {
   const [loadingDeadline, setLoadingDeadline] = useState(false);
   const [errorDeadline, setErrorDeadline] = useState(null);
 
-  const [popularTickets, setPopularTickets] = useState([]);
+  const [selectedRankingCategory, setSelectedRankingCategory] = useState(1);
+  const [rankingTickets, setRankingTickets] = useState([]);
 
   const bannerImages = [
     '/images/banner1.jpeg',
@@ -91,10 +99,10 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/tickets/popular?size=20')
-      .then(res => setPopularTickets(res.data))
+    axios.get(`http://localhost:8080/api/tickets/popular?categoryId=${selectedRankingCategory}&size=5`)
+      .then(res => setRankingTickets(res.data))
       .catch(err => console.error("🔥 인기 티켓 불러오기 실패:", err));
-  }, []);
+  }, [selectedRankingCategory]);
 
   const calculateDDay = (datetime) => {
     if (!datetime) return '';
@@ -140,6 +148,53 @@ const HomePage = () => {
       </section>
 
       <main className="content">
+
+        {/* 🔁 Ranking Section (이제 먼저 나옴) */}
+        <section>
+          <h2>Ranking</h2>
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+            {rankingCategories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedRankingCategory(cat.id)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: selectedRankingCategory === cat.id ? '2px solid #333' : '1px solid #ccc',
+                  backgroundColor: selectedRankingCategory === cat.id ? '#eee' : '#fff',
+                  cursor: 'pointer'
+                }}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+          {rankingTickets.length === 0 ? (
+            <p>인기 티켓 정보 준비 중입니다.</p>
+          ) : (
+            <div className="ranking-list">
+              {rankingTickets.map((ticket, index) => (
+                <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+                  <div className="event-card">
+                    <div className="ranking-badge">{`${index + 1}위`}</div>
+                    <img src={ticket.imageUrl} alt={ticket.title} />
+                    <div className="card-title">
+                      <h3>{ticket.title}</h3>
+                    </div>
+                    <div className="card-info">
+                      <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
+                      <p>{ticket.venue}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <hr style={{ margin: '50px 0' }} />
+
+        {/* 🔁 Tickets Section (이제 뒤에 나옴) */}
         <section>
           <h2>Tickets</h2>
           <div className="category-buttons">
@@ -171,60 +226,6 @@ const HomePage = () => {
               </Link>
             ))}
           </div>
-        </section>
-
-        <hr style={{ margin: '50px 0' }} />
-
-        <section>
-          <h2>Coming soon</h2>
-          {loadingDeadline && <p>로딩 중...</p>}
-          {errorDeadline && <p style={{ color: 'red' }}>{errorDeadline}</p>}
-          <div className="event-list-wrapper no-slider">
-            {deadlineTickets.slice(0, 5).map(ticket => (
-              <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
-                <div className="event-card">
-                  {ticket.bookingDatetime && (
-                    <div className="dday-badge">{calculateDDay(ticket.bookingDatetime)}</div>
-                  )}
-                  <img src={ticket.imageUrl} alt={ticket.title} />
-                  <div className="card-title">
-                    <h3>{ticket.title}</h3>
-                  </div>
-                  <div className="card-info">
-                    <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
-                    <p>{ticket.venue}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <hr style={{ margin: '50px 0' }} />
-
-        <section>
-          <h2>Ranking</h2>
-          {popularTickets.length === 0 ? (
-            <p>인기 티켓 정보 준비 중입니다.</p>
-          ) : (
-            <div className="ranking-list">
-              {popularTickets.slice(0, 5).map((ticket, index) => (
-                <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
-                  <div className="event-card">
-                    <div className="ranking-badge">{`${index + 1}위`}</div>
-                    <img src={ticket.imageUrl} alt={ticket.title} />
-                    <div className="card-title">
-                      <h3>{ticket.title}</h3>
-                    </div>
-                    <div className="card-info">
-                      <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
-                      <p>{ticket.venue}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
         </section>
 
         <Footer />

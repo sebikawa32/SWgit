@@ -21,7 +21,7 @@ const ExhibitionPage = () => {
 
   const fetchTickets = async (page) => {
     try {
-     const res = await axios.get(`/api/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
+      const res = await axios.get(`/api/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (err) {
@@ -31,7 +31,7 @@ const ExhibitionPage = () => {
 
   const fetchPopularExhibitions = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular-exhibitions');
+      const res = await axios.get('/api/tickets/popular?categoryId=2');
       setPopularExhibitions(res.data);
     } catch (err) {
       console.error('🔥 인기 전시 불러오기 오류:', err);
@@ -95,10 +95,21 @@ const ExhibitionPage = () => {
           {popularExhibitions.length === 0 ? (
             <p>인기 전시 정보 준비 중입니다.</p>
           ) : (
-            popularExhibitions.map((exhibition) => (
-              <div key={exhibition.id} className="popular-concert-card">
-                <p>{exhibition.title}</p>
-              </div>
+            popularExhibitions.slice(0, 5).map((exhibition, index) => (
+              <Link to={`/ticket/${exhibition.id}`} key={exhibition.id} className="concert-card-link">
+                <div className="concert-card">
+                  <div className="ranking-badge">{`${index + 1}위`}</div>
+                  <div className="concert-card-image-wrapper">
+                    <img src={exhibition.imageUrl} alt={exhibition.title} />
+                  </div>
+                  <div className="concert-info">
+                    <h2>{exhibition.title}</h2>
+                    <p>{formatDate(exhibition.eventStartDatetime)} ~ {formatDate(exhibition.eventEndDatetime)}</p>
+                    <p>{exhibition.venue}</p>
+                    <p>{exhibition.price}원</p>
+                  </div>
+                </div>
+              </Link>
             ))
           )}
         </div>
@@ -123,11 +134,9 @@ const ExhibitionPage = () => {
                 </div>
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>
-                  <p>
-                    {formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}
-                  </p>
+                  <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  {ticket.price && <p>{ticket.price}원</p>}
+                  <p>{ticket.price}원</p>
                 </div>
               </div>
             </Link>
