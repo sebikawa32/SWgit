@@ -106,7 +106,7 @@ const ExhibitionPage = () => {
                     <h2>{exhibition.title}</h2>
                     <p>{formatDate(exhibition.eventStartDatetime)} ~ {formatDate(exhibition.eventEndDatetime)}</p>
                     <p>{exhibition.venue}</p>
-                    <p>{exhibition.price}원</p>
+                    
                   </div>
                 </div>
               </Link>
@@ -136,7 +136,7 @@ const ExhibitionPage = () => {
                   <h2>{ticket.title}</h2>
                   <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  <p>{ticket.price}원</p>
+                  
                 </div>
               </div>
             </Link>

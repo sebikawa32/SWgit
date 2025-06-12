@@ -63,44 +63,13 @@ h2 {
   color: #fff;
 }
 
-/* ─────────── 슬라이더 버튼 (◀ ▶) ─────────── */
-.slider-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.slider-arrow {
-  font-size: 2rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #333;
-  padding: 0 10px;
-  user-select: none;
-}
-
-.event-slider {
-  display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  gap: 16px;
-  padding: 10px 0;
-}
-
-.event-slider::-webkit-scrollbar {
-  display: none;
-}
-
+/* ─────────── 카드 기본 스타일 ─────────── */
 .event-card-link {
   flex: 0 0 auto;
-  width: 180px;
   text-decoration: none;
   color: inherit;
 }
 
-/* ─────────── 카드 기본 스타일 ─────────── */
 .event-card {
   height: 370px;
   background: #fff;
@@ -150,32 +119,6 @@ h2 {
   margin: 2px 0;
   white-space: nowrap;
   letter-spacing: -0.5px;
-}
-
-/* 뱃지 위치 */
-.dday-badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background-color: #ff3b30;
-  color: #fff;
-  font-weight: bold;
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 12px;
-  z-index: 10;
-  text-align: center;
-  backdrop-filter: blur(2px);
-}
-
-/* ─────────── Coming Soon (no-slider) ─────────── */
-.event-list-wrapper.no-slider {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
-  justify-content: flex-start;
-  overflow-x: auto;
-  padding: 6px 0;
 }
 
 /* ─────────── 배너 슬라이더 ─────────── */
@@ -229,18 +172,36 @@ h2 {
   height: 360px;
 }
 
-/* 🔥 랭킹 뱃지 */
 .ranking-badge {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: gold;
-  color: black;
+  background-color: #ff5c5c;
+  color: white;
   font-weight: bold;
+  font-size: 0.9rem;
   padding: 4px 8px;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1;
+}
+
+/* ─────────── 랜덤 티켓 2줄 (5개씩) ─────────── */
+.ticket-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.ticket-row {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ticket-row .event-card-link {
+  flex: 1;
 }
 
 /* ─────────── 반응형 대응 ─────────── */
@@ -264,5 +225,14 @@ h2 {
 
   .ranking-list .event-card-link {
     max-width: 45%;
+  }
+
+  .ticket-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ticket-row .event-card-link {
+    flex: 1 1 45%;
   }
 }
