@@ -63,64 +63,44 @@ h2 {
   color: #fff;
 }
 
-/* ─────────── 슬라이더 버튼 ─────────── */
-.slider-wrapper {
+/* ─────────── 슬라이더 버튼 (◀ ▶) ─────────── */
+.slider-controls {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin: 20px 0;
 }
 
-.slide-btn {
-  background: #333;
-  color: white;
+.slider-arrow {
+  font-size: 2rem;
+  background: none;
   border: none;
-  padding: 8px 12px;
-  border-radius: 50%;
   cursor: pointer;
-  font-size: 0.9rem;
+  color: #333;
+  padding: 0 10px;
   user-select: none;
-  transition: background-color 0.3s ease;
 }
 
-.slide-btn:hover:not(:disabled) {
-  background-color: #555;
+.event-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 16px;
+  padding: 10px 0;
 }
 
-.slide-btn:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-
-/* ─────────── 슬라이더 내부 ─────────── */
-.event-list-wrapper {
-  overflow: hidden;
-  width: 100%;
-  scrollbar-width: none;
-}
-.event-list-wrapper::-webkit-scrollbar {
+.event-slider::-webkit-scrollbar {
   display: none;
 }
 
-.event-list {
-  display: flex;
-  flex-wrap: nowrap;
-  width: auto;
-  gap: 6px;
-  justify-content: flex-start;
-  transition: transform 0.5s ease-in-out;
-  padding: 6px 0;
-}
-
-/* ─────────── 카드 기본 스타일 ─────────── */
 .event-card-link {
-  display: block;
   flex: 0 0 auto;
-  width: 240px;
-  max-width: 240px;
+  width: 180px;
   text-decoration: none;
   color: inherit;
 }
 
+/* ─────────── 카드 기본 스타일 ─────────── */
 .event-card {
   height: 370px;
   background: #fff;
@@ -235,10 +215,19 @@ h2 {
   display: flex;
   justify-content: space-between;
   flex-wrap: nowrap;
-  gap: 8px;                    /* ✅ 간격 좁게 */
+  gap: 8px;
   width: 100%;
 }
 
+.ranking-list .event-card-link {
+  flex: 1 1 0;
+  max-width: calc(20% - 6.4px);
+  min-width: 0;
+}
+
+.ranking-list .event-card {
+  height: 360px;
+}
 
 /* 🔥 랭킹 뱃지 */
 .ranking-badge {
@@ -266,5 +255,14 @@ h2 {
 
   .event-card img {
     height: 260px;
+  }
+
+  .ranking-list {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ranking-list .event-card-link {
+    max-width: 45%;
   }
 }

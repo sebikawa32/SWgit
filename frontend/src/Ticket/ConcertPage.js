@@ -32,7 +32,9 @@ const ConcertPage = () => {
 
   const fetchPopularConcerts = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular');
+      const res = await axios.get('/api/tickets/popular', {
+        params: { categoryId: 1, size: 5 },
+      });
       setPopularConcerts(res.data);
     } catch (err) {
       console.error('🔥 인기 콘서트 불러오기 오류:', err);
@@ -96,10 +98,21 @@ const ConcertPage = () => {
           {popularConcerts.length === 0 ? (
             <p>인기 콘서트 정보 준비 중입니다.</p>
           ) : (
-            popularConcerts.map((concert) => (
-              <div key={concert.id} className="popular-concert-card">
-                <p>{concert.title}</p>
-              </div>
+            popularConcerts.slice(0, 5).map((concert, index) => (
+              <Link to={`/ticket/${concert.id}`} key={concert.id} className="concert-card-link">
+                <div className="concert-card">
+                  <div className="ranking-badge">{`${index + 1}위`}</div>
+                  <div className="concert-card-image-wrapper">
+                    <img src={concert.imageUrl} alt={concert.title} />
+                  </div>
+                  <div className="concert-info">
+                    <h2>{concert.title}</h2>
+                    <p>{formatDate(concert.eventStartDatetime)} ~ {formatDate(concert.eventEndDatetime)}</p>
+                    <p>{concert.venue}</p>
+                    <p>{concert.price}원</p>
+                  </div>
+                </div>
+              </Link>
             ))
           )}
         </div>

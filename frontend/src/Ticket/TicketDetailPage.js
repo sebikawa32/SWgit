@@ -127,7 +127,6 @@ function TicketDetailPage() {
 
           <p><strong>관람 연령</strong> {ticket.ageLimit || '예매 링크 참조'}</p>
           <p><strong>공연 시간</strong> {ticket.eventTime || '예매 링크 참조'}</p>
-          <p><strong>예매일</strong> {formatDate(ticket.bookingDatetime)}</p>
           <p><strong>예매처</strong> {ticket.bookingProvider}</p>
 
           {/* 🔵 [변경] 예매 버튼의 onClick 핸들러 연결 */}

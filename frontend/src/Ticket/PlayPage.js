@@ -21,7 +21,7 @@ const PlayPage = () => {
 
   const fetchTickets = async (page) => {
     try {
-     const res = await axios.get(`/api/tickets/sorted/page?categoryId=3&page=${page}&size=${pageSize}`);
+      const res = await axios.get(`/api/tickets/sorted/page?categoryId=3&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (err) {
@@ -31,7 +31,7 @@ const PlayPage = () => {
 
   const fetchPopularPlays = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular-plays');
+      const res = await axios.get('/api/tickets/popular?categoryId=3');
       setPopularPlays(res.data);
     } catch (err) {
       console.error('🔥 인기 연극 불러오기 오류:', err);
@@ -95,10 +95,21 @@ const PlayPage = () => {
           {popularPlays.length === 0 ? (
             <p>인기 연극 정보 준비 중입니다.</p>
           ) : (
-            popularPlays.map((play) => (
-              <div key={play.id} className="popular-concert-card">
-                <p>{play.title}</p>
-              </div>
+            popularPlays.slice(0, 5).map((play, index) => (
+              <Link to={`/ticket/${play.id}`} key={play.id} className="concert-card-link">
+                <div className="concert-card">
+                  <div className="ranking-badge">{`${index + 1}위`}</div>
+                  <div className="concert-card-image-wrapper">
+                    <img src={play.imageUrl} alt={play.title} />
+                  </div>
+                  <div className="concert-info">
+                    <h2>{play.title}</h2>
+                    <p>{formatDate(play.eventStartDatetime)} ~ {formatDate(play.eventEndDatetime)}</p>
+                    <p>{play.venue}</p>
+                    <p>{play.price}원</p>
+                  </div>
+                </div>
+              </Link>
             ))
           )}
         </div>
