@@ -125,7 +125,7 @@ function TicketDetailPage() {
             </ul>
           </div>
 
-          <p><strong>관람 연령</strong> {ticket.ageLimit || '예매 링크 참조'}</p>
+          <p><strong>관람 연령</strong> {ticket.ageLimit || '전체관람가'}</p>
           <p><strong>공연 시간</strong> {ticket.eventTime || '예매 링크 참조'}</p>
           <p><strong>예매처</strong> {ticket.bookingProvider}</p>
 
@@ -144,7 +144,9 @@ function TicketDetailPage() {
       {/* 탭 선택 */}
       <div className="ticket-detail-tabs">
         <button onClick={() => setActiveTab("info")} className={activeTab === "info" ? "active" : ""}>상세정보</button>
+        <button onClick={() => setActiveTab("board")} className={activeTab === "board" ? "active" : ""}>길찾기</button>
         <button onClick={() => setActiveTab("board")} className={activeTab === "board" ? "active" : ""}>게시글</button>
+        
       </div>
 
       {/*  탭 내용 */}

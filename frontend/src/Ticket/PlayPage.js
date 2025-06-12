@@ -106,7 +106,7 @@ const PlayPage = () => {
                     <h2>{play.title}</h2>
                     <p>{formatDate(play.eventStartDatetime)} ~ {formatDate(play.eventEndDatetime)}</p>
                     <p>{play.venue}</p>
-                    <p>{play.price}원</p>
+                    
                   </div>
                 </div>
               </Link>
@@ -134,7 +134,7 @@ const PlayPage = () => {
                   <h2>{ticket.title}</h2>
                   <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  <p>{ticket.price}원</p>
+                  
                 </div>
               </div>
             </Link>

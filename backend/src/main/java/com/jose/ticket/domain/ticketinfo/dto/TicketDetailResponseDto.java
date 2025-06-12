@@ -31,7 +31,7 @@ public class TicketDetailResponseDto {
     private String ageLimit;
     private String eventTime;
 
-    //  수정: String → List<String>
+    // 수정: String → List<String>
     private List<String> descriptionUrl;
 
     // Entity 기반 생성자
@@ -49,15 +49,20 @@ public class TicketDetailResponseDto {
         this.ageLimit = ticket.getAgeLimit();
         this.eventTime = ticket.getEventTime();
 
-        // JSON 문자열을 List<String>으로 변환
+        // JSON 문자열 or 단일 문자열 모두 처리
         ObjectMapper objectMapper = new ObjectMapper();
         List<String> urls = new ArrayList<>();
         try {
-            if (ticket.getDescriptionUrl() != null) {
-                urls = objectMapper.readValue(
-                        ticket.getDescriptionUrl(),
-                        new TypeReference<List<String>>() {}
-                );
+            String raw = ticket.getDescriptionUrl();
+            if (raw != null) {
+                raw = raw.trim();
+                if (raw.startsWith("[")) {
+                    // JSON 배열
+                    urls = objectMapper.readValue(raw, new TypeReference<List<String>>() {});
+                } else {
+                    // 단일 문자열
+                    urls.add(raw);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace(); // 필요시 로깅
