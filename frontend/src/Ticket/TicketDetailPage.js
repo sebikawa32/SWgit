@@ -3,6 +3,27 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BoardListMerged from "../Board/BoardListMerged";
 import "./TicketDetailPage.css";
+import Footer from '../Footer/Footer';
+
+// ✅ 지도 컴포넌트 (컴포넌트 따로 안 빼고 내부에 포함)
+const MapEmbed = ({ venue }) => {
+  if (!venue) return null;
+  const encodedVenue = encodeURIComponent(venue);
+  return (
+    <div style={{ marginTop: "16px", width: "100%", height: "300px" }}>
+      <h4>📍 지도 보기</h4>
+      <iframe
+        title="map"
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        style={{ border: 0, borderRadius: "8px" }}
+        src={`https://www.google.com/maps?q=${encodedVenue}&output=embed`}
+        allowFullScreen
+      ></iframe>
+    </div>
+  );
+};
 
 function TicketDetailPage() {
   const { id } = useParams();
@@ -13,9 +34,7 @@ function TicketDetailPage() {
   const [bookmarkMessage, setBookmarkMessage] = useState("");
   const [activeTab, setActiveTab] = useState("info");
 
-  // 티켓 상세 정보 & 북마크 정보 불러오기
   useEffect(() => {
-    // 티켓 상세조회
     axios.get(`http://localhost:8080/api/tickets/${id}`)
       .then(res => setTicket(res.data))
       .catch(err => {
@@ -23,7 +42,6 @@ function TicketDetailPage() {
         setError("티켓 상세 정보를 불러오는 데 실패했습니다.");
       });
 
-    // 북마크 체크
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("accessToken");
     if (userId && token) {
@@ -35,7 +53,6 @@ function TicketDetailPage() {
     }
   }, [id]);
 
-  // 북마크 추가/삭제
   const handleToggleBookmark = async () => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -70,7 +87,6 @@ function TicketDetailPage() {
     }
   };
 
-  // 날짜 포맷
   const formatDate = (dateStr) => {
     if (!dateStr || typeof dateStr !== "string") return "예매링크 참조";
     const date = new Date(dateStr);
@@ -79,17 +95,12 @@ function TicketDetailPage() {
       : date.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" });
   };
 
-  // 🔵 [추가] 예매 버튼 클릭 핸들러
-  // 1. 로그 저장 요청 → 2. 예매 사이트 이동
   const handleBookingClick = () => {
-    // 1) 로그 저장 (POST)
     axios.post(`http://localhost:8080/api/tickets/${id}/click`)
       .catch((err) => {
-        // 실패해도 이동은 해야 하니까 무시 또는 로그만 남김
         console.error("예매 클릭 로그 저장 실패:", err);
       });
 
-    // 2) 예매 사이트로 새 창 이동
     window.open(ticket.bookingLink, "_blank", "noopener noreferrer");
   };
 
@@ -125,11 +136,10 @@ function TicketDetailPage() {
             </ul>
           </div>
 
-          <p><strong>관람 연령</strong> {ticket.ageLimit || '예매 링크 참조'}</p>
+          <p><strong>관람 연령</strong> {ticket.ageLimit || '전체관람가'}</p>
           <p><strong>공연 시간</strong> {ticket.eventTime || '예매 링크 참조'}</p>
           <p><strong>예매처</strong> {ticket.bookingProvider}</p>
 
-          {/* 🔵 [변경] 예매 버튼의 onClick 핸들러 연결 */}
           {ticket.bookingLink && (
             <button
               onClick={handleBookingClick}
@@ -144,10 +154,11 @@ function TicketDetailPage() {
       {/* 탭 선택 */}
       <div className="ticket-detail-tabs">
         <button onClick={() => setActiveTab("info")} className={activeTab === "info" ? "active" : ""}>상세정보</button>
+        <button onClick={() => setActiveTab("map")} className={activeTab === "map" ? "active" : ""}>길찾기</button>
         <button onClick={() => setActiveTab("board")} className={activeTab === "board" ? "active" : ""}>게시글</button>
       </div>
 
-      {/*  탭 내용 */}
+      {/* 탭 내용 */}
       <div className="ticket-detail-tab-content">
         {activeTab === "info" && ticket.descriptionUrl && (
           <div className="ticket-description-image">
@@ -160,12 +171,20 @@ function TicketDetailPage() {
             )}
           </div>
         )}
+
+        {activeTab === "map" && (
+          <MapEmbed venue={ticket.venue} />
+        )}
+
         {activeTab === "board" && (
           <div className="ticket-board-section">
             <BoardListMerged ticketId={id} />
           </div>
         )}
       </div>
+
+          {/* ✅ Footer 추가 */}
+    <Footer />
     </main>
   );
 }

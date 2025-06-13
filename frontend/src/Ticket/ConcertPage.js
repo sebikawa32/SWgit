@@ -109,7 +109,7 @@ const ConcertPage = () => {
                     <h2>{concert.title}</h2>
                     <p>{formatDate(concert.eventStartDatetime)} ~ {formatDate(concert.eventEndDatetime)}</p>
                     <p>{concert.venue}</p>
-                    <p>{concert.price}원</p>
+                    
                   </div>
                 </div>
               </Link>
@@ -136,7 +136,7 @@ const ConcertPage = () => {
                   <h2>{ticket.title}</h2>
                   <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  <p>{ticket.price}원</p>
+                  
                 </div>
               </div>
             </Link>
