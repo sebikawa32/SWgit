@@ -16,3 +16,6 @@ lambda_ticket_crawler/
 .DS_Store
 .vscode/
 .idea/.DS_Store
+
+# Spring 설정파일 보호
+backend/src/main/resources/application.yml
