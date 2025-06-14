@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BoardListMerged from "../Board/BoardListMerged";
 import "./TicketDetailPage.css";
-import Footer from '../Footer/Footer';
 
 // ✅ 지도 컴포넌트 (컴포넌트 따로 안 빼고 내부에 포함)
 const MapEmbed = ({ venue }) => {
@@ -11,7 +10,7 @@ const MapEmbed = ({ venue }) => {
   const encodedVenue = encodeURIComponent(venue);
   return (
     <div style={{ marginTop: "16px", width: "100%", height: "300px" }}>
-      <h4>📍 지도 보기</h4>
+      <h4>📍</h4>
       <iframe
         title="map"
         width="100%"
@@ -183,8 +182,6 @@ function TicketDetailPage() {
         )}
       </div>
 
-          {/* ✅ Footer 추가 */}
-    <Footer />
     </main>
   );
 }

@@ -24,7 +24,7 @@ public class BoardController {
     public ResponseEntity<List<BoardResponse>> getBoardsByType(
             @RequestParam(defaultValue = "general") String type,
             @RequestParam(required = false, defaultValue = "false") boolean global,
-            @RequestParam(defaultValue = "latest") String sort // ✅ 정렬 기준 파라미터 추가
+            @RequestParam(defaultValue = "latest") String sort
     ) {
         System.out.println("📨 [BoardController] type = " + type + ", global = " + global + ", sort = " + sort);
 
@@ -42,7 +42,7 @@ public class BoardController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ 특정 티켓에 대한 게시글 목록 조회 (type 포함)
+    // ✅ 특정 티켓에 대한 게시글 목록 조회
     @GetMapping("/tickets/{ticketId}/boards")
     public ResponseEntity<List<BoardResponse>> getBoardsByTicketAndType(
             @PathVariable Long ticketId,
@@ -82,16 +82,23 @@ public class BoardController {
 
     // ✅ 게시글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long id,
-                                             @RequestBody Board updatedBoard) {
-        Board board = boardService.updateBoard(id, updatedBoard);
-        return ResponseEntity.ok(board);
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long id,
+                                                     @RequestBody BoardRequest request,
+                                                     @AuthenticationPrincipal User loginUser) {
+        if (loginUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Board updated = boardService.updateBoard(id, request, loginUser);
+        BoardResponse response = boardService.toDto(updated);
+        return ResponseEntity.ok().body(response);
     }
 
     // ✅ 게시글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
-        boardService.deleteBoard(id);
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,
+                                            @AuthenticationPrincipal User loginUser) {
+        boardService.deleteBoard(id, loginUser);
         return ResponseEntity.noContent().build();
     }
 }

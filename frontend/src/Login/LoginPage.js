@@ -17,14 +17,10 @@ function LoginPage() {
       .then((res) => {
         alert("로그인 성공!");
 
-        // ✅ 백엔드 응답에서 토큰과 userId(PK) 추출
         const { token, userId: userPk } = res.data.data;
-
-        // ✅ 토큰과 userId(PK) 저장
-       localStorage.setItem("accessToken", token); 
+        localStorage.setItem("accessToken", token);
         localStorage.setItem("userId", userPk);
 
-        // ✅ 닉네임 조회해서 저장
         axios
           .get("http://localhost:8080/api/users/me", {
             headers: {
@@ -34,8 +30,6 @@ function LoginPage() {
           .then((meRes) => {
             const nickname = meRes.data.data.nickname;
             localStorage.setItem("nickname", nickname);
-
-            // 홈으로 이동하고 새로고침
             navigate("/", { replace: true });
             window.location.reload();
           })
@@ -53,6 +47,7 @@ function LoginPage() {
       <div className="login-container">
         <h2>TicketPlanet 로그인</h2>
 
+        {/* 일반 로그인 입력창 */}
         <input
           type="text"
           placeholder="아이디"
@@ -68,9 +63,20 @@ function LoginPage() {
 
         <button onClick={onLogin}>로그인</button>
 
+        {/* 회원가입 안내 */}
         <p className="signup-text">
           아직 계정이 없나요? <a href="/signup">회원가입</a>
         </p>
+
+        {/* 구분선 */}
+        <div className="divider"><span>또는</span></div>
+
+        {/* SNS 로그인 버튼들 (UI만, 연동은 추후) */}
+        <div className="sns-login-buttons">
+          <button className="sns-button kakao">카카오로 로그인</button>
+          <button className="sns-button naver">네이버로 로그인</button>
+          <button className="sns-button google">구글로 로그인</button>
+        </div>
       </div>
     </div>
   );

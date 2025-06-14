@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,11 +47,14 @@ public class User implements UserDetails {
     @Column(name = "user_provider_id", unique = true)
     private String providerId; // 제공자 고유 ID
 
-    // ✅ UserDetails 필수 메서드 구현
+    @Column(name = "user_role", nullable = false)
+    private String role;  // 값: "USER", "ADMIN"
 
+
+    // ✅ 권한 설정: ROLE_USER 또는 ROLE_ADMIN 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // 권한은 없다고 가정
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role));
     }
 
     @Override

@@ -37,10 +37,19 @@ public class CommentService {
         return commentRepository.findById(id);
     }
 
-    // 댓글 삭제
-    public void deleteComment(Long id) {
-        commentRepository.deleteById(id);
+    public void deleteComment(Long id, User loginUser) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+
+        // ✨ 작성자 or 관리자만 삭제 허용
+        if (!comment.getWriter().getId().equals(loginUser.getId()) &&
+                !loginUser.getRole().equals("ADMIN")) {
+            throw new SecurityException("삭제 권한이 없습니다.");
+        }
+
+        commentRepository.delete(comment);
     }
+
 
     public CommentResponse createComment(CommentRequest request, Long userId) {
         User writer = userRepository.findById(userId)

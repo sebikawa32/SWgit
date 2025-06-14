@@ -1,3 +1,4 @@
+/* ─────────────────── 공통 레이아웃 설정 ─────────────────── */
 body, html, #root {
   height: 100%;
   margin: 0;
@@ -7,83 +8,270 @@ body, html, #root {
 }
 
 .signup-page-wrapper {
-  min-height: calc(100vh - 80px); /* 헤더 높이 */
+  min-height: calc(100vh - 80px);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding: 60px 24px;
   background: #ffffff;
   box-sizing: border-box;
-  padding: 20px;
 }
 
 .signup-container {
   width: 100%;
-  max-width: 400px;
-  padding: 40px 30px;
+  max-width: 720px;
+  padding: 48px;
   background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  text-align: left;
 }
 
 .signup-container h2 {
-  margin-bottom: 30px;
+  margin-bottom: 32px;
+  font-size: 28px;
   color: #222;
   font-weight: 700;
-  font-size: 26px;
+  text-align: center;
   letter-spacing: 0.5px;
 }
 
-.signup-container input {
+
+/* ─────────────────── 입력 필드 스타일 ─────────────────── */
+.signup-container input[type="text"],
+.signup-container input[type="email"],
+.signup-container input[type="password"] {
   width: 100%;
-  padding: 14px 15px;
+  padding: 14px 16px;
   margin-bottom: 18px;
   border: 1.5px solid #ccc;
   border-radius: 8px;
   font-size: 15px;
   background: #fafafa;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .signup-container input:focus {
+  outline: none;
+  border-color: #333;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+
+/* ─────────────────── 아이디 중복확인 구조 ─────────────────── */
+.input-with-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.input-with-button input {
+  flex: 1;
+  padding: 14px 16px;
+  font-size: 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.input-with-button input:focus {
   outline: none;
   border-color: #333;
   box-shadow: 0 0 6px rgba(0,0,0,0.1);
   background: #fff;
 }
 
-.signup-container button {
-  width: 100%;
+.check-button {
+  height: 48px;
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 500;
   background: #333;
   color: white;
   border: none;
-  padding: 14px 0;
-  font-size: 16px;
-  font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.3s ease;
+  box-sizing: border-box;
+}
+
+.check-button:hover {
+  background: #555;
+}
+
+
+/* ─────────────────── 비밀번호 눈 아이콘 영역 ─────────────────── */
+.input-with-eye {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.input-with-eye input {
+  width: 100%;
+  padding: 14px 16px;
+  padding-right: 40px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.input-with-eye span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #999;
+  cursor: pointer;
+  user-select: none;
+}
+
+.input-with-eye input:focus {
+  outline: none;
+  border-color: #333;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+
+/* ─────────────────── 회원가입 버튼 ─────────────────── */
+.submit-button {
+  width: 100%;
+  padding: 16px 0;
+  background: #222;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.signup-container button:hover {
-  background: #555;
+.submit-button:hover {
+  background: #444;
   transform: translateY(-2px);
 }
 
-.signup-container .login-text {
-  margin-top: 20px;
-  font-size: 13px;
+
+/* ─────────────────── 로그인 텍스트 ─────────────────── */
+.login-text {
+  margin-top: 24px;
+  font-size: 14px;
   color: #666;
+  text-align: center;
 }
 
-.signup-container .login-text a {
+.login-text a {
   color: #333;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.signup-container .login-text a:hover {
-  text-decoration: underline;
+.login-text a:hover {
   color: #111;
+  text-decoration: underline;
+}
+
+
+/* ─────────────────── 약관 동의 영역 ─────────────────── */
+.agreement-section {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 전체 동의 블록 */
+.agreement-all {
+  display: block;
+  padding: 16px;
+  background: #f8f8f8;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.agreement-all input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.agreement-description {
+  margin: 6px 0 0 26px;
+  font-size: 14px;
+  color: #666;
+}
+
+
+/* ─────────────────── 약관 전문 박스 ─────────────────── */
+.agreement-box {
+  position: relative;
+  max-height: 180px;
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.agreement-box.scrollable {
+  overflow-y: auto;
+}
+
+.agreement-box.small {
+  max-height: 120px;
+}
+
+/* 스크롤바 스타일 */
+.agreement-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.agreement-box::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.agreement-box::-webkit-scrollbar-track {
+  background-color: #f2f2f2;
+}
+
+/* 펼치기 / 접기 버튼 */
+.expand-button {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #007BFF;
+  cursor: pointer;
+  text-decoration: underline;
+  width: 100%;
+  text-align: right;
+  padding: 0;
+}
+
+.expand-button:hover {
+  color: #004a99;
+}
+
+/* 펼치기 전 미리보기 텍스트 */
+.blurred-text {
+  color: #999;
+  font-style: italic;
+  user-select: none;
 }

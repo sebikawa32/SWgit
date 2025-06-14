@@ -13,6 +13,7 @@ import lombok.Getter;
 
 @Getter
 public class TicketResponseDto {
+
     private final Long id;
     private final String title;
     private final String venue;
@@ -27,9 +28,9 @@ public class TicketResponseDto {
     private final Long daysUntilDeadline;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private final LocalDateTime createdAt;  //  추가된 필드
+    private final LocalDateTime createdAt;  // 등록일
 
-    // Entity → DTO 변환용 생성자
+    // ✅ Entity → DTO 변환 생성자
     public TicketResponseDto(TicketEntity ticket) {
         this.id = ticket.getId();
         this.title = ticket.getTitle();
@@ -45,6 +46,11 @@ public class TicketResponseDto {
         }
         this.daysUntilDeadline = daysLeft;
 
-        this.createdAt = ticket.getCreatedAt();  //  생성자에 필드 추가
+        this.createdAt = ticket.getCreatedAt();
+    }
+
+    // ✅ 정적 팩토리 메서드
+    public static TicketResponseDto from(TicketEntity ticket) {
+        return new TicketResponseDto(ticket);
     }
 }

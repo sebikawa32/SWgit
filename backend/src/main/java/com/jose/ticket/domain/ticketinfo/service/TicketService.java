@@ -12,6 +12,7 @@ import com.jose.ticket.domain.ticketinfo.dto.TicketRequestDto;
 import com.jose.ticket.domain.ticketinfo.dto.TicketResponseDto;
 import com.jose.ticket.domain.ticketinfo.entity.TicketEntity;
 import com.jose.ticket.domain.ticketinfo.repository.TicketRepository;
+import com.jose.ticket.domain.user.entity.User;
 import com.jose.ticket.global.exception.TicketNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final CategoryRepository categoryRepository;
 
-    //  전체 티켓 조회
+    // 전체 티켓 조회
     public List<TicketResponseDto> getAllTickets() {
         return ticketRepository.findAll().stream()
                 .sorted(Comparator.comparing(TicketEntity::getCreatedAt).reversed())
@@ -35,8 +36,12 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    // 티켓 등록
-    public TicketResponseDto addTicket(TicketRequestDto requestDto) {
+    // 티켓 등록 (관리자만 가능)
+    public TicketResponseDto addTicket(TicketRequestDto requestDto, User loginUser) {
+        if (!"ADMIN".equals(loginUser.getRole())) {
+            throw new SecurityException("티켓 등록은 관리자만 가능합니다.");
+        }
+
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + requestDto.getCategoryId()));
 
@@ -59,15 +64,12 @@ public class TicketService {
         return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    // 티켓 삭제
-    public void deleteTicket(Long id) {
-        TicketEntity ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new TicketNotFoundException(id));
-        ticketRepository.delete(ticket);
-    }
+    // 티켓 수정 (관리자만 가능)
+    public TicketResponseDto updateTicket(Long id, TicketRequestDto requestDto, User loginUser) {
+        if (!"ADMIN".equals(loginUser.getRole())) {
+            throw new SecurityException("티켓 수정은 관리자만 가능합니다.");
+        }
 
-    // 티켓 수정
-    public TicketResponseDto updateTicket(Long id, TicketRequestDto requestDto) {
         TicketEntity ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
 
@@ -93,10 +95,21 @@ public class TicketService {
         return new TicketResponseDto(ticketRepository.save(ticket));
     }
 
-    //  상세보기 + 상세보기 시 조회수 증가 로직 추가 !
+    // 티켓 삭제 (관리자만 가능)
+    public void deleteTicket(Long id, User loginUser) {
+        if (!"ADMIN".equals(loginUser.getRole())) {
+            throw new SecurityException("티켓 삭제는 관리자만 가능합니다.");
+        }
+
+        TicketEntity ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException(id));
+        ticketRepository.delete(ticket);
+    }
+
+    // 상세보기 + 조회수 증가
     @Transactional
     public TicketDetailResponseDto getTicketDetail(Long id) {
-        ticketRepository.increaseViewCount(id); // 👈 조회수 +1 추가!
+        ticketRepository.increaseViewCount(id); // 조회수 +1
 
         TicketEntity ticket = ticketRepository.findByIdWithCategory(id)
                 .orElseThrow(() -> new TicketNotFoundException(id));
@@ -107,9 +120,7 @@ public class TicketService {
         );
     }
 
-
-
-    //  마감일 정렬
+    // 마감일 기준 정렬
     public List<TicketResponseDto> getTicketsOrderByDeadline() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -123,7 +134,7 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    //  카테고리 전체 조회 (정렬만)
+    // 카테고리별 전체 조회
     public List<TicketResponseDto> getTicketsByCategory(Integer categoryId) {
         if (categoryId == null || categoryId == 0) {
             return ticketRepository.findAll().stream()
@@ -141,16 +152,15 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    //  카테고리 페이지네이션 조회
+    // 카테고리 페이지네이션 조회
     public Page<TicketResponseDto> getTicketsByCategory(int categoryId, Pageable pageable) {
         return ticketRepository.findByCategoryId(categoryId, pageable)
                 .map(TicketResponseDto::new);
     }
 
-
+    // 마감 전 티켓만 (카테고리별)
     public List<TicketResponseDto> getUpcomingTicketsByCategory(int categoryId) {
-        List<TicketEntity> tickets = ticketRepository.findUpcomingTicketsByCategory(categoryId);
-        return tickets.stream()
+        return ticketRepository.findUpcomingTicketsByCategory(categoryId).stream()
                 .map(TicketResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -161,3 +171,4 @@ public class TicketService {
     }
 
 }
+

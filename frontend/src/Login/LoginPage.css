@@ -15,7 +15,7 @@ body, html, #root {
   align-items: center;
   background: #ffffff;
   box-sizing: border-box;
-  padding: 20px; /* 모바일에서도 여백 유지 */
+  padding: 20px;
 }
 
 /* 3️⃣ 로그인 컨테이너 */
@@ -57,7 +57,7 @@ body, html, #root {
   background: #fff;
 }
 
-/* 6️⃣ 버튼 */
+/* 6️⃣ 로그인 버튼 */
 .login-container button {
   width: 100%;
   background: #333;
@@ -93,4 +93,63 @@ body, html, #root {
 .login-container .signup-text a:hover {
   text-decoration: underline;
   color: #111;
+}
+
+/* 8️⃣ 구분선 (SNS 로그인 전) */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 30px 0 20px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.divider span {
+  padding: 0 10px;
+  font-size: 12px;
+  color: #999;
+}
+
+/* 9️⃣ SNS 로그인 버튼 섹션 */
+.sns-login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* SNS 버튼 공통 */
+.sns-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.sns-button:hover {
+  transform: translateY(-2px);
+}
+
+/* 각 SNS 색상 */
+.kakao {
+  background-color: #FEE500 !important;
+  color: #000 !important;
+}
+
+.naver {
+  background-color: #03C75A !important;
+}
+
+.google {
+  background-color: #4285F4 !important;
 }

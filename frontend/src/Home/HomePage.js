@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Footer from '../Footer/Footer';
 import '../Header/Header.css';
+import ChatSearchBoxForHome from '../Chatbot/ChatSearchBoxForHome'; 
 import './HomePage.css';
 
 const categories = [
@@ -14,24 +14,27 @@ const categories = [
 
 const rankingCategories = [
   { id: 1, name: '콘서트' },
+  { id: 4, name: '뮤지컬' },
   { id: 2, name: '전시' },
   { id: 3, name: '연극' },
-  { id: 4, name: '뮤지컬' },
 ];
 
 const bannerImages = [
   '/images/banner1.jpeg',
   '/images/banner2.jpeg',
   '/images/banner3.jpeg',
+  '/images/banner4.jpeg',
 ];
 
 const bannerLinks = [
-  '/ticket/32603', // 내부 라우팅
-  '',              // 링크 없음
-  '',              // 링크 없음
+  '/ticket/32603', 
+  '',              
+  '/ticket/33136', 
+  '/ticket/32901', 
 ];
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [allTickets, setAllTickets] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(1);
   const [loadingAll, setLoadingAll] = useState(false);
@@ -39,7 +42,6 @@ const HomePage = () => {
 
   const [selectedRankingCategory, setSelectedRankingCategory] = useState(1);
   const [rankingTickets, setRankingTickets] = useState([]);
-
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const HomePage = () => {
             const link = bannerLinks[index];
             const image = (
               <img
+                key={index}
                 src={src}
                 alt={`배너${index + 1}`}
                 className={`banner-image ${index === currentBannerIndex ? 'active' : ''}`}
@@ -110,7 +113,23 @@ const HomePage = () => {
       </section>
 
       <main className="content">
-        {/* 🔁 Ranking Section */}
+
+        <h2>AI SEARCH</h2>
+        <ChatSearchBoxForHome
+          onResults={(data, query) => {
+            if (!data) {
+              console.warn("GPT 응답 없음");
+              return;
+            }
+            const encoded = encodeURIComponent(query);
+            navigate(`/chat/search?query=${encoded}`, {
+              state: { results: data },
+            });
+          }}
+        />
+
+        <hr style={{ margin: '50px 0' }} />
+
         <section>
           <h2>RANKING</h2>
           <div className="category-buttons">
@@ -149,7 +168,6 @@ const HomePage = () => {
 
         <hr style={{ margin: '50px 0' }} />
 
-        {/* 🔁 Tickets Section - 랜덤 10개, 5개씩 2줄 */}
         <section>
           <h2>TICKETS</h2>
           <div className="category-buttons">
@@ -189,7 +207,6 @@ const HomePage = () => {
           </div>
         </section>
 
-        <Footer />
       </main>
     </>
   );

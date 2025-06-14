@@ -12,6 +12,7 @@ public class BoardResponse {
     private Long id;
     private String title;
     private String content;
+    private String type;
     private Long writerId;
     private String nickname;
     private LocalDateTime createdAt;

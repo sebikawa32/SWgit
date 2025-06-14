@@ -10,6 +10,8 @@ const BoardList = ({ type = "general", ticketId }) => {
   const postsPerPage = 10;
   const navigate = useNavigate();
 
+  const userRole = localStorage.getItem('role'); // ✅ 사용자 역할 확인용
+
   useEffect(() => {
     const fetchBoards = async () => {
       try {
@@ -41,14 +43,13 @@ const BoardList = ({ type = "general", ticketId }) => {
 
   return (
     <div className="board-list-container">
-      {/* 제목 중앙 정렬 */}
+      {/* 제목 */}
       <div className="board-title-wrapper">
         <h1 className="board-title">{type === 'notice' ? '공지사항' : '게시글'}</h1>
       </div>
 
-      {/* 정렬 옵션 + 글쓰기 버튼 */}
+      {/* 정렬 및 글쓰기 */}
       <div className="board-list-controls">
-        {/* 왼쪽: 정렬 드롭다운 / 없으면 공간만 유지 */}
         {type !== 'notice' && !ticketId ? (
           <select
             value={sort}
@@ -62,12 +63,14 @@ const BoardList = ({ type = "general", ticketId }) => {
           <div style={{ width: '120px' }}></div>
         )}
 
-        {/* 오른쪽: 글쓰기 */}
-        <button className="write-button" onClick={handleWriteClick}>
-          글쓰기
-        </button>
+        {(type !== 'notice' || userRole === 'ADMIN') && (
+          <button className="write-button" onClick={handleWriteClick}>
+            글쓰기
+          </button>
+        )}
       </div>
 
+      {/* 게시글 테이블 */}
       <table className="board-table">
         <thead>
           <tr>
@@ -96,6 +99,7 @@ const BoardList = ({ type = "general", ticketId }) => {
         </tbody>
       </table>
 
+      {/* 페이지네이션 */}
       <div className="pagination">
         <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
           이전
@@ -118,3 +122,4 @@ const BoardList = ({ type = "general", ticketId }) => {
 };
 
 export default BoardList;
+ 

@@ -8,9 +8,9 @@ import './SearchPage.css';
 const categories = [
   { id: 0, name: '전체' },
   { id: 1, name: '콘서트' },
-  { id: 2, name: '뮤지컬' },
+  { id: 4, name: '뮤지컬' },
   { id: 3, name: '연극' },
-  { id: 4, name: '전시' },
+  { id: 2, name: '전시' },
 ];
 
 function SearchPage() {

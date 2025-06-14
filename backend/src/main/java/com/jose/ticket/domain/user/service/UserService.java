@@ -38,6 +38,8 @@ public class UserService {
                 .realname(request.getRealname())
                 .phoneNumber(request.getPhoneNumber())
                 .provider("local")
+                .providerId(null)
+                .role("USER")     // ✅ 일반 사용자로 고정
                 .build();
 
         return UserResponse.fromEntity(userRepository.save(user));
@@ -52,7 +54,13 @@ public class UserService {
 
         String token = jwtProvider.createToken(user.getUserId());
 
-        return new TokenResponse(token, user.getId());
+        return new TokenResponse(
+                token,
+                user.getId(),
+                user.getNickname(),
+                user.getRole()
+        );
+
     }
 
     // 아이디 중복 확인

@@ -6,7 +6,6 @@ import "./SignupPage.css";
 function SignupPage() {
   const navigate = useNavigate();
 
-  // 사용자 입력 상태 관리
   const [form, setForm] = useState({
     userId: "",
     email: "",
@@ -17,61 +16,56 @@ function SignupPage() {
     phoneNumber: ""
   });
 
-  // 입력값 변경 처리
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const onChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ 아이디 중복확인 함수
   const checkUserId = () => {
     if (!form.userId) {
       alert("아이디를 입력해주세요!");
       return;
     }
 
-    axios.post("http://localhost:8080/api/users/check-id", form.userId, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(res => {
-      if (res.data.data === true) {
-        alert("이미 사용 중인 아이디입니다.");
-      } else {
-        alert("사용 가능한 아이디입니다!");
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      alert("아이디 중복 검사 실패");
-    });
+    axios
+      .post("http://localhost:8080/api/users/check-id", form.userId, {
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => {
+        if (res.data.data === true) {
+          alert("이미 사용 중인 아이디입니다.");
+        } else {
+          alert("사용 가능한 아이디입니다!");
+        }
+      })
+      .catch(() => {
+        alert("아이디 중복 검사 실패");
+      });
   };
 
-  // ✅ 회원가입 + 토큰 저장 + 홈 이동
-const onSignup = () => {
-  axios.post("http://localhost:8080/api/users/signup", form)
-    .then((res) => {
-      alert("회원가입 성공!");
-      const token = res.data.data.token;
-      if (token) {
-        localStorage.setItem("token", token);
-        alert("자동 로그인 완료!");
-        navigate("/", { replace: true });
-        window.location.reload();
-      } else {
-        navigate("/login");
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      const message = err.response?.data || "회원가입 실패";
-      alert(message);
-    });
-};
-
+  const onSignup = () => {
+    axios
+      .post("http://localhost:8080/api/users/signup", form)
+      .then((res) => {
+        alert("회원가입 성공!");
+        const token = res.data.data.token;
+        if (token) {
+          localStorage.setItem("token", token);
+          alert("자동 로그인 완료!");
+          navigate("/", { replace: true });
+          window.location.reload();
+        } else {
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        const message = err.response?.data || "회원가입 실패";
+        alert(message);
+      });
+  };
 
   return (
     <div className="signup-page-wrapper">
@@ -86,7 +80,7 @@ const onSignup = () => {
           onChange={onChange}
         />
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="input-with-button">
           <input
             type="text"
             name="userId"
@@ -94,23 +88,37 @@ const onSignup = () => {
             value={form.userId}
             onChange={onChange}
           />
-          <button type="button" onClick={checkUserId}>중복확인</button>
+          <button type="button" className="check-button" onClick={checkUserId}>
+            중복확인
+          </button>
         </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="비밀번호"
-          value={form.password}
-          onChange={onChange}
-        />
-        <input
-          type="password"
-          name="passwordConfirm"
-          placeholder="비밀번호 확인"
-          value={form.passwordConfirm}
-          onChange={onChange}
-        />
+        <div className="input-with-eye">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="비밀번호"
+            value={form.password}
+            onChange={onChange}
+          />
+          <span className="eye-toggle" onClick={() => setShowPassword(!showPassword)}>
+            <i className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`}></i>
+          </span>
+        </div>
+
+        <div className="input-with-eye">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            name="passwordConfirm"
+            placeholder="비밀번호 확인"
+            value={form.passwordConfirm}
+            onChange={onChange}
+          />
+          <span className="eye-toggle" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+            <i className={`bi ${showConfirmPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`}></i>
+          </span>
+        </div>
+
         <input
           type="email"
           name="email"
@@ -133,7 +141,7 @@ const onSignup = () => {
           onChange={onChange}
         />
 
-        <button onClick={onSignup}>회원가입</button>
+        <button className="submit-button" onClick={onSignup}>회원가입</button>
 
         <p className="login-text">
           이미 계정이 있으신가요? <a href="/login">로그인</a>
@@ -144,5 +152,3 @@ const onSignup = () => {
 }
 
 export default SignupPage;
-
-
