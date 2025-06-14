@@ -26,6 +26,18 @@ function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // 🔥 인기 검색어 6개 (세로 2열)
+  const [popularKeywords, setPopularKeywords] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/keywords/popular")
+      .then(res => setPopularKeywords((res.data || []).slice(0, 6)))
+      .catch(() => setPopularKeywords([]));
+  }, []);
+
+  const leftColumn = popularKeywords.slice(0, 3);
+  const rightColumn = popularKeywords.slice(3, 6);
+
   useEffect(() => {
     const trimmedQuery = query.trim();
     if (!trimmedQuery) {
@@ -35,6 +47,18 @@ function SearchPage() {
 
     setLoading(true);
     setError(null);
+
+    // ✅ 검색 로그 저장 (로그인한 경우만)
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      axios.post("http://localhost:8080/api/search/log", {
+        userId: Number(userId),
+        keyword: trimmedQuery
+      }).catch((err) => {
+        // 로그 저장 실패해도 검색 계속 진행!
+        console.error("검색로그 저장 실패", err);
+      });
+    }
 
     const params = new URLSearchParams();
     params.set("query", trimmedQuery);
@@ -79,6 +103,42 @@ function SearchPage() {
   return (
     <main className="content">
       <section>
+        {/* 🔥 인기 검색어 2열 */}
+        {popularKeywords.length > 0 && (
+  <div className="popular-keywords-wrapper">
+    <div className="popular-keywords-title-row">
+      <span className="popular-keywords-title">인기 검색어</span>
+    </div>
+    <div className="popular-keywords-cols">
+      <div>
+        {leftColumn.map((item, idx) => (
+          <div
+            className="popular-keyword"
+            key={idx}
+            onClick={() => navigate(`/search?query=${encodeURIComponent(item.keyword)}`)}
+          >
+            <span className="popular-keyword-rank">{idx + 1}.</span>
+            <span className="popular-keyword-text">{item.keyword}</span>
+          </div>
+        ))}
+      </div>
+      <div>
+        {rightColumn.map((item, idx) => (
+          <div
+            className="popular-keyword"
+            key={idx + 3}
+            onClick={() => navigate(`/search?query=${encodeURIComponent(item.keyword)}`)}
+          >
+            <span className="popular-keyword-rank">{idx + 4}.</span>
+            <span className="popular-keyword-text">{item.keyword}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
+
         <h2>🔎 검색 결과: "{query}"</h2>
 
         <div className="category-buttons">

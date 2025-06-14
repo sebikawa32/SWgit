@@ -54,7 +54,8 @@ public class SecurityConfig {
                                 "/api/tickets/**",
                                 "/api/search",
                                 "/api/search/**",
-                                "/api/chat/search",
+                                "/api/keywords/popular/**",
+                                "/api/keywords/popular",
                                 "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**"
                         ).permitAll()
 

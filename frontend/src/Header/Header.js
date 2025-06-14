@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Header.css";
 
 function Header({ isLoggedIn: externalIsLoggedIn }) {
@@ -8,48 +9,124 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const bellRef = useRef(null);
+
+  // ✅ 드롭다운 상태 분리
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [popularKeywords, setPopularKeywords] = useState([]);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isInputHovered, setIsInputHovered] = useState(false);
+  const [isDropdownHovered, setIsDropdownHovered] = useState(false);
+  const dropdownRef = useRef();
+
   const navigate = useNavigate();
 
-  // ✅ 로그인 상태 및 닉네임 초기화
+  // 로그인 상태 및 닉네임 초기화
   useEffect(() => {
-    const token = localStorage.getItem("accessToken"); // ✅ 수정된 키
+    const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
     const storedNickname = localStorage.getItem("nickname") || "";
     setNickname(storedNickname);
-  }, [externalIsLoggedIn]); // ✅ App.js에서 전달된 값 변화 감지
+  }, [externalIsLoggedIn]);
 
-  // ✅ 알림 외부 클릭 시 닫힘
+  // 외부 클릭 시 알림/드롭다운 닫힘
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (bellRef.current && !bellRef.current.contains(e.target)) {
         setShowNotifications(false);
+      }
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target) &&
+        e.target.className !== "search-input"
+      ) {
+        setShowDropdown(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ 검색 처리
+  // 검색 처리
   const handleSearch = () => {
     if (searchQuery.trim() !== "") {
-     navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+      setShowDropdown(false);
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
     }
   };
 
-  // ✅ 로그아웃 처리
+  // 인기검색어 불러오기
+  const fetchPopularKeywords = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/keywords/popular");
+      setPopularKeywords(res.data || []);
+    } catch (e) {
+      setPopularKeywords([]);
+    }
+  };
+
+  // 검색창 포커스/입력시 인기검색어 드롭다운
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+    fetchPopularKeywords();
+    setShowDropdown(true);
+  };
+  const handleInputBlur = () => {
+    setTimeout(() => setIsInputFocused(false), 120);
+  };
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+    fetchPopularKeywords();
+    setShowDropdown(true);
+  };
+
+  // 드롭다운 hover/focus 제어
+  const handleInputMouseEnter = () => {
+    setIsInputHovered(true);
+    fetchPopularKeywords();
+    setShowDropdown(true);
+  };
+  const handleInputMouseLeave = () => {
+    setIsInputHovered(false);
+  };
+
+  const handleDropdownMouseEnter = () => setIsDropdownHovered(true);
+  const handleDropdownMouseLeave = () => setIsDropdownHovered(false);
+
+  // 인기검색어 클릭시 바로 검색
+  const handleKeywordClick = (keyword) => {
+    setShowDropdown(false);
+    setSearchQuery(keyword);
+    navigate(`/search?query=${encodeURIComponent(keyword)}`);
+  };
+
+  // 엔터로 검색
+  const handleInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
+  // 로그아웃 처리
   const handleLogout = () => {
-    localStorage.removeItem("accessToken"); // ✅ 수정된 키
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("nickname");
     localStorage.removeItem("userId");
     setIsLoggedIn(false);
     navigate("/");
-    window.location.reload(); // 새로고침으로 Header 반영 보장
+    window.location.reload();
   };
 
-  // ✅ 알림 토글
+  // 알림 토글
   const toggleNotifications = () => {
     setShowNotifications((prev) => !prev);
   };
+
+  // 드롭다운 표시 조건
+  const shouldShowDropdown =
+    showDropdown &&
+    (isInputFocused || isInputHovered || isDropdownHovered) &&
+    popularKeywords.length > 0;
 
   return (
     <header className="App-header">
@@ -81,17 +158,39 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
         {/* 우측 영역 */}
         <div className="nav-right">
           {/* 검색창 */}
-          <div className="search-container">
+          <div className="search-container" style={{ position: "relative" }}>
             <input
               type="text"
               className="search-input"
               placeholder="검색..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+              onMouseEnter={handleInputMouseEnter}
+              onMouseLeave={handleInputMouseLeave}
+              autoComplete="off"
             />
             <button className="search-btn" onClick={handleSearch} type="button">
               🔍
             </button>
+            {/* 인기검색어 드롭다운 */}
+            {shouldShowDropdown && (
+              <ul
+                className="search-dropdown"
+                ref={dropdownRef}
+                onMouseEnter={handleDropdownMouseEnter}
+                onMouseLeave={handleDropdownMouseLeave}
+              >
+                {popularKeywords.map((item, idx) => (
+                  <li key={idx} onClick={() => handleKeywordClick(item.keyword)}>
+                    <span style={{ fontWeight: 600, color: "#c0c0c0" }}>{idx + 1}위</span>&nbsp;
+                    {item.keyword}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* 로그인된 경우 */}
@@ -111,7 +210,6 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
                   </div>
                 )}
               </div>
-
               {/* 사용자 닉네임 및 드롭다운 */}
               <div className="nickname-wrapper">
                 <span className="user-greeting">{nickname}님</span>
