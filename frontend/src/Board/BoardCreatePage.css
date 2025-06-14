@@ -1,0 +1,97 @@
+.board-create-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.board-create-container h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #111;
+}
+
+/* 입력 요소 공통 */
+.board-create-container input[type="text"],
+.board-create-container textarea {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 18px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fafafa;
+  transition: border 0.2s;
+}
+
+.board-create-container input[type="text"]:focus,
+.board-create-container textarea:focus {
+  border-color: #222;
+  outline: none;
+  background-color: #fff;
+}
+
+.board-create-container textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+/* 제출 버튼 */
+.board-create-container button {
+  width: 100%;
+  padding: 14px;
+  background-color: #000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.board-create-container button:hover {
+  background-color: #333;
+}
+
+/* 티켓 검색 필드 */
+.form-group label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #222;
+}
+
+.search-dropdown {
+  list-style: none;
+  margin-top: -12px;
+  margin-bottom: 12px;
+  padding: 0;
+  border: 1px solid #ddd;
+  max-height: 150px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.search-dropdown li {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.search-dropdown li:hover {
+  background-color: #f3f3f3;
+}
+
+/* 선택된 티켓 표시 */
+.selected-ticket {
+  font-size: 0.92rem;
+  color: #333;
+  margin-bottom: 12px;
+}

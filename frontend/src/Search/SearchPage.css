@@ -1,0 +1,37 @@
+.event-list-wrapper {
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.event-list {
+  display: flex;
+  gap: 16px;
+}
+
+.event-card {
+  flex: 0 0 auto;
+  width: 180px;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+}
+
+.event-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+}
+
+.event-card h3,
+.event-card p {
+  margin: 5px 0;
+  padding: 0 5px;
+  font-size: 0.9rem;
+  text-align: center;
+}

@@ -1,0 +1,226 @@
+/* ───── 티켓 상세 페이지 전체 CSS ───── */
+
+/* 컨테이너 설정 */
+.ticket-detail-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 80px auto;
+  padding: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #222;
+}
+
+/* 제목 (h1) 스타일 */
+.ticket-detail-container h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  text-align: left;
+  font-weight: 700;
+  color: #222;
+}
+
+/* 구분선 */
+hr.divider {
+  border: none;
+  border-bottom: 3px solid #ccc;
+  width: 600px;
+  margin: 0 0 24px 0;
+}
+
+/* 상세 콘텐츠 레이아웃 */
+.ticket-detail-content {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* ─ 이미지 + 하트 아이콘 영역 ─ */
+.image-and-heart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ticket-detail-image {
+  flex: 0 0 300px;
+  border-radius: 8px;
+  object-fit: cover;
+  width: 300px;
+  height: 450px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* 하트 + 텍스트 */
+.heart-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.heart-icon.bi-heart {
+  color: #aaa;
+  font-size: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.heart-icon.bi-heart-fill {
+  color: #ff6b6b;
+  font-size: 1.5rem;
+  transition: transform 0.2s ease;
+}
+
+.heart-row:hover .heart-icon {
+  transform: scale(1.1);
+}
+
+.heart-text {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* 즐겨찾기 상태 메시지 */
+.bookmark-message {
+  color: #d64848;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ─ 정보 영역 ─ */
+.ticket-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+.ticket-info p {
+  margin: 0;
+}
+
+.ticket-info strong {
+  display: inline-block;
+  min-width: 90px;
+  color: #555;
+  font-weight: 600;
+}
+
+.ticket-info a {
+  color: #1e90ff;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.ticket-info a:hover {
+  color: #0c6ac2;
+}
+
+/* ─ 가격 리스트 ─ */
+.price-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.price-row > strong {
+  margin-right: 3px;
+  white-space: nowrap;
+}
+
+.price-row .price-list-inline {
+  display: inline-block;
+  margin: 0 !important;
+  padding: 0 0 0 3px !important;
+  list-style: none !important;
+  line-height: 1.4;
+}
+
+.price-row .price-list-inline li {
+  margin-bottom: 4px;
+  font-size: 1rem;
+  list-style: none !important;
+}
+
+
+/* ─ 공통 버튼 ─ */
+.btn {
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+/* 예매 버튼 */
+.btn-booking {
+  background-color: #000000;
+  color: white;
+  padding: 8px 10px;
+}
+
+.btn-booking:hover {
+  background-color: #414141;
+}
+
+/* ─ 상세정보 / 게시글 탭 버튼 (티켓링크 스타일) ─ */
+.ticket-detail-tabs {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid #ddd;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.ticket-detail-tabs button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  margin-bottom: -2px;
+  cursor: pointer;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.ticket-detail-tabs button:hover {
+  color: #000;
+}
+
+.ticket-detail-tabs button.active {
+  color: #000;
+  border-bottom: 2px solid #000;
+}
+
+/* ─ 상세 이미지 영역 ─ */
+.ticket-description-image img {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 16px;
+}
+
+
+/* ─ 반응형 예시 ─ */
+/*
+@media (max-width: 600px) {
+  .price-row {
+    display: block;
+  }
+  .price-row > strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .price-row .price-list-inline {
+    padding-left: 3px !important;
+  }
+}
+*/

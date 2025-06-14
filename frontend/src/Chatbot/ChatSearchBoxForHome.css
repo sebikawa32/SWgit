@@ -1,0 +1,60 @@
+/* 검색 폼 전체 영역 */
+.chat-search-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+/* 챗봇 아이콘 */
+.chatbot-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+/* 검색 입력창 */
+.chat-search-input {
+  width: 60%;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 12px; /* ✅ 둥글네모 모양 */
+  background: #fafafa;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-search-input:focus {
+  outline: none;
+  border-color: #333;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+/* 검색 버튼 */
+.chat-search-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #222;
+  color: white;
+  border: none;
+  border-radius: 12px; /* ✅ 둥글네모 모양 */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chat-search-button:hover {
+  background-color: #444;
+}
+
+/* 예시 문구 */
+.chat-search-examples {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: -8px;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}

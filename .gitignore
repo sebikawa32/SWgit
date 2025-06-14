@@ -1,0 +1,18 @@
+# Node.js 의존성
+node_modules/
+
+# Lambda 크롤러 전체 제외
+lambda_ticket_crawler/
+
+# 대용량/실수 방지 파일
+*.zip
+*.jar
+*.exe
+*.bin
+*.tar.gz
+*.7z
+
+# 에디터/환경 관련
+.DS_Store
+.vscode/
+.idea/.DS_Store

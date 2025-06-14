@@ -1,0 +1,238 @@
+/* ─────────── 전체 공통 레이아웃 ─────────── */
+body, html, #root, .App {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.content {
+  width: 90%;
+  max-width: 1000px;
+  margin: 60px auto 20px;
+  border-radius: 12px;
+  padding: 24px;
+  padding-top: 0;
+  background: transparent;
+}
+
+* {
+  box-shadow: none !important;
+}
+
+/* ─────────── 제목 및 헤더 텍스트 ─────────── */
+h2 {
+  font-size: 1.6rem;
+  margin: 16px 0;
+  text-align: center;
+  color: #222;
+  font-weight: 700;
+}
+
+/* ─────────── 카테고리 버튼 ─────────── */
+.category-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.category-button {
+  background-color: #e4e7ec;
+  border: none;
+  border-radius: 30px;
+  padding: 6px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #333;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.category-button:hover {
+  background-color: #d0d5da;
+  color: #111;
+}
+
+.category-button.active {
+  background: #333;
+  color: #fff;
+}
+
+/* ─────────── 카드 기본 스타일 ─────────── */
+.event-card-link {
+  flex: 0 0 auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+.event-card {
+  height: 370px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+}
+
+.event-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+/* 제목 */
+.card-title {
+  text-align: center;
+  padding: 4px 6px 0;
+}
+
+.card-title h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 날짜 및 장소 */
+.card-info {
+  text-align: center;
+  padding: 0 6px;
+}
+
+.card-info p {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 2px 0;
+  white-space: nowrap;
+  letter-spacing: -0.5px;
+}
+
+/* ─────────── 배너 슬라이더 ─────────── */
+.banner-slider {
+  width: 100%;
+  overflow: hidden;
+  padding-top: 90px;
+  margin-bottom: 60px;
+}
+
+.banner-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1908 / 508;
+  overflow: hidden;
+}
+
+.banner-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease;
+  z-index: 0;
+}
+
+.banner-image.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+/* ─────────── 랭킹 리스트 🔥 ─────────── */
+.ranking-list {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.ranking-list .event-card-link {
+  flex: 1 1 0;
+  max-width: calc(20% - 6.4px);
+  min-width: 0;
+}
+
+.ranking-list .event-card {
+  height: 360px;
+}
+
+.ranking-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: #ff5c5c;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* ─────────── 랜덤 티켓 2줄 (5개씩) ─────────── */
+.ticket-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.ticket-row {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ticket-row .event-card-link {
+  flex: 1;
+}
+
+/* ─────────── 반응형 대응 ─────────── */
+@media (max-width: 1024px) {
+  .event-card-link {
+    width: 200px;
+  }
+
+  .event-card {
+    height: 330px;
+  }
+
+  .event-card img {
+    height: 260px;
+  }
+
+  .ranking-list {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ranking-list .event-card-link {
+    max-width: 45%;
+  }
+
+  .ticket-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ticket-row .event-card-link {
+    flex: 1 1 45%;
+  }
+}
