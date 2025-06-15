@@ -20,7 +20,6 @@ public class ChatbotFilterExtractor {
 
     public ChatbotFilter extract(String message) {
         try {
-            // ✅ 오늘 날짜를 기준으로 명시
             String today = LocalDate.now().toString();
 
             String prompt = """
@@ -45,21 +44,18 @@ public class ChatbotFilterExtractor {
                 예시 질문: "%s"
             """.formatted(today, systemPrompt, message);
 
-            // GPT 호출
+            System.out.println("🔥 GPT 호출 시작");
             String response = openAiService.ask(prompt);
+            System.out.println("🔥 GPT 응답 도착: " + response);
 
-            // 🧠 GPT 응답 로그 출력
-            System.out.println("🧠 GPT 응답 내용:\n" + response);
-
-            // ✅ "null" 문자열을 실제 null 값으로 치환
             String sanitizedResponse = response.replace("\"null\"", "null");
 
-            // JSON 파싱
             return objectMapper.readValue(sanitizedResponse, ChatbotFilter.class);
 
         } catch (Exception e) {
-            System.out.println("❌ GPT 필터 파싱 실패: " + e.getMessage());
-            return new ChatbotFilter(); // fallback (빈 필터)
+            System.out.println("❌ GPT 필터 파싱 실패:");
+            e.printStackTrace(); // 🔥 예외 전체 출력
+            return new ChatbotFilter();
         }
     }
 }

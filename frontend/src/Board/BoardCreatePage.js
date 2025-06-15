@@ -8,18 +8,14 @@ const BoardCreatePage = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
-  // ✅ type을 useState로 한 번만 초기화
   const [type] = useState(searchParams.get("type") || "general");
-
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-
   const [tickets, setTickets] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // ✅ 티켓 목록 불러오기
   useEffect(() => {
     axios.get('/api/tickets/summaries')
       .then(res => {
@@ -29,7 +25,6 @@ const BoardCreatePage = () => {
       .catch(err => console.error('티켓 목록 불러오기 실패', err));
   }, []);
 
-  // ✅ 검색어 필터링
   useEffect(() => {
     const filtered = tickets.filter(ticket =>
       ticket.title.toLowerCase().includes(searchKeyword.toLowerCase())
@@ -37,16 +32,19 @@ const BoardCreatePage = () => {
     setFilteredTickets(filtered);
   }, [searchKeyword, tickets]);
 
-  // ✅ 티켓 선택
   const handleTicketSelect = (ticket) => {
     setSelectedTicket(ticket);
     setSearchKeyword(ticket.title);
     setFilteredTickets([]);
   };
 
-  // ✅ 등록
+  const handleTicketRemove = () => {
+    setSelectedTicket(null);
+    setSearchKeyword('');
+  };
+
   const handleSubmit = async () => {
-    const token = localStorage.getItem("accessToken"); // 🔥 토큰 이름 수정됨
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -82,46 +80,55 @@ const BoardCreatePage = () => {
     <div className="board-create-container">
       <h1>게시글 작성</h1>
 
-      {/* 티켓 검색 */}
-      <div className="form-group">
+      <div className="form-row">
         <label>티켓 검색</label>
-        <input
-          type="text"
-          placeholder="티켓 제목을 입력하세요"
-          value={searchKeyword}
-          onChange={e => setSearchKeyword(e.target.value)}
-        />
-        {filteredTickets.length > 0 && searchKeyword && !selectedTicket && (
-          <ul className="search-dropdown">
-            {filteredTickets.map(ticket => (
-              <li key={ticket.id} onClick={() => handleTicketSelect(ticket)}>
-                {ticket.title}
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="ticket-search-wrapper">
+          <input
+            type="text"
+            placeholder="티켓 제목을 입력하세요"
+            value={searchKeyword}
+            onChange={e => setSearchKeyword(e.target.value)}
+          />
+          {filteredTickets.length > 0 && searchKeyword && !selectedTicket && (
+            <ul className="search-dropdown">
+              {filteredTickets.map(ticket => (
+                <li key={ticket.id} onClick={() => handleTicketSelect(ticket)}>
+                  {ticket.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         {selectedTicket && (
-          <p className="selected-ticket">✅ 선택된 티켓: {selectedTicket.title}</p>
+          <div className="selected-ticket">
+            ✅ {selectedTicket.title}
+            <span className="remove-ticket-btn" onClick={handleTicketRemove}>❌</span>
+          </div>
         )}
       </div>
 
-      {/* 제목 */}
-      <input
-        type="text"
-        placeholder="제목을 입력하세요"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-      />
+      <div className="form-row">
+        <label>제목</label>
+        <input
+          type="text"
+          placeholder="제목을 입력하세요"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+        />
+      </div>
 
-      {/* 내용 */}
-      <textarea
-        placeholder="내용을 입력하세요"
-        value={content}
-        onChange={e => setContent(e.target.value)}
-      />
+      <div className="form-row">
+        <label>내용</label>
+        <textarea
+          placeholder="내용을 입력하세요"
+          value={content}
+          onChange={e => setContent(e.target.value)}
+        />
+      </div>
 
-      {/* 등록 */}
-      <button onClick={handleSubmit}>등록</button>
+      <div className="button-row">
+        <button onClick={handleSubmit}>등록</button>
+      </div>
     </div>
   );
 };

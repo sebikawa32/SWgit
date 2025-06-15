@@ -1,5 +1,148 @@
+/* 🔍 검색어 결과 제목 */
+.search-header {
+  margin: 20px 0 12px;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+/* 로딩 상태 */
+.search-loading {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 30px;
+  color: #666;
+}
+
+/* 에러 메시지 */
+.search-error {
+  text-align: center;
+  font-size: 17px;
+  color: red;
+  margin-top: 20px;
+}
+
+/* 결과 없음 상태 */
+.no-results {
+  text-align: center;
+  margin-top: 40px;
+  color: #777;
+  font-size: 16px;
+  margin: 60px 0; 
+}
+.no-results img {
+  width: 140px;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+/* 공연 리스트 */
+.event-list-wrapper {
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.event-list {
+  display: flex;
+  gap: 16px;
+}
+
+.event-card {
+  flex: 0 0 auto;
+  width: 180px;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.event-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+}
+
+.event-card h3,
+.event-card p {
+  margin: 5px 0;
+  padding: 0 5px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+
+/* 게시글 리스트 */
+.board-list {
+  margin-top: 20px;
+  margin-bottom: 60px;
+}
+
+.board-card {
+  padding: 10px 14px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: background 0.2s ease;
+}
+
+.board-card:hover {
+  background: #f8f8f8;
+}
+
+.board-card h4 {
+  margin: 0 0 5px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.board-card p {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+
+/* 🎯 카테고리 버튼 */
+.category-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.category-button {
+  background: #ececf1;
+  color: #444;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.category-button.active {
+  background: #1a1a1a;
+  color: white;
+}
+
+.category-button:hover {
+  background: #d1d1e0;
+}
+
+
+/* 🔥 인기 검색어 영역 */
 .popular-keywords-wrapper {
-  margin-bottom: 40px; /* 아래 공간 넉넉히 */
+  margin-bottom: 40px;
   padding: 24px 0 12px 0;
   background: #fafbfc;
   border-radius: 12px;
@@ -12,10 +155,12 @@
   margin-bottom: 12px;
   padding-left: 10px;
 }
+
 .popular-keywords-icon {
   font-size: 23px;
   margin-right: 7px;
 }
+
 .popular-keywords-title {
   font-weight: bold;
   font-size: 18px;
@@ -44,7 +189,7 @@
 
 .popular-keyword:hover {
   background: #f1f0fa;
-  color: #6b5dfa;
+  color: #171717;
 }
 
 .popular-keyword-rank {
@@ -62,42 +207,27 @@
   letter-spacing: 0.1px;
 }
 
-
-/* 공연 리스트 */
-.event-list-wrapper {
-  overflow-x: auto;
-  padding: 10px;
+.popular-keywords-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 12px;
+  column-gap: 16px;
+  padding: 0 16px;
 }
 
-.event-list {
-  display: flex;
-  gap: 16px;
+.content {
+  padding-bottom: 100px; /* 푸터랑 겹치지 않도록 전체 페이지 하단 여백 확보 */
 }
 
-.event-card {
-  flex: 0 0 auto;
-  width: 180px;
-  background: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
 
-.event-card:hover {
-  transform: translateY(-4px);
-}
-
-.event-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 8px 8px 0 0;
-}
-
-.event-card h3,
-.event-card p {
-  margin: 5px 0;
-  padding: 0 5px;
-  font-size: 0.9rem;
+.no-board-message {
+  margin-bottom: 120px;
   text-align: center;
+  font-size: 15px;
+  color: #777;
+}
+
+.highlight-rank {
+  color: red;
+  font-weight: bold;
 }

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Footer from '../Footer/Footer';
-import '../Header/Header.css';
 import './SearchPage.css';
 
 const categories = [
@@ -25,8 +23,6 @@ function SearchPage() {
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // 🔥 인기 검색어 6개 (세로 2열)
   const [popularKeywords, setPopularKeywords] = useState([]);
 
   useEffect(() => {
@@ -34,9 +30,6 @@ function SearchPage() {
       .then(res => setPopularKeywords((res.data || []).slice(0, 6)))
       .catch(() => setPopularKeywords([]));
   }, []);
-
-  const leftColumn = popularKeywords.slice(0, 3);
-  const rightColumn = popularKeywords.slice(3, 6);
 
   useEffect(() => {
     const trimmedQuery = query.trim();
@@ -48,16 +41,12 @@ function SearchPage() {
     setLoading(true);
     setError(null);
 
-    // ✅ 검색 로그 저장 (로그인한 경우만)
     const userId = localStorage.getItem("userId");
     if (userId) {
       axios.post("http://localhost:8080/api/search/log", {
         userId: Number(userId),
         keyword: trimmedQuery
-      }).catch((err) => {
-        // 로그 저장 실패해도 검색 계속 진행!
-        console.error("검색로그 저장 실패", err);
-      });
+      }).catch(() => {});
     }
 
     const params = new URLSearchParams();
@@ -66,18 +55,13 @@ function SearchPage() {
       params.set("categoryId", categoryId.toString());
     }
 
-    const url = `http://localhost:8080/api/search?${params.toString()}`;
-    console.log("📡 요청 URL:", url);
-
-    axios.get(url)
+    axios.get(`http://localhost:8080/api/search?${params.toString()}`)
       .then(res => {
-        console.log("✅ 응답:", res.data);
         setTickets(res.data.tickets || []);
         setBoards(res.data.boards || []);
         setLoading(false);
       })
-      .catch(err => {
-        console.error("❌ 검색 실패:", err);
+      .catch(() => {
         setError("검색 실패");
         setLoading(false);
       });
@@ -102,114 +86,111 @@ function SearchPage() {
 
   return (
     <main className="content">
-      <section>
-        {/* 🔥 인기 검색어 2열 */}
-        {popularKeywords.length > 0 && (
-  <div className="popular-keywords-wrapper">
-    <div className="popular-keywords-title-row">
-      <span className="popular-keywords-title">인기 검색어</span>
-    </div>
-    <div className="popular-keywords-cols">
-      <div>
-        {leftColumn.map((item, idx) => (
-          <div
-            className="popular-keyword"
-            key={idx}
-            onClick={() => navigate(`/search?query=${encodeURIComponent(item.keyword)}`)}
-          >
-            <span className="popular-keyword-rank">{idx + 1}.</span>
-            <span className="popular-keyword-text">{item.keyword}</span>
+      {popularKeywords.length > 0 && (
+        <div className="popular-keywords-wrapper">
+          <div className="popular-keywords-title-row">
+            <span className="popular-keywords-title">인기 검색어</span>
           </div>
-        ))}
-      </div>
-      <div>
-        {rightColumn.map((item, idx) => (
-          <div
-            className="popular-keyword"
-            key={idx + 3}
-            onClick={() => navigate(`/search?query=${encodeURIComponent(item.keyword)}`)}
-          >
-            <span className="popular-keyword-rank">{idx + 4}.</span>
-            <span className="popular-keyword-text">{item.keyword}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
-
-
-        <h2>🔎 검색 결과: "{query}"</h2>
-
-        <div className="category-buttons">
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              className={`category-button ${categoryId === cat.id ? 'active' : ''}`}
-              onClick={() => handleCategoryClick(cat.id)}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-
-        {loading && <p>로딩 중...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {!loading && !error && tickets.length === 0 && boards.length === 0 && (
-          <p>검색 결과가 없습니다.</p>
-        )}
-
-        {tickets.length > 0 && (
-          <>
-            <h3>🎫 공연 검색 결과</h3>
-            <div className="event-list-wrapper">
-              <div className="event-list">
-                {tickets.map(ticket => (
-                  <div
-                    key={ticket.id}
-                    className="event-card"
-                    onClick={() => handleTicketClick(ticket.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img src={ticket.imageUrl} alt={ticket.title} />
-                    <h3>{ticket.title}</h3>
-                    <p>{ticket.eventStartDatetime} ~ {ticket.eventEndDatetime}</p>
-                    <p>{ticket.venue}</p>
-                  </div>
-                ))}
+          <div className="popular-keywords-grid">
+            {popularKeywords.map((item, idx) => (
+              <div
+                className="popular-keyword"
+                key={idx}
+                onClick={() => navigate(`/search?query=${encodeURIComponent(item.keyword)}`)}
+              >
+                <span className={`popular-keyword-rank ${idx < 3 ? 'highlight-rank' : ''}`}>
+                  {idx + 1}.
+                </span>
+                <span className="popular-keyword-text">{item.keyword}</span>
               </div>
-            </div>
-          </>
-        )}
+            ))}
+          </div>
+        </div>
+      )}
 
-        {boards.length > 0 && (
-          <>
-            <h3>📝 게시글 검색 결과</h3>
-            <div className="board-list">
-              {boards.map(board => (
+     
+
+      <div className="search-summary-bar">
+        <strong>"{query}"</strong> 검색 결과 ({tickets.length + boards.length}건)
+      </div>
+
+ <hr className="search-divider" />
+
+      <div className="category-buttons">
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            className={`category-button ${categoryId === cat.id ? 'active' : ''}`}
+            onClick={() => handleCategoryClick(cat.id)}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+
+    
+      {loading && (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>검색 중입니다. 잠시만 기다려주세요...</p>
+        </div>
+      )}
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {!loading && !error && tickets.length === 0 && boards.length === 0 && (
+        <div className="no-result-box">
+          <img src="/images/no-result.png" alt="결과 없음" />
+          <p>조건에 맞는 검색 결과가 없어요. 다른 키워드로 검색해보세요!</p>
+        </div>
+      )}
+
+      {tickets.length > 0 && (
+        <>
+          <h3>공연 검색 결과 <span style={{ fontWeight: 'normal' }}>({tickets.length})</span></h3>
+          <div className="event-list-wrapper">
+            <div className="event-list">
+              {tickets.map(ticket => (
                 <div
-                  key={board.id}
-                  className="board-card"
-                  onClick={() => handleBoardClick(board.id)}
-                  style={{ borderBottom: '1px solid #ccc', padding: '10px', cursor: 'pointer' }}
+                  key={ticket.id}
+                  className="event-card"
+                  onClick={() => handleTicketClick(ticket.id)}
                 >
-                  <h4>{board.title}</h4>
-                  <p style={{ color: '#666' }}>{board.nickname} · {board.createdAt}</p>
+                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <h3>{ticket.title}</h3>
+                  <p>{ticket.eventStartDatetime?.split('T')[0]} ~ {ticket.eventEndDatetime?.split('T')[0]}</p>
+                  <p>{ticket.venue}</p>
                 </div>
               ))}
             </div>
-          </>
-        )}
+          </div>
+        </>
+      )}
 
-        {!loading && !error && tickets.length > 0 && boards.length === 0 && (
-          <>
-            <h3>📝 게시글 검색 결과</h3>
-            <p>현재 게시글이 없습니다.</p>
-          </>
-        )}
-      </section>
+      {boards.length > 0 && (
+        <>
+          <h3>게시글 검색 결과 <span style={{ fontWeight: 'normal' }}>({boards.length})</span></h3>
+          <div className="board-list">
+            {boards.map(board => (
+              <div
+                key={board.id}
+                className="board-card"
+                onClick={() => handleBoardClick(board.id)}
+              >
+                <h4>{board.title}</h4>
+                <p style={{ color: '#666' }}>{board.nickname} · {board.createdAt?.split('T')[0]}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
-      <Footer />
+      {!loading && !error && tickets.length > 0 && boards.length === 0 && (
+        <>
+          <h3>게시글 검색 결과 <span style={{ fontWeight: 'normal' }}>(0)</span></h3>
+          <p className="no-board-message">현재 게시글이 없습니다.</p>
+        </>
+      )}
     </main>
   );
 }

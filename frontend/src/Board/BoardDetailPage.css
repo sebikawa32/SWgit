@@ -70,7 +70,7 @@
 }
 
 .linked-ticket:hover {
-  color: #084298;
+  color: #1a1a1a;
 }
 
 /* ─────────────── 게시글 본문 ─────────────── */
@@ -149,7 +149,7 @@
 
 .comment-actions button {
   padding: 6px 12px;
-  background-color:#111;
+  background-color: #111;
   color: white;
   font-size: 0.8rem;
   font-weight: 600;
@@ -160,7 +160,7 @@
 }
 
 .comment-actions button:hover {
-  background-color:  #5a5a5a;
+  background-color: #5a5a5a;
 }
 
 /* ─────────────── 댓글 작성 폼 ─────────────── */

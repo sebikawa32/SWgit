@@ -16,7 +16,7 @@ const Footer = () => {
       <div className="footer-info">
         <p><strong>티켓플래닛 프로젝트</strong></p>
         <p>서경대학교 SW인재양성사업 클라우드백엔드트랙</p>
-        <p>개발자: 원세빈, 조여진</p>
+        <p>개발자:조여진, 원세빈</p>
         <p>주소: 서울특별시 성북구 서경로 124, 서경대학교</p>
       </div>
 

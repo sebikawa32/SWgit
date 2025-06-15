@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import jakarta.annotation.PostConstruct; // ✅ Spring Boot 3 이상 사용 시
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +25,12 @@ public class OpenAiService {
     @Value("${openai.model}")
     private String model;
 
+    @PostConstruct
+    public void init() {
+        System.out.println("✅ [OpenAiService] API 키 로드 확인: " + apiKey);
+    }
+
     public String ask(String userPrompt) {
-        // 요청 본문 구성
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", model);
         requestBody.put("messages", List.of(
@@ -33,24 +39,19 @@ public class OpenAiService {
         ));
         requestBody.put("temperature", 0.2);
 
-        // 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
-        // HTTP 요청
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            // ✅ 로그 출력
             System.out.println("🧠 GPT 요청 프롬프트: " + userPrompt);
             System.out.println("🌐 API 요청 URL: " + apiUrl);
-            System.out.println("📤 요청 바디: " + requestBody);
 
             ResponseEntity<Map> response = restTemplate.exchange(apiUrl, HttpMethod.POST, entity, Map.class);
 
-            // ✅ 응답 null 및 구조 확인
             if (response.getBody() == null || !response.getBody().containsKey("choices")) {
                 System.out.println("❌ GPT 응답이 비정상입니다: " + response);
                 return "{}";
@@ -72,8 +73,13 @@ public class OpenAiService {
             System.out.println("✅ GPT 응답 내용:\n" + content);
             return content;
 
+        } catch (HttpClientErrorException e) {
+            System.out.println("❌ GPT API 호출 실패 (상태): " + e.getStatusCode());
+            System.out.println("📩 OpenAI 응답 본문: " + e.getResponseBodyAsString());
+            return "{}";
         } catch (Exception e) {
-            System.out.println("❌ GPT API 호출 실패: " + e.getMessage());
+            System.out.println("❌ GPT 호출 일반 예외: " + e.getMessage());
+            e.printStackTrace(); // 전체 예외 로그
             return "{}";
         }
     }
