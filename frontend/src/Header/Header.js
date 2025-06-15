@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Header.css";
+import NotificationBell from "../SseNotification/NotificationBell";
 
 function Header({ isLoggedIn: externalIsLoggedIn }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -10,7 +11,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const bellRef = useRef(null);
 
-  // ✅ 드롭다운 상태 분리
+  // 드롭다운 상태 분리
   const [showDropdown, setShowDropdown] = useState(false);
   const [popularKeywords, setPopularKeywords] = useState([]);
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -19,6 +20,9 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   const dropdownRef = useRef();
 
   const navigate = useNavigate();
+
+  const storedUserId = Number(localStorage.getItem("userId")); //유저 아이디 localStorage에서 불러오기
+
 
   // 로그인 상태 및 닉네임 초기화
   useEffect(() => {
@@ -117,10 +121,6 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
     window.location.reload();
   };
 
-  // 알림 토글
-  const toggleNotifications = () => {
-    setShowNotifications((prev) => !prev);
-  };
 
   // 드롭다운 표시 조건
   const shouldShowDropdown =
@@ -198,17 +198,9 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
             <>
               {/* 알림 아이콘 */}
               <div className="notification-wrapper" ref={bellRef}>
-                <button onClick={toggleNotifications} className="notification-btn" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" className="bi bi-bell-fill" viewBox="0 0 16 16">
-                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
-                  </svg>
-                </button>
-                {showNotifications && (
-                  <div className="notification-popup">
-                    <p>📢 새로운 공연이 등록되었습니다!</p>
-                    <p>🎫 마감 임박 티켓이 있어요!</p>
-                  </div>
-                )}
+              {isLoggedIn && storedUserId && (
+                <NotificationBell userId={storedUserId} /> //로그인 안하면 아이콘 안뜨도록
+              )} 
               </div>
               {/* 사용자 닉네임 및 드롭다운 */}
               <div className="nickname-wrapper">
