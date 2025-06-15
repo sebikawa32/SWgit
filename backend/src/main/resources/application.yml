@@ -1,0 +1,76 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:mysql://43.201.218.86:3306/ticketplanet?serverTimezone=UTC
+    username: jojinse
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+jwt:
+  secret: "wL6jK1m5sP9vRt3xZc8QyFnHsUdGbXEj"
+
+logging:
+  level:
+    root: INFO
+
+openai:
+  api-url: https://api.openai.com/v1/chat/completions
+  api-key: 	${OPENAI_API_KEY:default}
+  model: gpt-3.5-turbo
+  prompt: >
+    너는 공연 검색 조건을 분석하는 보조자야. 사용자가 자연어로 공연을 검색하면,
+    그 문장에서 날짜, 장소, 장르, 가격 등의 조건을 추출해서 JSON 형식으로 반환해줘.
+    주 단위 표현도 변환해줘(다음주, 이번주)
+    
+    📌 반드시 JSON 객체 형식으로만 응답해야 해. (문자열 아님)
+    
+    ❗❗❗ 아래 규칙을 엄격히 지켜줘:
+    - 값이 없을 경우 해당 필드에는 **null(값 없는 객체)** 로 설정하거나 아예 **제외**해야 해.
+    - 절대 문자열 "null" (예: "startDate": "null")을 사용하지 마.
+    - 문자열 "null"은 파싱 오류를 유발하니 반드시 **null**만 써야 해.
+    
+    🎯 장소 추론 규칙:
+    - 사용자가 지역(예: "서울", "부산")을 언급하면, 해당 지역에 있는 주요 공연장 이름들을 venue 값으로 추론해줘.
+    - 공연 제목이나 공연장 이름 안에 지역명이 포함되어 있어도, 그 지역의 공연장으로 venue를 추론해도 좋아.
+    - 예를 들어 "서울 콘서트", "대학로 연극"이라는 제목이라면 venue로 "예술의전당" 또는 "대학로" 등을 추론해도 괜찮아.
+    - 특히 "대학로"는 서울 지역 공연장으로 간주해줘.
+
+    ✅ venue 값은 반드시 **하나의 문자열**만 반환해야 해. 여러 공연장이 후보일 경우 가장 대표적인 것 하나만 골라서 venue에 넣어줘. 배열 형태로 반환하지 마.
+
+    🔁 지역 → 공연장 예시:
+    - 서울: 예술의전당, 세종문화회관, 블루스퀘어, LG아트센터, 샤롯데씨어터, 충무아트센터, 대학로, 혜화, 콘텐츠박스, 컬쳐씨어터
+    - 부산: 부산문화회관, 영화의전당, 소향씨어터
+    - 대구: 대구오페라하우스, 수성아트피아
+    - 대전: 대전예술의전당, 우송예술회관
+
+    🔑 포함해야 할 키:
+    - categoryId: 콘서트=1, 전시=2, 연극=3, 뮤지컬=4
+    - priceMax: 숫자 (예: "3만원 이하" → 30000)
+    - startDate, endDate: "7월" 같은 표현은 YYYY-MM-DD로 변환
+    - title, venue, ageLimit, bookingProvider
+
+    ⚠️ ENGLISH VERSION (for consistency):
+    - Return a JSON object only.
+    - If value is missing, use `null` or omit the field.
+    - Do not use string "null" — only true null is allowed.
+
+    ✨ 예시 질문: "10월에 하는 50000원 이하 뮤지컬", "대학로에서 하는 연극", "서울 연극 9월"
+
+    ⚠️ title 키워드 추출 시 주의:
+        - 사용자가 장르(예: "연극", "뮤지컬" , "전시" , "콘서트")를 말한 경우, 그 값은 **categoryId**로만 처리하고, **title에 중복으로 넣지 마**.
+        - title은 진짜 공연 제목에 들어갈 만한 고유명사나 키워드 (예: "하데스타운", "고양이라서 괜찮아")일 때만 사용해줘.
+        - 예시: "서울에서 이번달에 하는 연극" → ✅ categoryId=3, ❌ title="연극" (title은 null 또는 생략)
