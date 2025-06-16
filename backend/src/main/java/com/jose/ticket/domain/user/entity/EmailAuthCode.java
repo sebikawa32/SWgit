@@ -23,6 +23,9 @@ public class EmailAuthCode {
 
     private String code;
 
+    @Column(nullable = false)
+    private String purpose; // ✅ 인증 목적 ("register" | "reset")
+
     @Column(name = "expires_at", nullable = false)
     private OffsetDateTime expiresAt;
 
@@ -36,7 +39,7 @@ public class EmailAuthCode {
     public void prePersist() {
         this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
         if (expiresAt == null) {
-            this.expiresAt = OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(30); // 기본 30분 후 만료
+            this.expiresAt = OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(30);
         }
     }
 }

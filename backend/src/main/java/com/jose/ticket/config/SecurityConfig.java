@@ -46,23 +46,23 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ 인증 없이 접근 가능한 API 경로
+                        // ✅ 인증 없이 접근 가능한 API
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/users/check-id",
+                                "/api/users/reset-password", // ✅ 비밀번호 재설정용 허용
                                 "/api/tickets/**",
-                                "/api/search",
                                 "/api/search/**",
                                 "/api/keywords/popular/**",
-                                "/api/keywords/popular",
                                 "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**",
                                 "/api/chat/**",
                                 "/api/notifications/**",
 
-                                // ✅ 이메일 인증 API 허용
+                                // ✅ 이메일 인증 관련 경로 허용
                                 "/api/auth/email/send",
-                                "/api/auth/email/verify"
+                                "/api/auth/email/verify",
+                                "/api/auth/email/reset-password/**"
                         ).permitAll()
 
                         // 🔓 게시글 단건 조회(GET) 허용

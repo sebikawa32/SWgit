@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long>  {
     boolean existsByUserId(String userId);
 
     boolean existsByEmail(String email);
+
+    // 이메일로 사용자 조회 (비밀번호 재설정 등)
+    Optional<User> findByEmail(String email);
 }

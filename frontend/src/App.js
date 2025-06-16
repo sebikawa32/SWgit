@@ -25,6 +25,7 @@ import BoardCreatePage from './Board/BoardCreatePage';
 import BoardEditPage from './Board/BoardEditPage'; // ✅ 게시글 수정 페이지
 import TicketCreatePage from './Ticket/TicketCreatePage';
 import ChatSearchPage from './Chatbot/ChatSearchPage';
+import ResetPasswordPage from "./Login/ResetPasswordPage";
 
 import './App.css';
 
@@ -76,6 +77,7 @@ function App() {
         <Route path="/board/edit/:id" element={<BoardEditPage />} />
         <Route path="/admin/tickets/new" element={<main className="content"><TicketCreatePage /></main>} />
         <Route path="/chat/search" element={<ChatSearchPage />} />
+  <Route path="/reset-password" element={<div className="login-page-wrapper"><ResetPasswordPage /></div>} />
       </Routes>
 
       <Footer />
