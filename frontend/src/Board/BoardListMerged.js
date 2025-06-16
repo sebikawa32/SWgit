@@ -55,7 +55,7 @@ const BoardListMerged = ({ ticketId }) => {
         <tbody>
           {currentBoards.map((board, index) => (
             <tr key={board.id} className={board.isNotice ? "notice-row" : ""}>
-              <td>{board.isNotice ? "공지사항" : boards.length - (indexOfFirst + index)}</td>
+              <td>{board.id}</td>
               <td>{board.ticketTitle || ""}</td>
               <td>
                 <Link to={`/boards/${board.id}`}>

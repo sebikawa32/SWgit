@@ -17,9 +17,10 @@ function LoginPage() {
       .then((res) => {
         alert("로그인 성공!");
 
-        const { token, userId: userPk } = res.data.data;
+        const { token, userId: userPk, role } = res.data.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userId", userPk);
+        localStorage.setItem("role", role); 
 
         axios
           .get("http://localhost:8080/api/users/me", {
@@ -63,10 +64,17 @@ function LoginPage() {
 
         <button onClick={onLogin}>로그인</button>
 
+          <p className="signup-text">
+       <a href="/reset-password">비밀번호를 잊으셨나요?</a>
+      </p>
+
+
         {/* 회원가입 안내 */}
         <p className="signup-text">
           아직 계정이 없나요? <a href="/signup">회원가입</a>
         </p>
+
+       
 
         {/* 구분선 */}
         <div className="divider"><span>또는</span></div>

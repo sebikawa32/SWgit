@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/users/check-id",
+                                "/api/users/reset-password", // ✅ 비밀번호 재설정용 허용
                                 "/api/tickets/**",
                                 "/api/search",
                                 "/api/search/**",
@@ -64,7 +65,13 @@ public class SecurityConfig {
                                 "/api/notifications/**",
                                 "/api/test/dday",
                                 "/api/alerts/**",
-                                "/api/alerts"
+                                "/api/alerts",
+                                "/api/notifications/**",
+
+                                // ✅ 이메일 인증 관련 경로 허용
+                                "/api/auth/email/send",
+                                "/api/auth/email/verify",
+                                "/api/auth/email/reset-password/**"
                         ).permitAll()
 
                         // 🔓 게시글 단건 조회(GET) 허용

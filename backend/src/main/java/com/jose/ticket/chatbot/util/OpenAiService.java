@@ -1,13 +1,13 @@
 package com.jose.ticket.chatbot.util;
 
+import com.jose.ticket.global.security.AwsSecretsManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.annotation.PostConstruct; // ✅ Spring Boot 3 이상 사용 시
+import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,18 +16,22 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OpenAiService {
 
-    @Value("${openai.api-key}")
+    private final AwsSecretsManager secretsManager;
+
     private String apiKey;
-
-    @Value("${openai.api-url}")
     private String apiUrl;
-
-    @Value("${openai.model}")
     private String model;
 
     @PostConstruct
     public void init() {
-        System.out.println("✅ [OpenAiService] API 키 로드 확인: " + apiKey);
+        Map<String, String> secrets = secretsManager.getSecretMap("ticketplanet/credentials");
+        this.apiKey = secrets.get("OPENAI_API_KEY");
+
+        // 아래 두 값은 application.yml 그대로 사용해도 문제없음
+        this.apiUrl = "https://api.openai.com/v1/chat/completions";
+        this.model = "gpt-3.5-turbo";
+
+        System.out.println("✅ [OpenAiService] GPT 키 로드 완료");
     }
 
     public String ask(String userPrompt) {
@@ -79,7 +83,7 @@ public class OpenAiService {
             return "{}";
         } catch (Exception e) {
             System.out.println("❌ GPT 호출 일반 예외: " + e.getMessage());
-            e.printStackTrace(); // 전체 예외 로그
+            e.printStackTrace();
             return "{}";
         }
     }
