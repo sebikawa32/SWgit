@@ -57,6 +57,7 @@ public class SecurityConfig {
                                 "/api/search/**",
                                 "/api/keywords/popular/**",
                                 "/api/keywords/popular",
+                                "/api/bookmarks/count",
                                 "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**",
 
                                 // ✅ GPT 검색 API 경로 추가

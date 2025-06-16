@@ -75,7 +75,7 @@ const BoardList = ({ type = "general", ticketId }) => {
         <thead>
           <tr>
             <th>번호</th>
-            <th>티켓</th>
+            <th>티켓 태그</th>
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
@@ -84,8 +84,8 @@ const BoardList = ({ type = "general", ticketId }) => {
         <tbody>
           {currentBoards.map((board, index) => (
             <tr key={board.id}>
-             <td>{board.id}</td>
-              <td>{board.ticketTitle || ""}</td>
+              <td>{board.type === 'notice' ? "공지사항" : boards.length - (indexOfFirst + index)}</td>
+              <td>{board.ticketTitle ? `[${board.ticketTitle}]` : '-'}</td>
               <td>
                 <Link to={`/boards/${board.id}`}>
                   {board.type === 'notice' && <span className="notice-label">[공지사항] </span>}
@@ -122,4 +122,3 @@ const BoardList = ({ type = "general", ticketId }) => {
 };
 
 export default BoardList;
- 

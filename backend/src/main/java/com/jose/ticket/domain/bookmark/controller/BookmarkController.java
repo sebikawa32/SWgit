@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -57,5 +59,23 @@ public class BookmarkController {
         System.out.println("📥 [GET] 즐겨찾기 목록 요청: userId = " + user.getId());
         List<BookmarkResponse> bookmarks = bookmarkService.getBookmarksByUserId(user.getId());
         return ResponseEntity.ok(bookmarks);
+    }
+
+    // ✅ 즐겨찾기 여부 확인 API
+    @GetMapping("/check")
+    public ResponseEntity<Map<String, Boolean>> checkBookmark(
+            @RequestParam Long ticketId,
+            @AuthenticationPrincipal User user
+    ) {
+        boolean exists = bookmarkService.existsBookmark(user.getId(), ticketId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Integer>> getBookmarkCount(@RequestParam Long ticketId) {
+        int count = bookmarkService.getBookmarkCount(ticketId);
+        return ResponseEntity.ok(Map.of("count", count));
     }
 }

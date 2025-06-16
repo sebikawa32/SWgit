@@ -4,11 +4,15 @@ import com.jose.ticket.domain.bookmark.entity.Bookmark;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 import java.util.Optional;
 
-/**북마크 관련 DB 작업 인터페이스**/
+/** 북마크 관련 DB 작업 인터페이스 **/
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+
+    // ✅ 특정 티켓의 북마크 수 조회
+    int countByTicketId(Long ticketId);
 
     // 사용자와 티켓으로 북마크 삭제
     void deleteByUserIdAndTicketId(Long userId, Long ticketId);
@@ -25,4 +29,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     // 사용자와 티켓으로 북마크 단건 조회
     Optional<Bookmark> findByUserIdAndTicketId(Long userId, Long ticketId);
+
+    // 특정 유저가 티켓을 북마크했는지 여부
+    boolean existsByUserIdAndTicketId(Long userId, Long ticketId);
 }

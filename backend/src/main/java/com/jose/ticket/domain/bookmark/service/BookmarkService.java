@@ -76,4 +76,14 @@ public class BookmarkService {
                 })
                 .collect(Collectors.toList());
     }
+
+    /** 즐겨찾기 여부 확인 */
+    public boolean existsBookmark(Long userId, Long ticketId) {
+        return bookmarkRepository.existsByUserIdAndTicketId(userId, ticketId);
+    }
+
+    /** ✅ 특정 티켓의 북마크 수 반환 */
+    public int getBookmarkCount(Long ticketId) {
+        return bookmarkRepository.countByTicketId(ticketId);
+    }
 }

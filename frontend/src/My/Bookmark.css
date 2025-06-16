@@ -1,0 +1,88 @@
+.bookmark-page {
+  padding-top: 100px;
+  padding-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.bookmark-title {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.bookmark-error {
+  color: red;
+  text-align: center;
+}
+
+.bookmark-empty {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+}
+
+/* ✅ 그리드 레이아웃: 한 줄에 5개 정렬 */
+.bookmark-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ✅ 카드: 세로 정렬 + 버튼 하단 고정 */
+.bookmark-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.bookmark-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.bookmark-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 12px;
+}
+
+.bookmark-info h2 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.bookmark-info p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* ✅ 삭제 버튼 하단 고정 */
+.bookmark-remove-btn {
+  margin-top: auto;
+  background: #4a4a4a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  align-self: flex-start;
+}

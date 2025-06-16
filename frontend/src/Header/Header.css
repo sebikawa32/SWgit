@@ -327,6 +327,12 @@ body {
   fill: #222 !important;
 }
 
+/* ✅ 인기검색어 1~3위 빨간색 강조 */
+.search-dropdown li:nth-child(1) span,
+.search-dropdown li:nth-child(2) span,
+.search-dropdown li:nth-child(3) span {
+  color: red !important;
+}
 
 
 

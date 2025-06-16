@@ -208,6 +208,12 @@ hr.divider {
   margin-top: 16px;
 }
 
+.bookmark-count {
+  font-size: 14px;
+  margin-left: 6px;
+  color: #666;
+}
+
 
 /* ─ 반응형 예시 ─ */
 /*
