@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // 🔓 인증 없이 접근 가능한 API 경로
+                        // ✅ 인증 없이 접근 가능한 API 경로
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
@@ -57,11 +57,12 @@ public class SecurityConfig {
                                 "/api/keywords/popular/**",
                                 "/api/keywords/popular",
                                 "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**",
-
-                                // ✅ GPT 검색 API 경로 추가
                                 "/api/chat/**",
-                                //알림 경로
-                                "/api/notifications/**"
+                                "/api/notifications/**",
+
+                                // ✅ 이메일 인증 API 허용
+                                "/api/auth/email/send",
+                                "/api/auth/email/verify"
                         ).permitAll()
 
                         // 🔓 게시글 단건 조회(GET) 허용

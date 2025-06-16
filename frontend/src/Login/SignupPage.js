@@ -16,6 +16,9 @@ function SignupPage() {
     phoneNumber: ""
   });
 
+  const [emailCode, setEmailCode] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -45,7 +48,40 @@ function SignupPage() {
       });
   };
 
+  const sendEmailCode = () => {
+    if (!form.email) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+
+    axios
+      .post(`http://localhost:8080/api/auth/email/send?email=${form.email}`)
+      .then(() => {
+        alert("인증 코드가 이메일로 전송되었습니다.");
+      })
+      .catch(() => {
+        alert("이메일 전송 실패");
+      });
+  };
+
+  const verifyEmailCode = () => {
+    axios
+      .post(`http://localhost:8080/api/auth/email/verify?email=${form.email}&code=${emailCode}`)
+      .then(() => {
+        alert("이메일 인증 성공!");
+        setEmailVerified(true);
+      })
+      .catch(() => {
+        alert("인증 실패: 코드가 틀리거나 만료되었습니다.");
+      });
+  };
+
   const onSignup = () => {
+    if (!emailVerified) {
+      alert("이메일 인증을 완료해주세요.");
+      return;
+    }
+
     axios
       .post("http://localhost:8080/api/users/signup", form)
       .then((res) => {
@@ -61,7 +97,6 @@ function SignupPage() {
         }
       })
       .catch((err) => {
-        console.error(err);
         const message = err.response?.data || "회원가입 실패";
         alert(message);
       });
@@ -119,13 +154,33 @@ function SignupPage() {
           </span>
         </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="이메일"
-          value={form.email}
-          onChange={onChange}
-        />
+        {/* ✅ 이메일 + 인증 요청 버튼 */}
+        <div className="input-with-button">
+          <input
+            type="email"
+            name="email"
+            placeholder="이메일"
+            value={form.email}
+            onChange={onChange}
+          />
+          <button type="button" className="check-button" onClick={sendEmailCode}>
+            인증 요청
+          </button>
+        </div>
+
+        {/* ✅ 인증 코드 입력 및 확인 버튼 */}
+        <div className="input-with-button">
+          <input
+            type="text"
+            placeholder="인증 코드 입력"
+            value={emailCode}
+            onChange={(e) => setEmailCode(e.target.value)}
+          />
+          <button type="button" className="check-button" onClick={verifyEmailCode}>
+            코드 확인
+          </button>
+        </div>
+
         <input
           type="text"
           name="phoneNumber"

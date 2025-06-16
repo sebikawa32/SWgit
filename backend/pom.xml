@@ -12,7 +12,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.2</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <properties>
@@ -37,6 +37,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- MySQL -->
@@ -53,11 +54,7 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Spring WebFlux -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
+        <!-- ✅ WebFlux 제거함 -->
 
         <!-- JWT -->
         <dependency>
@@ -78,12 +75,34 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ✅ Bean Validation (유효성 검사) 추가 -->
+        <!-- Bean Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- 이메일 전송 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- ✅ AWS Secrets Manager 관련 의존성 -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>secretsmanager</artifactId>
+            <version>2.20.80</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>auth</artifactId>
+            <version>2.20.80</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>regions</artifactId>
+            <version>2.20.80</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -95,5 +114,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

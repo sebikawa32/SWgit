@@ -3,6 +3,7 @@ package com.jose.ticket.domain.user.controller;
 import com.jose.ticket.domain.user.dto.TokenResponse;
 import com.jose.ticket.domain.user.dto.UserResponse;
 import com.jose.ticket.domain.user.entity.User;
+import com.jose.ticket.domain.user.service.EmailAuthService;
 import com.jose.ticket.global.response.ApiResponse;
 import com.jose.ticket.global.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -30,13 +31,24 @@ import com.jose.ticket.domain.user.service.UserService;
 public class UserController {
 
     private final UserService userService;
+    private final EmailAuthService emailAuthService;
 
     /** 회원가입 API **/
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> signup(@Valid @RequestBody UserSignupRequest request) {
+
+        // ✅ 이메일 인증 여부 확인
+        boolean isVerified = emailAuthService.isEmailVerified(request.getEmail());
+        if (!isVerified) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ApiResponse("이메일 인증이 완료되지 않았습니다.", null));
+        }
+
         UserResponse userResponse = userService.signup(request);
         return ResponseEntity.ok(new ApiResponse("회원가입 성공", userResponse));
     }
+
 
     /** 로그인 API **/
     @PostMapping("/login")
