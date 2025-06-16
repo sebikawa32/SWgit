@@ -1,6 +1,7 @@
 package com.jose.ticket.domain.notification.dto;
 
 import lombok.*;
+import com.jose.ticket.domain.notification.entity.Notification;
 
 @Getter
 @Setter
@@ -15,4 +16,18 @@ public class NotificationResponseDto {
     private Boolean isRead;      // 읽음 여부
     private String createdAt;    // 알림 발생 시각(YYYY-MM-DD HH:mm) 등으로 포맷해서 내려주면 UI에 바로 쓸 수 있음
     private String timeAgo;      // "5분 전", "2시간 전" 처럼 표시 (서비스단에서 계산해서 넣어주면 편함)
+
+
+    // NotificationResponseDto.java
+    public static NotificationResponseDto from(Notification n) {
+        return NotificationResponseDto.builder()
+                .notificationId(n.getNotificationId())
+                .type(n.getType())
+                .content(n.getContent())
+                .url(n.getUrl())
+                .isRead(n.getIsRead())
+                .createdAt(n.getCreatedAt() != null ? n.getCreatedAt().toString() : null)
+                .build();
+    }
 }
+

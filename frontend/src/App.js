@@ -27,6 +27,7 @@ import TicketCreatePage from './Ticket/TicketCreatePage';
 import ChatSearchPage from './Chatbot/ChatSearchPage';
 
 import './App.css';
+import AlertSettingFormPage from "./SseNotification/AlertSettingFormPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -76,6 +77,7 @@ function App() {
         <Route path="/board/edit/:id" element={<BoardEditPage />} />
         <Route path="/admin/tickets/new" element={<main className="content"><TicketCreatePage /></main>} />
         <Route path="/chat/search" element={<ChatSearchPage />} />
+        <Route path="/alarm-settings" element={<AlertSettingFormPage />} /> 
       </Routes>
 
       <Footer />

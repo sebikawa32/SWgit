@@ -6,6 +6,7 @@ import com.jose.ticket.domain.notification.service.NotificationService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,12 @@ public class NotificationController {
                 req.getUserId(), req.getType(), req.getContent(),
                 req.getUrl(), req.getTargetType(), req.getTargetId()
         );
+    }
+    //모두 읽음 처리
+    @PostMapping("/{userId}/read-all")
+    public ResponseEntity<Void> markAllRead(@PathVariable Long userId) {
+        notificationService.markAllRead(userId);
+        return ResponseEntity.ok().build();
     }
 
 }

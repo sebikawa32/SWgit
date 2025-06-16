@@ -1,16 +1,24 @@
 package com.jose.ticket.domain.notification.service;
 
+import com.jose.ticket.domain.notification.dto.NotificationResponseDto;
+import com.jose.ticket.domain.notification.entity.Notification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
+import com.jose.ticket.domain.notification.repository.NotificationRepository;
+import lombok.RequiredArgsConstructor;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@RequiredArgsConstructor
 @Service
 public class NotificationSseService {
     // 유저별 연결 관리
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final NotificationRepository notificationRepository;
 
     public SseEmitter subscribe(Long userId) {
         System.out.println("[subscribe] userId = " + userId + " (" + userId.getClass().getName() + ")");
@@ -41,4 +49,21 @@ public class NotificationSseService {
             System.out.println("SSE emitter가 없음! (userId=" + userId + ")");
         }
     }
+    @Scheduled(fixedDelay = 2000) // 2초마다 실행 (필요시 1000, 5000 등으로)
+    public void pollAndPushNewNotifications() {
+        for (Long userId : emitters.keySet()) {
+            // 3초 이내에 insert된, 아직 안읽은 알림만
+            List<Notification> notis = notificationRepository
+                    .findUnreadRecent(userId, LocalDateTime.now().minusSeconds(3));
+            for (Notification n : notis) {
+                try {
+                    NotificationResponseDto dto = NotificationResponseDto.from(n);
+                    emitters.get(userId).send(SseEmitter.event().name("notification").data(dto));
+                } catch (Exception e) {
+                    emitters.remove(userId); // 연결 끊기면 emitter 삭제
+                }
+            }
+        }
+    }
+
 }

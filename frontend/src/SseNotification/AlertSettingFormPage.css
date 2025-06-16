@@ -1,0 +1,111 @@
+
+/* src/pages/AlertSettingFormPage.css */
+/* ─────────── 전체 페이지 레이아웃 ─────────── */
+.concert-page {
+  padding: 60px 20px 20px;
+}
+.alert-container {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 40px;
+    border: 1px solid #000;
+    border-radius: 8px;
+    background: none;
+  }
+  
+  .alert-header {
+    margin-bottom: 32px;
+    font-size: 1.8rem;
+  }
+  
+  .alert-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .form-group {
+    position: relative;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #000;
+  }
+  
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    background: none;
+    color: #000;
+    font-size: 1rem;
+  }
+  
+  .form-input:focus,
+  .form-select:focus {
+    outline: none;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .form-button {
+    align-self: start;
+    padding: 12px 24px;
+    background: none;
+    border: 1px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #000;
+    font-size: 1rem;
+  }
+  
+  .form-button:hover {
+    background: #f0f0f0;
+  }
+  
+  .submit-msg {
+    margin-top: 20px;
+    color: #4caf50;
+    font-weight: 500;
+  }
+  
+  .suggestions {
+    position: absolute;
+    width: 100%;
+    max-height: 200px;
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    z-index: 10;
+  }
+  
+  .suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    color: #000;
+  }
+  
+  .suggestion-item:hover {
+    background: #f7f7f7;
+  }
+  
+  .suggestion-disabled {
+    padding: 10px;
+    color: #888;
+    cursor: default;
+  }
+  
+  

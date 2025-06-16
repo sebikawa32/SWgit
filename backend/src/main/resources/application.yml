@@ -29,7 +29,7 @@ logging:
 
 openai:
   api-url: https://api.openai.com/v1/chat/completions
-  api-key: 	${OPENAI_API_KEY:default}
+  api-key: ${OPENAI_API_KEY:default}
   model: gpt-3.5-turbo
   prompt: >
     너는 공연 검색 조건을 분석하는 보조자야. 사용자가 자연어로 공연을 검색하면,

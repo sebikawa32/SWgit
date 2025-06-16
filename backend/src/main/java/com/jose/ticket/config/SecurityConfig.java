@@ -61,7 +61,10 @@ public class SecurityConfig {
                                 // ✅ GPT 검색 API 경로 추가
                                 "/api/chat/**",
                                 //알림 경로
-                                "/api/notifications/**"
+                                "/api/notifications/**",
+                                "/api/test/dday",
+                                "/api/alerts/**",
+                                "/api/alerts"
                         ).permitAll()
 
                         // 🔓 게시글 단건 조회(GET) 허용
