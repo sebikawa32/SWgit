@@ -140,13 +140,4 @@ body, html, #root {
   transform: translateY(-2px);
 }
 
-/* 각 SNS 색상 */
-
-.naver {
-  background-color: #03C75A !important;
-}
-
-.google {
-  background-color: #4285F4 !important;
-}
 

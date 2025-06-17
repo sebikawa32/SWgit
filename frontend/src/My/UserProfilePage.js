@@ -8,7 +8,9 @@ function UserProfilePage() {
     nickname: '',
     realname: '',
     phoneNumber: '',
+    provider: '',
   });
+
   const [editMode, setEditMode] = useState(false);
   const [editSuccess, setEditSuccess] = useState(false);
 
@@ -39,7 +41,10 @@ function UserProfilePage() {
       }
     })
       .then(res => {
-        setProfile(res.data.data);
+        console.log("👀 프로필 전체 응답:", res.data);
+        const userData = res.data?.data || {};
+        console.log("🔍 profile.provider:", userData.provider);
+        setProfile(userData);
       })
       .catch(err => {
         console.error('프로필 조회 실패:', err);
@@ -132,6 +137,8 @@ function UserProfilePage() {
       });
   };
 
+  const isGoogleUser = (profile.provider || '').toLowerCase() === 'google';
+
   return (
     <div className="userprofile-container">
       <h2>내 프로필</h2>
@@ -177,49 +184,55 @@ function UserProfilePage() {
       <div className="userprofile-form">
         <h3>비밀번호 변경</h3>
 
-        <label>현재 비밀번호</label>
-        <div className="input-with-eye">
-          <input
-            type={showPassword.current ? 'text' : 'password'}
-            name="currentPassword"
-            value={passwordData.currentPassword}
-            onChange={handlePasswordChange}
-          />
-          <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, current: !prev.current }))}>
-            <i className={`bi ${showPassword.current ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
-          </span>
-        </div>
+        {isGoogleUser ? (
+          <p style={{ color: 'gray' }}>이 계정은 구글 연동 계정입니다. 비밀번호 변경이 불가능합니다.</p>
+        ) : (
+          <>
+            <label>현재 비밀번호</label>
+            <div className="input-with-eye">
+              <input
+                type={showPassword.current ? 'text' : 'password'}
+                name="currentPassword"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordChange}
+              />
+              <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, current: !prev.current }))}>
+                <i className={`bi ${showPassword.current ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+              </span>
+            </div>
 
-        <label>새 비밀번호</label>
-        <div className="input-with-eye">
-          <input
-            type={showPassword.new ? 'text' : 'password'}
-            name="newPassword"
-            value={passwordData.newPassword}
-            onChange={handlePasswordChange}
-          />
-          <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, new: !prev.new }))}>
-            <i className={`bi ${showPassword.new ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
-          </span>
-        </div>
+            <label>새 비밀번호</label>
+            <div className="input-with-eye">
+              <input
+                type={showPassword.new ? 'text' : 'password'}
+                name="newPassword"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChange}
+              />
+              <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, new: !prev.new }))}>
+                <i className={`bi ${showPassword.new ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+              </span>
+            </div>
 
-        <label>새 비밀번호 확인</label>
-        <div className="input-with-eye">
-          <input
-            type={showPassword.confirm ? 'text' : 'password'}
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-          />
-          <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, confirm: !prev.confirm }))}>
-            <i className={`bi ${showPassword.confirm ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
-          </span>
-        </div>
+            <label>새 비밀번호 확인</label>
+            <div className="input-with-eye">
+              <input
+                type={showPassword.confirm ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+              />
+              <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, confirm: !prev.confirm }))}>
+                <i className={`bi ${showPassword.confirm ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+              </span>
+            </div>
 
-        <button onClick={handleChangePassword}>비밀번호 변경</button>
+            <button onClick={handleChangePassword}>비밀번호 변경</button>
 
-        {passwordSuccess && <p className="success-msg">비밀번호가 성공적으로 변경되었습니다.</p>}
-        {passwordError && <p className="error-msg">{passwordError}</p>}
-        {validationError && <p className="error-msg">{validationError}</p>}
+            {passwordSuccess && <p className="success-msg">비밀번호가 성공적으로 변경되었습니다.</p>}
+            {passwordError && <p className="error-msg">{passwordError}</p>}
+            {validationError && <p className="error-msg">{validationError}</p>}
+          </>
+        )}
       </div>
     </div>
   );
