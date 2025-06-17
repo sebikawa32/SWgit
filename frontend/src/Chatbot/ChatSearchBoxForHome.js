@@ -25,12 +25,12 @@ function ChatSearchBoxForHome({ onResults }) {
         onResults(response.data, query);
       } else {
         // ✅ navigate로 /chat-search 경로로 이동하며, 상태 전달
-        navigate('/chat-search', {
-          state: {
-            results: response.data,
-            query: query,
-          },
-        });
+        navigate(`/chat/search?query=${encodeURIComponent(query)}`, {
+  state: {
+    results: response.data,
+    query: query,
+  },
+});
       }
     } catch (error) {
       console.error('❌ GPT 검색 오류 (AxiosError):', error);

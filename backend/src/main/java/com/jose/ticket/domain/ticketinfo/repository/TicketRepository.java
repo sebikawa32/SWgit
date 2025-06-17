@@ -36,7 +36,7 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     @Query("UPDATE TicketEntity t SET t.viewCount = t.viewCount + 1 WHERE t.id = :ticketId")
     void increaseViewCount(@Param("ticketId") Long ticketId);
 
-    // ✅ 유연한 대화형 필터 검색 쿼리 (LocalDateTime 버전)
+    // ✅ 기존 단일 title 검색 필터
     @Query("""
         SELECT t FROM TicketEntity t
         WHERE (:categoryId IS NULL OR t.category.id = :categoryId)
@@ -57,9 +57,43 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
             @Param("categoryId") Integer categoryId,
             @Param("venue") String venue,
             @Param("priceMax") Integer priceMax,
-            @Param("startDate") LocalDateTime startDate, // ✅ 변경됨
-            @Param("endDate") LocalDateTime endDate,     // ✅ 변경됨
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
             @Param("title") String title,
+            @Param("ageLimit") String ageLimit,
+            @Param("bookingProvider") String bookingProvider
+    );
+
+    // ✅ 다중 키워드 title 조건 (최대 3개)
+    @Query("""
+        SELECT t FROM TicketEntity t
+        WHERE (:categoryId IS NULL OR t.category.id = :categoryId)
+          AND (:venue IS NULL OR t.venue LIKE CONCAT('%', :venue, '%'))
+          AND (:priceMax IS NULL OR 
+               CAST(FUNCTION('REPLACE', t.price, '원', '') AS integer) <= :priceMax)
+          AND (
+            (:startDate IS NULL AND :endDate IS NULL)
+            OR (:startDate IS NOT NULL AND :endDate IS NOT NULL AND t.eventStartDatetime <= :endDate AND t.eventEndDatetime >= :startDate)
+            OR (:startDate IS NOT NULL AND :endDate IS NULL AND t.eventEndDatetime >= :startDate)
+            OR (:startDate IS NULL AND :endDate IS NOT NULL AND t.eventStartDatetime <= :endDate)
+          )
+          AND (
+            (:keyword1 IS NULL OR t.title LIKE CONCAT('%', :keyword1, '%')) OR
+            (:keyword2 IS NULL OR t.title LIKE CONCAT('%', :keyword2, '%')) OR
+            (:keyword3 IS NULL OR t.title LIKE CONCAT('%', :keyword3, '%'))
+          )
+          AND (:ageLimit IS NULL OR t.ageLimit LIKE CONCAT('%', :ageLimit, '%'))
+          AND (:bookingProvider IS NULL OR t.bookingProvider = :bookingProvider)
+    """)
+    List<TicketEntity> findByDynamicFilterWithTitleKeywords(
+            @Param("categoryId") Integer categoryId,
+            @Param("venue") String venue,
+            @Param("priceMax") Integer priceMax,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("keyword1") String keyword1,
+            @Param("keyword2") String keyword2,
+            @Param("keyword3") String keyword3,
             @Param("ageLimit") String ageLimit,
             @Param("bookingProvider") String bookingProvider
     );
