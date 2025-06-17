@@ -1,111 +1,191 @@
-
 /* src/pages/AlertSettingFormPage.css */
 /* ─────────── 전체 페이지 레이아웃 ─────────── */
-.concert-page {
-  padding: 60px 20px 20px;
-}
 .alert-container {
-    max-width: 600px;
-    margin: 80px auto;
-    padding: 40px;
-    border: 1px solid #000;
-    border-radius: 8px;
-    background: none;
-  }
-  
-  .alert-header {
-    margin-bottom: 32px;
-    font-size: 1.8rem;
-  }
-  
-  .alert-form {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  
-  .form-group {
-    position: relative;
-  }
-  
-  .form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 1rem;
-    color: #000;
-  }
-  
-  .form-input,
-  .form-select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #000;
-    border-radius: 4px;
-    background: none;
-    color: #000;
-    font-size: 1rem;
-  }
-  
-  .form-input:focus,
-  .form-select:focus {
-    outline: none;
-  }
-  
-  .checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .form-button {
-    align-self: start;
-    padding: 12px 24px;
-    background: none;
-    border: 1px solid #000;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #000;
-    font-size: 1rem;
-  }
-  
-  .form-button:hover {
-    background: #f0f0f0;
-  }
-  
-  .submit-msg {
-    margin-top: 20px;
-    color: #4caf50;
-    font-weight: 500;
-  }
-  
-  .suggestions {
-    position: absolute;
-    width: 100%;
-    max-height: 200px;
-    background: #fff;
-    border: 1px solid #000;
-    border-radius: 4px;
-    overflow-y: auto;
-    list-style: none;
-    padding: 0;
-    margin: 4px 0 0;
-    z-index: 10;
-  }
-  
-  .suggestion-item {
-    padding: 10px;
-    cursor: pointer;
-    color: #000;
-  }
-  
-  .suggestion-item:hover {
-    background: #f7f7f7;
-  }
-  
-  .suggestion-disabled {
-    padding: 10px;
-    color: #888;
-    cursor: default;
-  }
-  
-  
+  width: 80%;
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.alert-header {
+  margin-bottom: 24px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+}
+
+.alert-form {
+  display: grid;
+  gap: 20px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-label {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #444;
+  display: block;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-button {
+  width: fit-content;
+  padding: 10px 20px;
+  background: #000;       /* 검정색 배경 */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;      /* 살짝 작은 크기 */
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form-button:hover {
+  background: #333;
+}
+
+.submit-msg {
+  margin-top: 12px;
+  color: #28a745;
+  font-weight: 600;
+  text-align: center;
+}
+
+.suggestions {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.suggestion-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+  background: #f0f0f0;
+}
+
+.suggestion-disabled {
+  padding: 10px 14px;
+  color: #aaa;
+  cursor: default;
+}
+
+/* ─────────── 내 알림 목록 스타일 ─────────── */
+.alert-list-section {
+  margin-top: 40px;
+}
+
+.alert-list-section .alert-header {
+  margin-bottom: 16px;
+  text-align: left;
+  font-size: 1.5rem;
+}
+
+.alert-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.alert-table-header,
+.alert-table-row {
+  display: grid;
+  /* 시간 칸과 액션 칸 사이에 간격을 더 주기 위해 컬럼 비율 조정 */
+  grid-template-columns: 3fr 1.5fr 1fr;
+  align-items: center;
+  padding: 12px 16px;
+  column-gap: 12px; /* 컬럼 간격 추가 */
+}
+
+.alert-table-header {
+  font-weight: 600;
+  color: #555;
+  background: transparent;
+  border-bottom: 2px solid #eee;
+}
+
+.alert-table-row {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.1s;
+}
+
+.alert-table-row:hover {
+  transform: translateY(-2px);
+}
+
+.col-title {
+  font-size: 1rem;
+  color: #333;
+}
+
+.col-time {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: right;
+}
+
+.col-action {
+  text-align: center;
+}
+
+.delete-btn {
+  background: none;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.delete-btn:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+.no-alert {
+  padding: 20px;
+  color: #888;
+  text-align: center;
+  font-style: italic;
+}

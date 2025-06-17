@@ -1,16 +1,16 @@
-
 // src/pages/AlertSettingFormPage.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./AlertSettingFormPage.css";
 
-function AlertSettingFormPage() {
+export default function AlertSettingFormPage() {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const userId = Number(queryParams.get("userId"));
+  const query = new URLSearchParams(location.search);
+  const userId = Number(query.get("userId"));
 
   const [tickets, setTickets] = useState([]);
+  const [alerts, setAlerts] = useState([]);
   const [ticketSearch, setTicketSearch] = useState("");
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [alertMinutes, setAlertMinutes] = useState(1440);
@@ -19,24 +19,34 @@ function AlertSettingFormPage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionsRef = useRef();
 
+  // 전체 티켓 목록 (제목 매핑용)
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/tickets")
-      .then(res => {
-        const list = Array.isArray(res.data) ? res.data : res.data.tickets || [];
-        setTickets(list);
-      })
-      .catch(err => console.error("티켓 불러오기 실패:", err));
+      .then(res => setTickets(Array.isArray(res.data) ? res.data : res.data.tickets || []))
+      .catch(console.error);
   }, []);
 
+  // 내 알림 목록
+  const fetchAlerts = () => {
+    axios
+      .get(`http://localhost:8080/api/alerts?userId=${userId}`)
+      .then(res => setAlerts(res.data || []))
+      .catch(console.error);
+  };
   useEffect(() => {
-    const handleClickOutside = e => {
+    if (userId) fetchAlerts();
+  }, [userId]);
+
+  // 검색창 외부 클릭 시 제안 목록 닫기
+  useEffect(() => {
+    const handler = e => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(e.target)) {
         setShowSuggestions(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const filtered = tickets.filter(t =>
@@ -49,6 +59,16 @@ function AlertSettingFormPage() {
     setShowSuggestions(false);
   };
 
+  const formatAlertTime = mins => {
+    switch (mins) {
+      case 1440: return "1일 전";
+      case 720:  return "12시간 전";
+      case 120:  return "2시간 전";
+      case 30:   return "30분 전";
+      default:   return `${mins}분 전`;
+    }
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     if (!selectedTicketId) {
@@ -57,13 +77,27 @@ function AlertSettingFormPage() {
     }
     try {
       await axios.post(
-        "http://localhost:8080/api/alerts",
-        { userId, ticketId: selectedTicketId, alertMinutes, emailEnabled }
+        `http://localhost:8080/api/alerts?userId=${userId}`,
+        { ticketId: selectedTicketId, alertMinutes, emailEnabled }
       );
       setSubmitted(true);
+      fetchAlerts();
     } catch (err) {
       console.error("알림 설정 실패:", err);
       alert("이미 설정했거나 오류가 발생했습니다");
+    }
+  };
+
+  const handleDelete = async alertId => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/alerts/${alertId}?userId=${userId}`
+      );
+      fetchAlerts();
+    } catch (err) {
+      console.error("삭제 실패:", err);
+      alert("삭제 중 오류가 발생했습니다");
     }
   };
 
@@ -83,13 +117,13 @@ function AlertSettingFormPage() {
           />
           {showSuggestions && ticketSearch && (
             <ul className="suggestions" ref={suggestionsRef}>
-              {filtered.map(ticket => (
+              {filtered.map(t => (
                 <li
-                  key={ticket.id}
+                  key={t.id}
                   className="suggestion-item"
-                  onClick={() => handleSelect(ticket)}
+                  onClick={() => handleSelect(t)}
                 >
-                  {ticket.title}
+                  {t.title}
                 </li>
               ))}
               {filtered.length === 0 && (
@@ -128,9 +162,36 @@ function AlertSettingFormPage() {
         <button type="submit" className="form-button">저장</button>
         {submitted && <div className="submit-msg">알림 설정 완료!</div>}
       </form>
+
+      <div className="alert-list-section">
+        <h2 className="alert-header">내 알림 목록</h2>
+        <div className="alert-table">
+          <div className="alert-table-header">
+            <div className="col-title">공연 제목</div>
+            <div className="col-time">알림 시간</div>
+            <div className="col-action"></div>
+          </div>
+          {alerts.length > 0 ? (
+            alerts.map(a => {
+              const t = tickets.find(x => x.id === a.ticketId) || {};
+              return (
+                <div className="alert-table-row" key={a.alertId}>
+                  <div className="col-title">{t.title || "알 수 없음"}</div>
+                  <div className="col-time">{formatAlertTime(a.alertMinutes)}</div>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(a.alertId)}
+                  >
+                    삭제
+                  </button>
+                </div>
+              );
+            })
+          ) : (
+            <div className="no-alert">설정된 알림이 없습니다.</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-export default AlertSettingFormPage;
-

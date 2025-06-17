@@ -35,13 +35,10 @@ public class JwtProvider {
 
     @PostConstruct
     protected void init() {
-        try {
-            byte[] keyBytes = Base64.getEncoder().encode(secretKey.getBytes());
-            key = Keys.hmacShaKeyFor(keyBytes);
-            log.info("✅ JWT 서명 키 초기화 완료");
-        } catch (Exception e) {
-            log.error("❌ JWT 키 초기화 실패: {}", e.getMessage());
-        }
+        // Base64 디코딩된 키를 사용
+        byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(secretKey);
+        key = Keys.hmacShaKeyFor(keyBytes);
+        log.info("✅ JWT 서명 키 초기화 → {}비트", keyBytes.length * 8);
     }
 
     /** JWT 토큰 생성 */
@@ -108,4 +105,12 @@ public class JwtProvider {
         }
         return false;
     }
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return Long.parseLong(claims.getSubject()); // subject에 userId 저장된 경우
+    }
+
 }

@@ -51,12 +51,13 @@ hr.divider {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-/* 하트 + 텍스트 */
+/* ─ 북마크 버튼 ─ */
 .heart-row {
   display: flex;
   align-items: center;
-  gap: 4px;
   cursor: pointer;
+  gap: 6px;
+  font-size: 14px;
 }
 
 .heart-icon.bi-heart {
@@ -75,9 +76,15 @@ hr.divider {
   transform: scale(1.1);
 }
 
-.heart-text {
-  font-size: 1rem;
+.heart-row .action-text {
   color: #555;
+}
+
+/* 북마크 카운트 */
+.bookmark-count {
+  font-size: 14px;
+  margin-left: 6px;
+  color: #666;
 }
 
 /* 즐겨찾기 상태 메시지 */
@@ -85,6 +92,28 @@ hr.divider {
   color: #d64848;
   font-weight: 600;
   margin-top: 4px;
+}
+
+/* ─ 알림 버튼 (북마크 바로 아래) ─ */
+.alert-button {
+  margin-top: 6px;      /* 북마크 바로 아래 여백 */
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.alert-button i {
+  font-size: 1.3rem;    /* 종 아이콘 크기 키움 */
+  color: #666;          /* 종 아이콘 색상 변경 */
+}
+
+.alert-button .action-text {
+  color: #666;          /* Notification 텍스트 색상 변경 */
 }
 
 /* ─ 정보 영역 ─ */
@@ -145,7 +174,6 @@ hr.divider {
   list-style: none !important;
 }
 
-
 /* ─ 공통 버튼 ─ */
 .btn {
   margin-top: 10px;
@@ -161,8 +189,8 @@ hr.divider {
 
 /* 예매 버튼 */
 .btn-booking {
-  background-color: #000000;
-  color: white;
+  background-color: #000;
+  color: #fff;
   padding: 8px 10px;
 }
 
@@ -170,7 +198,7 @@ hr.divider {
   background-color: #414141;
 }
 
-/* ─ 상세정보 / 게시글 탭 버튼 (티켓링크 스타일) ─ */
+/* ─ 상세정보 / 게시글 탭 버튼 ─ */
 .ticket-detail-tabs {
   display: flex;
   justify-content: center;
@@ -207,13 +235,6 @@ hr.divider {
   border-radius: 10px;
   margin-top: 16px;
 }
-
-.bookmark-count {
-  font-size: 14px;
-  margin-left: 6px;
-  color: #666;
-}
-
 
 /* ─ 반응형 예시 ─ */
 /*

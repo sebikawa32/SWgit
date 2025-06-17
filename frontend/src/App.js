@@ -80,6 +80,7 @@ function App() {
         <Route path="/chat/search" element={<ChatSearchPage />} />
         <Route path="/alarm-settings" element={<AlertSettingFormPage />} /> 
   <Route path="/reset-password" element={<div className="login-page-wrapper"><ResetPasswordPage /></div>} />
+  <Route path="/alert-setting/:ticketId" element={<AlertSettingFormPage />} />
       </Routes>
 
       <Footer />

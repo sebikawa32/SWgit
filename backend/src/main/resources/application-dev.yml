@@ -26,7 +26,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
 jwt:
-  secret: "wL6jK1m5sP9vRt3xZc8QyFnHsUdGbXEj"
+  secret: "d0w2aksxbTVzUDl2UnQzeFpjOFF5Rm5Ic1VkR2JYRWo="
 
 logging:
   level:
