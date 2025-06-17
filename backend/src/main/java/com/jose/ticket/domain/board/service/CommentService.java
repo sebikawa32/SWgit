@@ -77,7 +77,7 @@ public class CommentService {
                     boardWriterId,                   // 알림 받을 유저
                     "COMMENT",                       // 알림 타입
                     message,                         // 알림 내용
-                    "/board/" + board.getId(),       // 알림 클릭시 이동 경로(게시글 상세)
+                    "/boards/" + board.getId(),       // 알림 클릭시 이동 경로(게시글 상세)
                     "POST",                          // 알림 대상 타입
                     board.getId()                    // 알림 대상 PK
             );

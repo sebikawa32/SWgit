@@ -1,22 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import useSseNotification from "./useSseNotification";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function NotificationBell({ userId }) {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // ISO 문자열(UTC) → "YYYY-MM-DD HH:mm:ss" 포맷 함수
   const formatDate = (isoString) => {
     const date = new Date(isoString);
-    const Y  = date.getFullYear();
-    const M  = String(date.getMonth() + 1).padStart(2, "0");
-    const D  = String(date.getDate()).padStart(2, "0");
-    const h  = String(date.getHours()).padStart(2, "0");
-    const m  = String(date.getMinutes()).padStart(2, "0");
-    const s  = String(date.getSeconds()).padStart(2, "0");
+    const Y = date.getFullYear();
+    const M = String(date.getMonth() + 1).padStart(2, "0");
+    const D = String(date.getDate()).padStart(2, "0");
+    const h = String(date.getHours()).padStart(2, "0");
+    const m = String(date.getMinutes()).padStart(2, "0");
+    const s = String(date.getSeconds()).padStart(2, "0");
     return `${Y}-${M}-${D} ${h}:${m}:${s}`;
   };
 
@@ -32,12 +34,14 @@ function NotificationBell({ userId }) {
   // 마운트 시 기존 알림/안읽음 개수 불러오기
   useEffect(() => {
     if (!userId) return;
-    axios.get(`/api/notifications/${userId}`)
-      .then(res => setNotifications(res.data || []))
-      .catch(err => console.error("알림 목록 로드 실패", err));
-    axios.get(`/api/notifications/${userId}/unread-count`)
-      .then(res => setUnreadCount(res.data || 0))
-      .catch(err => console.error("알림 수 로드 실패", err));
+    axios
+      .get(`/api/notifications/${userId}`)
+      .then((res) => setNotifications(res.data || []))
+      .catch((err) => console.error("알림 목록 로드 실패", err));
+    axios
+      .get(`/api/notifications/${userId}/unread-count`)
+      .then((res) => setUnreadCount(res.data || 0))
+      .catch((err) => console.error("알림 수 로드 실패", err));
   }, [userId]);
 
   // 드롭다운 외부 클릭 시 닫기
@@ -53,7 +57,8 @@ function NotificationBell({ userId }) {
 
   // 개별 알림 읽음 처리
   const handleRead = (notificationId) => {
-    axios.post(`/api/notifications/${notificationId}/read`)
+    axios
+      .post(`/api/notifications/${notificationId}/read`)
       .then(() => {
         setNotifications((prev) =>
           prev.map((n) =>
@@ -62,17 +67,39 @@ function NotificationBell({ userId }) {
         );
         setUnreadCount((c) => Math.max(0, c - 1));
       })
-      .catch(err => console.error("알림 읽음 처리 실패", err));
+      .catch((err) => console.error("알림 읽음 처리 실패", err));
   };
 
   // 모두 읽음 처리
   const handleMarkAllRead = () => {
-    axios.post(`/api/notifications/${userId}/read-all`)
+    axios
+      .post(`/api/notifications/${userId}/read-all`)
       .then(() => {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
         setUnreadCount(0);
       })
-      .catch(err => console.error("모두 읽음 처리 실패", err));
+      .catch((err) => console.error("모두 읽음 처리 실패", err));
+  };
+
+  // 알림 클릭 시 분기 처리
+  const handleNotificationClick = (n) => {
+    console.log("알림 클릭!", n);
+    if (!n.isRead) handleRead(n.notificationId);
+
+    // 타입별 이동
+    if (n.type === "comment") {
+      // 게시글 상세로 이동
+      navigate(`/boards/${n.targetId}`);
+    } else if (n.type === "d-day") {
+      // 티켓 상세로 이동
+      navigate(`/ticket/${n.targetId}`);
+    } else if (n.url) {
+      // 혹시 url이 있으면 그대로 이동
+      window.location.href = n.url;
+    } else {
+      // 기타 알림 분기 (없으면 그냥 닫기)
+      setOpen(false);
+    }
   };
 
   return (
@@ -85,7 +112,7 @@ function NotificationBell({ userId }) {
           border: "none",
           padding: 0,
           cursor: "pointer",
-          lineHeight: 0
+          lineHeight: 0,
         }}
         aria-label="알림"
       >
@@ -103,13 +130,17 @@ function NotificationBell({ userId }) {
             6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
         </svg>
         {unreadCount > 0 && (
-          <span style={{
-            position: "absolute",
-            top: 2, right: 2,
-            width: 10, height: 10,
-            background: "#e53e3e",
-            borderRadius: "50%"
-          }} />
+          <span
+            style={{
+              position: "absolute",
+              top: 2,
+              right: 2,
+              width: 10,
+              height: 10,
+              background: "#e53e3e",
+              borderRadius: "50%",
+            }}
+          />
         )}
       </button>
 
@@ -127,17 +158,19 @@ function NotificationBell({ userId }) {
             boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
             zIndex: 10,
             maxHeight: 400,
-            overflowY: "auto"
+            overflowY: "auto",
           }}
         >
-          <div style={{
-            padding: 16,
-            borderBottom: "1px solid #eee",
-            fontWeight: 700,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
+          <div
+            style={{
+              padding: 16,
+              borderBottom: "1px solid #eee",
+              fontWeight: 700,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <span>알림함 {unreadCount > 0 && `(${unreadCount})`}</span>
             {unreadCount > 0 && (
               <button
@@ -147,7 +180,7 @@ function NotificationBell({ userId }) {
                   border: "none",
                   fontSize: 12,
                   color: "#2b5be3",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
               >
                 모두 읽음 처리
@@ -168,17 +201,16 @@ function NotificationBell({ userId }) {
                     padding: "14px 16px",
                     borderBottom: "1px solid #f2f2f2",
                     background: n.isRead ? "#fafafa" : "#f1f9ff",
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
-                  onClick={() => {
-                    if (!n.isRead) handleRead(n.notificationId);
-                    window.location.href = n.url;
-                  }}
+                  onClick={() => handleNotificationClick(n)}
                 >
-                  <div style={{
-                    fontWeight: n.isRead ? 400 : 700,
-                    color: n.isRead ? "#999" : "#2b5be3"
-                  }}>
+                  <div
+                    style={{
+                      fontWeight: n.isRead ? 400 : 700,
+                      color: n.isRead ? "#999" : "#2b5be3",
+                    }}
+                  >
                     [{n.type}] {n.content}
                   </div>
                   <div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
