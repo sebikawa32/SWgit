@@ -12,13 +12,12 @@ const ChatSearchPage = () => {
   return (
     <div className="chat-search-result-page">
       {/* 🔶 상단 챗봇 이미지 + 제목 */}
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      <div className="chat-search-header">
         <img
           src="/images/chat.jpeg"
           alt="챗봇"
-          style={{ width: '50px', height: '50px', verticalAlign: 'middle', marginRight: '10px' }}
         />
-        <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+        <span className="chat-search-title">
           '{query}' 검색 결과입니다냥
         </span>
       </div>
@@ -31,8 +30,7 @@ const ChatSearchPage = () => {
               <div
                 key={index}
                 className="chat-search-card"
-                onClick={() => navigate(`/ticket/${item.id}`)} // ✅ 티켓 상세 페이지로 이동
-                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/ticket/${item.id}`)}
               >
                 <div className="concert-card-image-wrapper">
                   <img

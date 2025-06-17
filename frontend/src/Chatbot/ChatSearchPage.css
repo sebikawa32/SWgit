@@ -1,28 +1,39 @@
 /* ─────────── GPT 검색 결과 페이지 ─────────── */
 .chat-search-result-page {
-  padding: 100px 20px 20px;
+  padding: 150px 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto; /* 👉 전체 박스 가운데 정렬 */
 }
 
-/* 상단 챗봇 이미지 + 제목 정렬용 */
+/* ─────────── 상단 챗봇 이미지 + 제목 ─────────── */
 .chat-search-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
   gap: 12px;
+  margin-bottom: 60px;
 }
 
 .chat-search-header img {
-  width: 32px;
-  height: 32px;
+  width: 50px;
+  height: 50px;
 }
 
-/* 검색 결과 그리드 */
+.chat-search-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #222;
+}
+
+/* ─────────── 검색 결과 그리드 ─────────── */
 .chat-search-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
-  justify-items: start;
+
+  justify-content: start;     /* 카드 왼쪽 정렬 */
+  max-width: 1000px;          /* 카드가 담긴 그리드 너비 제한 */
+  margin: 0 auto;             /* 그리드 자체는 가운데로 */
 }
 
 /* ─────────── 카드 스타일 ─────────── */
