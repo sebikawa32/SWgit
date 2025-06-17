@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
-import ScrollToTop from "./ScrollToTop"; // ✅ 추가
+import ScrollToTop from "./ScrollToTop"; 
+import GoogleSignupPage from "./Login/GoogleSignupPage";
 
 // ✅ 페이지 컴포넌트들
 import HomePage from './Home/HomePage';
@@ -81,6 +82,7 @@ function App() {
         <Route path="/alarm-settings" element={<AlertSettingFormPage />} />
         <Route path="/reset-password" element={<div className="login-page-wrapper"><ResetPasswordPage /></div>} />
         <Route path="/profile" element={<UserProfilePage />} />
+          <Route path="/additional-info" element={<GoogleSignupPage />} />
       </Routes>
 
       <Footer />

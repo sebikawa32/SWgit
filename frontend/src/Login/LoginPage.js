@@ -16,33 +16,31 @@ function LoginPage({ setIsLoggedIn }) {
         userId,
         password,
       })
-      .then((res) => {
+      .then(async (res) => {
         alert("로그인 성공!");
 
         const { token, userId: userPk, role } = res.data.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userId", userPk);
         localStorage.setItem("role", role);
-        localStorage.setItem("provider", "LOCAL"); // ✅ 일반 로그인은 LOCAL로 저장
+        localStorage.setItem("provider", "LOCAL"); // 일반 로그인은 LOCAL로 저장
 
-        setIsLoggedIn(true);  // ← 로그인 상태 반영 추가
+        setIsLoggedIn(true); // 로그인 상태 반영
 
-        // 사용자 닉네임도 가져오기
-        axios
-          .get("http://localhost:8080/api/users/me", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then((meRes) => {
-            const nickname = meRes.data.data.nickname;
-            localStorage.setItem("nickname", nickname);
-            navigate("/", { replace: true });
-            window.location.reload();
-          })
-          .catch(() => {
-            alert("닉네임 불러오기 실패");
+        try {
+          const meRes = await axios.get("http://localhost:8080/api/users/me", {
+            headers: { Authorization: `Bearer ${token}` },
           });
+
+          const profile = meRes.data.data;
+          localStorage.setItem("nickname", profile.nickname || "");
+
+          navigate("/", { replace: true });
+          window.location.reload();
+        } catch {
+          alert("닉네임 불러오기 실패");
+          navigate("/", { replace: true });
+        }
       })
       .catch(() => {
         alert("아이디 혹은 비밀번호가 일치하지 않습니다.");
@@ -62,16 +60,36 @@ function LoginPage({ setIsLoggedIn }) {
       const { token, userId: userPk, role, nickname, provider } = res.data;
 
       localStorage.setItem("accessToken", token);
+      localStorage.setItem("tempGoogleToken", token); // 추가 정보 입력용 임시 토큰 저장
       localStorage.setItem("userId", userPk);
       localStorage.setItem("role", role);
       localStorage.setItem("nickname", nickname);
-      localStorage.setItem("provider", provider); // ✅ provider 저장 (예: GOOGLE)
+      localStorage.setItem("provider", provider); // 예: GOOGLE
 
-      setIsLoggedIn(true);  // ← 로그인 상태 반영 추가
+      setIsLoggedIn(true);
 
-      alert("구글 로그인 성공!");
-      navigate("/", { replace: true });
-      window.location.reload();
+      // 로그인 후 프로필 조회하여 추가정보 입력 필요 여부 판단
+      try {
+        const meRes = await axios.get("http://localhost:8080/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const profile = meRes.data.data;
+        const needsAdditionalInfo =
+          !profile.nickname || !profile.realname || !profile.phoneNumber;
+
+        if (needsAdditionalInfo) {
+          // 추가 정보 입력 페이지로 이동
+          navigate("/additional-info", { replace: true });
+        } else {
+          // 정상 홈 화면 이동
+          navigate("/", { replace: true });
+          window.location.reload();
+        }
+      } catch (e) {
+        alert("프로필 조회 실패, 추가 정보 입력이 필요합니다.");
+        navigate("/additional-info", { replace: true });
+      }
     } catch (err) {
       if (err.response?.status === 409) {
         alert("이미 일반 회원으로 가입된 이메일입니다. 일반 로그인을 이용해 주세요.");
@@ -111,7 +129,9 @@ function LoginPage({ setIsLoggedIn }) {
             아직 계정이 없나요? <a href="/signup">회원가입</a>
           </p>
 
-          <div className="divider"><span>또는</span></div>
+          <div className="divider">
+            <span>또는</span>
+          </div>
 
           <div className="sns-login-buttons">
             <div className="sns-button google">
