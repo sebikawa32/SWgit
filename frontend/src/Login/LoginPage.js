@@ -9,32 +9,24 @@ function LoginPage({ setIsLoggedIn }) {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  // 일반 로그인
   const onLogin = () => {
     axios
-      .post("http://localhost:8080/api/users/login", {
-        userId,
-        password,
-      })
+      .post("http://localhost:8080/api/users/login", { userId, password })
       .then(async (res) => {
         alert("로그인 성공!");
-
         const { token, userId: userPk, role } = res.data.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userId", userPk);
         localStorage.setItem("role", role);
-        localStorage.setItem("provider", "LOCAL"); // 일반 로그인은 LOCAL로 저장
-
-        setIsLoggedIn(true); // 로그인 상태 반영
+        localStorage.setItem("provider", "LOCAL");
+        setIsLoggedIn(true);
 
         try {
           const meRes = await axios.get("http://localhost:8080/api/users/me", {
             headers: { Authorization: `Bearer ${token}` },
           });
-
           const profile = meRes.data.data;
           localStorage.setItem("nickname", profile.nickname || "");
-
           navigate("/", { replace: true });
           window.location.reload();
         } catch {
@@ -47,46 +39,38 @@ function LoginPage({ setIsLoggedIn }) {
       });
   };
 
-  // 구글 로그인 성공 시 처리
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     const idToken = credentialResponse.credential;
     console.log("✅ 받은 구글 ID 토큰:", idToken);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/google-login", {
-        idToken,
-      });
-
+      const res = await axios.post("http://localhost:8080/api/auth/google-login", { idToken });
       const { token, userId: userPk, role, nickname, provider } = res.data;
 
       localStorage.setItem("accessToken", token);
-      localStorage.setItem("tempGoogleToken", token); // 추가 정보 입력용 임시 토큰 저장
+      localStorage.setItem("tempGoogleToken", token);
       localStorage.setItem("userId", userPk);
       localStorage.setItem("role", role);
       localStorage.setItem("nickname", nickname);
-      localStorage.setItem("provider", provider); // 예: GOOGLE
+      localStorage.setItem("provider", provider);
 
       setIsLoggedIn(true);
 
-      // 로그인 후 프로필 조회하여 추가정보 입력 필요 여부 판단
       try {
         const meRes = await axios.get("http://localhost:8080/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         const profile = meRes.data.data;
         const needsAdditionalInfo =
           !profile.nickname || !profile.realname || !profile.phoneNumber;
 
         if (needsAdditionalInfo) {
-          // 추가 정보 입력 페이지로 이동
           navigate("/additional-info", { replace: true });
         } else {
-          // 정상 홈 화면 이동
           navigate("/", { replace: true });
           window.location.reload();
         }
-      } catch (e) {
+      } catch {
         alert("프로필 조회 실패, 추가 정보 입력이 필요합니다.");
         navigate("/additional-info", { replace: true });
       }
@@ -138,6 +122,22 @@ function LoginPage({ setIsLoggedIn }) {
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}
                 onError={() => console.log("구글 로그인 실패")}
+                theme="outline"
+                ux_mode="popup"
+                render={(renderProps) => (
+                  <button
+                    className="custom-google-button"
+                    onClick={renderProps.onClick}
+                    disabled={renderProps.disabled}
+                  >
+                    <img
+                      src="https://developers.google.com/identity/images/g-logo.png"
+                      alt="Google logo"
+                      style={{ width: 18, height: 18, marginRight: 8 }}
+                    />
+                    구글로 로그인
+                  </button>
+                )}
               />
             </div>
           </div>

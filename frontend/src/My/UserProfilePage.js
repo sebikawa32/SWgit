@@ -4,6 +4,7 @@ import './UserProfilePage.css';
 
 function UserProfilePage() {
   const [profile, setProfile] = useState({
+    id: null,
     email: '',
     nickname: '',
     realname: '',
@@ -30,20 +31,13 @@ function UserProfilePage() {
 
   const fetchProfile = () => {
     const token = localStorage.getItem('accessToken');
-    if (!token) {
-      console.error('토큰이 없습니다. 로그인해주세요.');
-      return;
-    }
+    if (!token) return;
 
     axios.get('/api/users/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        console.log("👀 프로필 전체 응답:", res.data);
         const userData = res.data?.data || {};
-        console.log("🔍 profile.provider:", userData.provider);
         setProfile(userData);
       })
       .catch(err => {
@@ -62,15 +56,10 @@ function UserProfilePage() {
 
   const handleSave = () => {
     const token = localStorage.getItem('accessToken');
-    if (!token) {
-      console.error('토큰이 없습니다. 로그인해주세요.');
-      return;
-    }
+    if (!token) return;
 
     axios.put('/api/users/me', profile, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
         setEditSuccess(true);
@@ -93,10 +82,7 @@ function UserProfilePage() {
   };
 
   const validatePassword = (password) => {
-    const lengthValid = password.length >= 8;
-    const hasLetter = /[a-zA-Z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    return lengthValid && hasLetter && hasNumber;
+    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
   };
 
   const handleChangePassword = () => {
@@ -113,15 +99,10 @@ function UserProfilePage() {
     }
 
     const token = localStorage.getItem('accessToken');
-    if (!token) {
-      console.error('토큰이 없습니다.');
-      return;
-    }
+    if (!token) return;
 
     axios.post('/api/users/me/change-password', passwordData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
+      headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
         setPasswordSuccess(true);
@@ -138,10 +119,23 @@ function UserProfilePage() {
   };
 
   const isGoogleUser = (profile.provider || '').toLowerCase() === 'google';
+  const isIncomplete = !profile.nickname || !profile.realname || !profile.phoneNumber;
 
   return (
     <div className="userprofile-container">
       <h2>내 프로필</h2>
+
+      {isGoogleUser && (
+        isIncomplete ? (
+          <div className="google-warning-box">
+            <p>🔔 구글 연동 계정입니다. 추가 정보를 등록해주세요.</p>
+            <button onClick={() => setEditMode(true)}>정보 등록하기</button>
+          </div>
+        ) : (
+          <p style={{ color: 'gray' }}>이 계정은 구글 연동 계정입니다. 비밀번호 변경은 불가능합니다.</p>
+        )
+      )}
+
       <div className="userprofile-form">
         <label>이메일</label>
         <input type="email" value={profile.email} readOnly />
@@ -173,7 +167,7 @@ function UserProfilePage() {
             <button onClick={handleCancel}>취소</button>
           </div>
         ) : (
-          <button onClick={() => setEditMode(true)}>수정하기</button>
+          !isIncomplete && <button onClick={() => setEditMode(true)}>수정하기</button>
         )}
 
         {editSuccess && <p className="success-msg">정보가 성공적으로 수정되었습니다.</p>}
@@ -181,59 +175,55 @@ function UserProfilePage() {
 
       <hr style={{ margin: '40px 0' }} />
 
-      <div className="userprofile-form">
-        <h3>비밀번호 변경</h3>
+      {!isGoogleUser && (
+        <div className="userprofile-form">
+          <h3>비밀번호 변경</h3>
 
-        {isGoogleUser ? (
-          <p style={{ color: 'gray' }}>이 계정은 구글 연동 계정입니다. 비밀번호 변경이 불가능합니다.</p>
-        ) : (
-          <>
-            <label>현재 비밀번호</label>
-            <div className="input-with-eye">
-              <input
-                type={showPassword.current ? 'text' : 'password'}
-                name="currentPassword"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordChange}
-              />
-              <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, current: !prev.current }))}>
-                <i className={`bi ${showPassword.current ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
-              </span>
-            </div>
+          <label>현재 비밀번호</label>
+          <div className="input-with-eye">
+            <input
+              type={showPassword.current ? 'text' : 'password'}
+              name="currentPassword"
+              value={passwordData.currentPassword}
+              onChange={handlePasswordChange}
+            />
+            <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, current: !prev.current }))}>
+              <i className={`bi ${showPassword.current ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+            </span>
+          </div>
 
-            <label>새 비밀번호</label>
-            <div className="input-with-eye">
-              <input
-                type={showPassword.new ? 'text' : 'password'}
-                name="newPassword"
-                value={passwordData.newPassword}
-                onChange={handlePasswordChange}
-              />
-              <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, new: !prev.new }))}>
-                <i className={`bi ${showPassword.new ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
-              </span>
-            </div>
+          <label>새 비밀번호</label>
+          <div className="input-with-eye">
+            <input
+              type={showPassword.new ? 'text' : 'password'}
+              name="newPassword"
+              value={passwordData.newPassword}
+              onChange={handlePasswordChange}
+            />
+            <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, new: !prev.new }))}>
+              <i className={`bi ${showPassword.new ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+            </span>
+          </div>
 
-            <label>새 비밀번호 확인</label>
-            <div className="input-with-eye">
-              <input
-                type={showPassword.confirm ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-              />
-              <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, confirm: !prev.confirm }))}>
-                <i className={`bi ${showPassword.confirm ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
-              </span>
-            </div>
+          <label>새 비밀번호 확인</label>
+          <div className="input-with-eye">
+            <input
+              type={showPassword.confirm ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+            />
+            <span className="eye-toggle" onClick={() => setShowPassword(prev => ({ ...prev, confirm: !prev.confirm }))}>
+              <i className={`bi ${showPassword.confirm ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+            </span>
+          </div>
 
-            <button onClick={handleChangePassword}>비밀번호 변경</button>
+          <button onClick={handleChangePassword}>비밀번호 변경</button>
 
-            {passwordSuccess && <p className="success-msg">비밀번호가 성공적으로 변경되었습니다.</p>}
-            {passwordError && <p className="error-msg">{passwordError}</p>}
-            {validationError && <p className="error-msg">{validationError}</p>}
-          </>
-        )}
-      </div>
+          {passwordSuccess && <p className="success-msg">비밀번호가 성공적으로 변경되었습니다.</p>}
+          {passwordError && <p className="error-msg">{passwordError}</p>}
+          {validationError && <p className="error-msg">{validationError}</p>}
+        </div>
+      )}
     </div>
   );
 }
