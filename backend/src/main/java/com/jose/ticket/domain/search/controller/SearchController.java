@@ -41,7 +41,7 @@ public class SearchController {
             List<TicketResponseDto> tickets = searchService.searchTickets(request);
             System.out.println("✅ 티켓 검색 성공");
 
-            // 📝 게시글 검색
+            // 📝 게시글 검색 (원래대로)
             List<BoardResponse> boards = boardService.searchBoards(query);
             System.out.println("✅ 게시글 검색 성공");
 
@@ -53,7 +53,7 @@ public class SearchController {
 
         } catch (Exception e) {
             System.out.println("❌ 검색 중 예외 발생");
-            e.printStackTrace(); // 콘솔에 전체 스택 찍기
+            e.printStackTrace();
             return ResponseEntity.status(500).body("❌ 서버 오류: " + e.getMessage());
         }
     }

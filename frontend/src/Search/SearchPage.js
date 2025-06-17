@@ -150,7 +150,9 @@ function SearchPage() {
           <h3>공연 검색 결과 <span style={{ fontWeight: 'normal' }}>({tickets.length})</span></h3>
           <div className="event-list-wrapper">
             <div className="event-list">
-              {tickets.map(ticket => (
+              {tickets
+              .filter(ticket => ticket.imageUrl && ticket.imageUrl.trim() !== "") 
+              .map(ticket => (
                 <div
                   key={ticket.id}
                   className="event-card"
