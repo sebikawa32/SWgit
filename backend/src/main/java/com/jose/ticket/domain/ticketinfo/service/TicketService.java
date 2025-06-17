@@ -125,9 +125,9 @@ public class TicketService {
         LocalDateTime now = LocalDateTime.now();
 
         return ticketRepository.findAll().stream()
-                .filter(ticket -> ticket.getBookingDatetime() != null && ticket.getBookingDatetime().isAfter(now))
+                .filter(ticket -> ticket.getEventStartDatetime() != null && ticket.getEventStartDatetime().isAfter(now))
                 .sorted(Comparator.comparing(
-                        TicketEntity::getBookingDatetime,
+                        TicketEntity::getEventStartDatetime,
                         Comparator.nullsLast(LocalDateTime::compareTo)
                 ))
                 .map(TicketResponseDto::new)

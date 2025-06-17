@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../Header/Header.css';
-import ChatSearchBoxForHome from '../Chatbot/ChatSearchBoxForHome'; 
+import ChatSearchBoxForHome from '../Chatbot/ChatSearchBoxForHome';
 import './HomePage.css';
 
 const categories = [
@@ -27,10 +27,10 @@ const bannerImages = [
 ];
 
 const bannerLinks = [
-  '/ticket/32603', 
-  '',              
-  '/ticket/33136', 
-  '/ticket/32901', 
+  '/ticket/32603',
+  '',
+  '/ticket/33136',
+  '/ticket/32901',
 ];
 
 const HomePage = () => {
@@ -42,6 +42,8 @@ const HomePage = () => {
 
   const [selectedRankingCategory, setSelectedRankingCategory] = useState(1);
   const [rankingTickets, setRankingTickets] = useState([]);
+
+  const [comingSoonTickets, setComingSoonTickets] = useState([]);
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   useEffect(() => {
@@ -75,6 +77,12 @@ const HomePage = () => {
       .catch(err => console.error("🔥 인기 티켓 불러오기 실패:", err));
   }, [selectedRankingCategory]);
 
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/tickets/deadline`)
+      .then(res => setComingSoonTickets(res.data.slice(0, 15)))
+      .catch(err => console.error("⏳ Coming Soon 티켓 불러오기 실패:", err));
+  }, []);
+
   const formatDateRange = (start, end) => {
     const format = (dateStr) => {
       if (!dateStr) return '';
@@ -85,6 +93,17 @@ const HomePage = () => {
       return `${year}.${month}.${day}`;
     };
     return `${format(start)}~${format(end)}`;
+  };
+
+  const getDDay = (startDate) => {
+    if (!startDate) return null;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const start = new Date(startDate);
+    start.setHours(0,0,0,0);
+    const diffTime = start.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 ? `D-${diffDays}` : null;
   };
 
   return (
@@ -169,6 +188,29 @@ const HomePage = () => {
         <hr style={{ margin: '50px 0' }} />
 
         <section>
+          <h2>COMING SOON</h2>
+          <div className="ticket-slider-horizontal">
+            {comingSoonTickets.map(ticket => (
+              <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+                <div className="event-card">
+                  <div className="dday-badge">{getDDay(ticket.eventStartDatetime)}</div>
+                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <div className="card-title">
+                    <h3>{ticket.title}</h3>
+                  </div>
+                  <div className="card-info">
+                    <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
+                    <p>{ticket.venue}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <hr style={{ margin: '50px 0' }} />
+
+        <section>
           <h2>TICKETS</h2>
           <div className="category-buttons">
             {categories.map(cat => (
@@ -206,7 +248,6 @@ const HomePage = () => {
             ))}
           </div>
         </section>
-
       </main>
     </>
   );
