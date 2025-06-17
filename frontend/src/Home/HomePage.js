@@ -61,8 +61,9 @@ const HomePage = () => {
 
     axios.get(url)
       .then(res => {
-        const shuffled = [...res.data].sort(() => Math.random() - 0.5).slice(0, 10);
-        setAllTickets(shuffled);
+        // 이미지 없는 티켓 제외, 10개만
+        const filtered = res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 10);
+        setAllTickets(filtered);
         setLoadingAll(false);
       })
       .catch(() => {
@@ -72,14 +73,20 @@ const HomePage = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/tickets/popular?categoryId=${selectedRankingCategory}&size=5`)
-      .then(res => setRankingTickets(res.data))
+    // 여기 size=10~15 등 넉넉하게!
+    axios.get(`http://localhost:8080/api/tickets/popular?categoryId=${selectedRankingCategory}&size=15`)
+      .then(res => {
+        // 이미지 없는 티켓 제외, 5개만
+        setRankingTickets(
+          res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 5)
+        );
+      })
       .catch(err => console.error("🔥 인기 티켓 불러오기 실패:", err));
   }, [selectedRankingCategory]);
 
   useEffect(() => {
     axios.get(`http://localhost:8080/api/tickets/deadline`)
-      .then(res => setComingSoonTickets(res.data.slice(0, 15)))
+      .then(res => setComingSoonTickets(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 15)))
       .catch(err => console.error("⏳ Coming Soon 티켓 불러오기 실패:", err));
   }, []);
 
@@ -170,7 +177,10 @@ const HomePage = () => {
                 <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
                   <div className="event-card">
                     <div className="ranking-badge">{`${index + 1}위`}</div>
-                    <img src={ticket.imageUrl} alt={ticket.title} />
+                    <img
+                      src={ticket.imageUrl}
+                      alt={ticket.title}
+                    />
                     <div className="card-title">
                       <h3>{ticket.title}</h3>
                     </div>
@@ -194,7 +204,10 @@ const HomePage = () => {
               <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
                 <div className="event-card">
                   <div className="dday-badge">{getDDay(ticket.eventStartDatetime)}</div>
-                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <img
+                    src={ticket.imageUrl}
+                    alt={ticket.title}
+                  />
                   <div className="card-title">
                     <h3>{ticket.title}</h3>
                   </div>
@@ -230,20 +243,25 @@ const HomePage = () => {
           <div className="ticket-grid">
             {[0, 1].map(row => (
               <div key={row} className="ticket-row">
-                {allTickets.slice(row * 5, row * 5 + 5).map(ticket => (
-                  <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
-                    <div className="event-card">
-                      <img src={ticket.imageUrl} alt={ticket.title} />
-                      <div className="card-title">
-                        <h3>{ticket.title}</h3>
+                {allTickets
+                  .slice(row * 5, row * 5 + 5)
+                  .map(ticket => (
+                    <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
+                      <div className="event-card">
+                        <img
+                          src={ticket.imageUrl}
+                          alt={ticket.title}
+                        />
+                        <div className="card-title">
+                          <h3>{ticket.title}</h3>
+                        </div>
+                        <div className="card-info">
+                          <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
+                          <p>{ticket.venue}</p>
+                        </div>
                       </div>
-                      <div className="card-info">
-                        <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
-                        <p>{ticket.venue}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))}
               </div>
             ))}
           </div>

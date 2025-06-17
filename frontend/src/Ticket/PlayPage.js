@@ -19,20 +19,22 @@ const PlayPage = () => {
     return `${year}.${month}.${day}`;
   };
 
+  // 전체 연극 리스트 (이미지 없는거 제거)
   const fetchTickets = async (page) => {
     try {
       const res = await axios.get(`/api/tickets/sorted/page?categoryId=3&page=${page}&size=${pageSize}`);
-      setTickets(res.data.content);
+      setTickets(res.data.content.filter(t => t.imageUrl && t.imageUrl.trim() !== ""));
       setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error('❌ 연극 티켓 불러오기 오류:', err);
     }
   };
 
+  // 인기 연극 리스트 (최소 10개 이상 받아서 이미지 있는 것만 5개)
   const fetchPopularPlays = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular?categoryId=3');
-      setPopularPlays(res.data);
+      const res = await axios.get('/api/tickets/popular?categoryId=3&size=15');
+      setPopularPlays(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 5));
     } catch (err) {
       console.error('🔥 인기 연극 불러오기 오류:', err);
     }
@@ -95,7 +97,7 @@ const PlayPage = () => {
           {popularPlays.length === 0 ? (
             <p>인기 연극 정보 준비 중입니다.</p>
           ) : (
-            popularPlays.slice(0, 5).map((play, index) => (
+            popularPlays.map((play, index) => (
               <Link to={`/ticket/${play.id}`} key={play.id} className="concert-card-link">
                 <div className="concert-card">
                   <div className="ranking-badge">{`${index + 1}위`}</div>
@@ -106,7 +108,6 @@ const PlayPage = () => {
                     <h2>{play.title}</h2>
                     <p>{formatDate(play.eventStartDatetime)} ~ {formatDate(play.eventEndDatetime)}</p>
                     <p>{play.venue}</p>
-                    
                   </div>
                 </div>
               </Link>
@@ -134,7 +135,6 @@ const PlayPage = () => {
                   <h2>{ticket.title}</h2>
                   <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  
                 </div>
               </div>
             </Link>
@@ -142,7 +142,6 @@ const PlayPage = () => {
         </div>
       )}
 
-      {/* 페이지네이션 */}
       <div className="pagination">{renderPagination()}</div>
     </div>
   );

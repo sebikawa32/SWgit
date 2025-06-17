@@ -19,20 +19,23 @@ const ExhibitionPage = () => {
     return `${year}.${month}.${day}`;
   };
 
+  // 전체 전시 리스트
   const fetchTickets = async (page) => {
     try {
       const res = await axios.get(`/api/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
-      setTickets(res.data.content);
+      // 이미지 없는 전시 빼고 보여주기
+      setTickets(res.data.content.filter(t => t.imageUrl && t.imageUrl.trim() !== ""));
       setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error('❌ 전시 티켓 불러오기 오류:', err);
     }
   };
 
+  // 인기 전시 리스트 (최소 10개 이상 받아와서 이미지 있는 것만 5개 보여주기)
   const fetchPopularExhibitions = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular?categoryId=2');
-      setPopularExhibitions(res.data);
+      const res = await axios.get('/api/tickets/popular?categoryId=2&size=15');
+      setPopularExhibitions(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 5));
     } catch (err) {
       console.error('🔥 인기 전시 불러오기 오류:', err);
     }
@@ -95,7 +98,7 @@ const ExhibitionPage = () => {
           {popularExhibitions.length === 0 ? (
             <p>인기 전시 정보 준비 중입니다.</p>
           ) : (
-            popularExhibitions.slice(0, 5).map((exhibition, index) => (
+            popularExhibitions.map((exhibition, index) => (
               <Link to={`/ticket/${exhibition.id}`} key={exhibition.id} className="concert-card-link">
                 <div className="concert-card">
                   <div className="ranking-badge">{`${index + 1}위`}</div>
@@ -106,7 +109,6 @@ const ExhibitionPage = () => {
                     <h2>{exhibition.title}</h2>
                     <p>{formatDate(exhibition.eventStartDatetime)} ~ {formatDate(exhibition.eventEndDatetime)}</p>
                     <p>{exhibition.venue}</p>
-                    
                   </div>
                 </div>
               </Link>
@@ -115,13 +117,10 @@ const ExhibitionPage = () => {
         </div>
       </section>
 
-      {/* 구분선 */}
       <hr className="section-divider" />
 
-      {/* 전체 전시 제목 */}
       <h1>Exhibition</h1>
 
-      {/* 전체 전시 리스트 */}
       {tickets.length === 0 ? (
         <p>전시 데이터가 없습니다.</p>
       ) : (
@@ -136,7 +135,6 @@ const ExhibitionPage = () => {
                   <h2>{ticket.title}</h2>
                   <p>{formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
                   <p>{ticket.venue}</p>
-                  
                 </div>
               </div>
             </Link>
@@ -144,7 +142,6 @@ const ExhibitionPage = () => {
         </div>
       )}
 
-      {/* 페이지네이션 */}
       <div className="pagination">{renderPagination()}</div>
     </div>
   );
