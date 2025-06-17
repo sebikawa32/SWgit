@@ -1,26 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './ChatSearchPage.css'; // 스타일 파일
+import './ChatSearchPage.css';
 
 const ChatSearchPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const queryParams = new URLSearchParams(location.search);
-  const query = queryParams.get('query');
-  const results = location.state?.results;
+  const queryFromURL = queryParams.get('query');
+  const queryFromState = location.state?.query;
+  const results = location.state?.results ?? null;
+
+  const query = queryFromState || queryFromURL || '';
+
+  const [typedText, setTypedText] = useState('');
+
+  useEffect(() => {
+    if (!query) {
+      setTypedText('검색어가 없습니다냥.');
+      return;
+    }
+
+    const fullText = `'${query}' 검색 결과입니다냥!`;
+    let index = 0;
+
+    const interval = setInterval(() => {
+      setTypedText(fullText.slice(0, index + 1));
+      index++;
+      if (index >= fullText.length) clearInterval(interval);
+    }, 70);
+
+    return () => clearInterval(interval);
+  }, [query]);
 
   return (
     <div className="chat-search-result-page">
-      {/* 🔶 상단 챗봇 이미지 + 제목 */}
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      {/* 🐱 챗봇 캐릭터 + 말풍선 */}
+      <div className="chatbot-message-wrapper">
         <img
           src="/images/chat.jpeg"
           alt="챗봇"
-          style={{ width: '50px', height: '50px', verticalAlign: 'middle', marginRight: '10px' }}
+          className="chat-cat-image"
         />
-        <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-          '{query}' 검색 결과입니다냥
-        </span>
+        <div className="chat-balloon">{typedText}</div>
       </div>
 
       {/* 🔶 검색 결과 목록 */}
@@ -31,8 +53,7 @@ const ChatSearchPage = () => {
               <div
                 key={index}
                 className="chat-search-card"
-                onClick={() => navigate(`/ticket/${item.id}`)} // ✅ 티켓 상세 페이지로 이동
-                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/ticket/${item.id}`)}
               >
                 <div className="concert-card-image-wrapper">
                   <img

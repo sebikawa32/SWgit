@@ -1,28 +1,60 @@
-/* ─────────── GPT 검색 결과 페이지 ─────────── */
+/* ─────────── GPT 검색 결과 페이지 전체 컨테이너 ─────────── */
 .chat-search-result-page {
-  padding: 100px 20px 20px;
+  padding: 150px 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* 상단 챗봇 이미지 + 제목 정렬용 */
-.chat-search-header {
+/* ─────────── 챗봇 고양이 + 말풍선 ─────────── */
+.chatbot-message-wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  margin-bottom: 24px;
   gap: 12px;
+  margin-bottom: 60px;
+  padding: 0 12px;
 }
 
-.chat-search-header img {
-  width: 32px;
-  height: 32px;
+.chat-cat-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
 }
 
-/* 검색 결과 그리드 */
+.chat-balloon {
+  background-color: #f6f6f6;
+  padding: 14px 18px;
+  border-radius: 18px;
+  position: relative;
+  max-width: 600px;
+  min-height: 40px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: keep-all;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+.chat-balloon::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 18px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent #f6f6f6 transparent transparent;
+}
+
+/* ─────────── 검색 결과 그리드 ─────────── */
 .chat-search-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
-  justify-items: start;
+  justify-content: start;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 /* ─────────── 카드 스타일 ─────────── */

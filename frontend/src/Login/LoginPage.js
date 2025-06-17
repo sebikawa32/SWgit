@@ -20,7 +20,7 @@ function LoginPage() {
         const { token, userId: userPk, role } = res.data.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userId", userPk);
-        localStorage.setItem("role", role); 
+        localStorage.setItem("role", role);
 
         axios
           .get("http://localhost:8080/api/users/me", {
@@ -39,7 +39,7 @@ function LoginPage() {
           });
       })
       .catch(() => {
-        alert("로그인 실패");
+        alert("아이디 혹은 비밀번호가 일치하지 않습니다.");
       });
   };
 
@@ -48,7 +48,6 @@ function LoginPage() {
       <div className="login-container">
         <h2>TicketPlanet 로그인</h2>
 
-        {/* 일반 로그인 입력창 */}
         <input
           type="text"
           placeholder="아이디"
@@ -64,24 +63,17 @@ function LoginPage() {
 
         <button onClick={onLogin}>로그인</button>
 
-          <p className="signup-text">
-       <a href="/reset-password">비밀번호를 잊으셨나요?</a>
-      </p>
+        <p className="signup-text">
+          <a href="/reset-password">비밀번호를 잊으셨나요?</a>
+        </p>
 
-
-        {/* 회원가입 안내 */}
         <p className="signup-text">
           아직 계정이 없나요? <a href="/signup">회원가입</a>
         </p>
 
-       
-
-        {/* 구분선 */}
         <div className="divider"><span>또는</span></div>
 
-        {/* SNS 로그인 버튼들 (UI만, 연동은 추후) */}
         <div className="sns-login-buttons">
-          <button className="sns-button kakao">카카오로 로그인</button>
           <button className="sns-button naver">네이버로 로그인</button>
           <button className="sns-button google">구글로 로그인</button>
         </div>

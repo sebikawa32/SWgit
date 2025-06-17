@@ -1,0 +1,118 @@
+/* ─────────── 전체 컨테이너 ─────────── */
+.userprofile-container {
+  max-width: 800px;
+  margin: 100px auto 60px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ─────────── 제목 ─────────── */
+.userprofile-container h2 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 36px;
+}
+
+/* ─────────── 구역별 제목 ─────────── */
+.userprofile-form h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* ─────────── 입력 라벨 ─────────── */
+.userprofile-form label {
+  display: block;
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #222;
+}
+
+/* ─────────── 입력 필드 ─────────── */
+.userprofile-form input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #fdfdfd;
+  box-sizing: border-box;
+}
+
+/* ─────────── 아이콘 포함 입력 필드 ─────────── */
+.input-with-eye {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.input-with-eye input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+/* ─────────── 눈 모양 아이콘 버튼 ─────────── */
+.eye-toggle {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #777;
+  font-size: 1.2rem;
+}
+
+/* ─────────── 버튼 ─────────── */
+.userprofile-form button {
+  margin-top: 28px;
+  padding: 12px 20px;
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 160px;
+  transition: background-color 0.2s ease;
+}
+
+.userprofile-form button:hover {
+  background-color: #333333;
+}
+
+/* ─────────── 버튼 그룹 ─────────── */
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+/* ─────────── 메시지 ─────────── */
+.success-msg {
+  margin-top: 20px;
+  color: green;
+  text-align: left;
+  font-weight: 600;
+}
+
+.error-msg {
+  margin-top: 20px;
+  color: crimson;
+  text-align: left;
+  font-weight: 600;
+}
+
+/* ─────────── 일반 텍스트 스타일 (읽기 전용) ─────────── */
+.userprofile-form p {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #444;
+  padding-left: 4px;
+}

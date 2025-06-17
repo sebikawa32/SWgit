@@ -12,10 +12,10 @@ body, html, #root {
   min-height: calc(100vh - 80px); /* 예: 헤더가 80px인 경우 */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;  /* 👉 위에서 조금 내려오게 조정 */
   background: #ffffff;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 80px 20px 40px 20px;  /* ✅ 헤더와 충분한 여백 확보 */
 }
 
 /* 3️⃣ 로그인 컨테이너 */
@@ -141,10 +141,6 @@ body, html, #root {
 }
 
 /* 각 SNS 색상 */
-.kakao {
-  background-color: #FEE500 !important;
-  color: #000 !important;
-}
 
 .naver {
   background-color: #03C75A !important;

@@ -140,6 +140,36 @@
   cursor: not-allowed;
 }
 
+/* ─── 제목 + 글쓰기 버튼 같이 정렬 ─── */
+.board-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.board-list-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* ─── 글쓰기 버튼 스타일 ─── */
+.btn-write-mini {
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  background-color: #141414;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-write-mini:hover {
+  background-color: #000;
+}
+
 /* ─── 반응형 대응 ─── */
 @media (max-width: 768px) {
   .board-table thead {

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/comments")
@@ -48,5 +50,15 @@ public class CommentController {
     @GetMapping
     public ResponseEntity<?> getComments(@RequestParam Long boardId) {
         return ResponseEntity.ok(commentService.getCommentDtosByBoardId(boardId));
+    }
+
+    @GetMapping("/my-comments")
+    public ResponseEntity<List<CommentResponse>> getMyComments(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build(); // 인증 실패 시
+        }
+
+        List<CommentResponse> comments = commentService.getCommentsByUser(user);
+        return ResponseEntity.ok(comments);
     }
 }

@@ -101,4 +101,15 @@ public class BoardController {
         boardService.deleteBoard(id, loginUser);
         return ResponseEntity.noContent().build();
     }
+
+    // ✅ 내가 쓴 게시글 목록 조회
+    @GetMapping("/my-posts")
+    public ResponseEntity<List<BoardResponse>> getMyPosts(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        List<BoardResponse> myPosts = boardService.getBoardsByUser(user);
+        return ResponseEntity.ok(myPosts);
+    }
 }

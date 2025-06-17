@@ -87,7 +87,9 @@ function TicketDetailPage() {
       fetchAlertCheck();
     }
 
-    fetchBookmarkCount();
+    axios.get(`/api/bookmarks/count?ticketId=${id}`)
+      .then(res => setBookmarkCount(res.data.count || 0))
+      .catch(() => setBookmarkCount(0));
   }, [id]);
 
   const handleToggleBookmark = async () => {
@@ -104,7 +106,6 @@ function TicketDetailPage() {
           { params: { ticketId: Number(id) }, headers: { Authorization: `Bearer ${token}` } }
         );
         setIsBookmarked(true);
-        fetchBookmarkCount();
         setBookmarkMessage("즐겨찾기에 추가되었습니다!");
       } else {
         await axios.delete(
@@ -112,9 +113,11 @@ function TicketDetailPage() {
           { params: { ticketId: Number(id) }, headers: { Authorization: `Bearer ${token}` } }
         );
         setIsBookmarked(false);
-        fetchBookmarkCount();
         setBookmarkMessage("즐겨찾기에서 삭제되었습니다!");
       }
+
+      const res = await axios.get(`/api/bookmarks/count?ticketId=${id}`);
+      setBookmarkCount(res.data.count || 0);
     } catch (err) {
       console.error("즐겨찾기 처리 중 오류:", err);
       setBookmarkMessage(

@@ -100,9 +100,13 @@ const BoardCreatePage = () => {
           )}
         </div>
         {selectedTicket && (
-          <div className="selected-ticket">
-            ✅ {selectedTicket.title}
-            <span className="remove-ticket-btn" onClick={handleTicketRemove}>❌</span>
+          <div className="selected-ticket" style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
+            <span style={{ fontWeight: "500", flex: 1 }}>{selectedTicket.title}</span>
+            <i
+              className="bi bi-x-circle-fill"
+              style={{ color: "#dc3545", cursor: "pointer", marginLeft: "8px", fontSize: "20px" }}
+              onClick={handleTicketRemove}
+            ></i>
           </div>
         )}
       </div>
