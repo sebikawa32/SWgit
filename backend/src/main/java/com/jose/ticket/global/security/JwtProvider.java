@@ -108,4 +108,12 @@ public class JwtProvider {
         }
         return false;
     }
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return Long.parseLong(claims.getSubject()); // subject에 userId 저장된 경우
+    }
+
 }

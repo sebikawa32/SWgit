@@ -199,7 +199,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
                     </svg>
                   </button>
                   <div className="my-dropdown">
-                    <Link to="/MyProfile">내 프로필</Link>
+                    <Link to="/profile">내 프로필</Link>
                     <Link to="/Bookmark">즐겨찾기 목록</Link>
                     <Link to={`/alarm-settings?userId=${storedUserId}`}>알림 설정</Link>
                     <button onClick={handleLogout} type="button">로그아웃</button>

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BoardListPage.css';
 
-const BoardListMerged = ({ ticketId }) => {
+const BoardListMerged = ({ ticketId, ticketTitle }) => {
   const [boards, setBoards] = useState([]);
-  const postsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBoards = async () => {
@@ -39,9 +40,20 @@ const BoardListMerged = ({ ticketId }) => {
 
   return (
     <div className="board-list-container">
-      <div className="board-list-header">
-        <h1>게시글</h1>
+      <div className="board-list-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 style={{ margin: 0 }}>게시글</h1>
+        <button
+          className="btn-write-mini"
+          onClick={() =>
+            navigate(
+              `/boards/new?type=general&ticketId=${ticketId}&ticketTitle=${encodeURIComponent(ticketTitle || '')}`
+            )
+          }
+        >
+          글쓰기
+        </button>
       </div>
+
       <table className="board-table">
         <thead>
           <tr>
@@ -53,9 +65,9 @@ const BoardListMerged = ({ ticketId }) => {
           </tr>
         </thead>
         <tbody>
-          {currentBoards.map((board, index) => (
+          {currentBoards.map((board) => (
             <tr key={board.id} className={board.isNotice ? "notice-row" : ""}>
-              <td>{board.id}</td>
+              <td>{board.isNotice ? "공지사항" : board.id}</td>
               <td>{board.ticketTitle || ""}</td>
               <td>
                 <Link to={`/boards/${board.id}`}>
@@ -74,7 +86,11 @@ const BoardListMerged = ({ ticketId }) => {
           이전
         </button>
         {Array.from({ length: totalPages }, (_, i) => (
-          <button key={i} onClick={() => setCurrentPage(i + 1)} className={currentPage === i + 1 ? "active" : ""}>
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            className={currentPage === i + 1 ? "active" : ""}
+          >
             {i + 1}
           </button>
         ))}

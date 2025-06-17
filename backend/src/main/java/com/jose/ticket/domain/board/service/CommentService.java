@@ -106,4 +106,10 @@ public class CommentService {
                 .map(this::toDto) //  댓글을 DTO로 변환
                 .toList();
     }
+
+    public List<CommentResponse> getCommentsByUser(User user) {
+        return commentRepository.findByWriter(user).stream()
+                .map(this::toDto)
+                .toList();
+    }
 }

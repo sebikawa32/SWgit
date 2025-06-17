@@ -32,12 +32,6 @@ function TicketDetailPage() {
   const [bookmarkMessage, setBookmarkMessage] = useState("");
   const [activeTab, setActiveTab] = useState("info");
 
-  const fetchBookmarkCount = () => {
-    axios.get(`/api/bookmarks/count?ticketId=${id}`)
-      .then(res => setBookmarkCount(res.data.count || 0))
-      .catch(() => setBookmarkCount(0));
-  };
-
   useEffect(() => {
     axios.get(`/api/tickets/${id}`)
       .then(res => setTicket(res.data))
@@ -50,14 +44,14 @@ function TicketDetailPage() {
     if (token) {
       axios.get(`/api/bookmarks/check?ticketId=${id}`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
-        .then(res => {
-          if (res.data.exists) setIsBookmarked(true);
-        })
-        .catch(() => {});
+      }).then(res => {
+        if (res.data.exists) setIsBookmarked(true);
+      });
     }
 
-    fetchBookmarkCount();
+    axios.get(`/api/bookmarks/count?ticketId=${id}`)
+      .then(res => setBookmarkCount(res.data.count || 0))
+      .catch(() => setBookmarkCount(0));
   }, [id]);
 
   const handleToggleBookmark = async () => {
@@ -75,7 +69,6 @@ function TicketDetailPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setIsBookmarked(true);
-        fetchBookmarkCount();
         setBookmarkMessage("즐겨찾기에 추가되었습니다!");
       } else {
         await axios.delete("/api/bookmarks", {
@@ -83,18 +76,14 @@ function TicketDetailPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setIsBookmarked(false);
-        fetchBookmarkCount();
         setBookmarkMessage("즐겨찾기에서 삭제되었습니다!");
       }
+
+      const res = await axios.get(`/api/bookmarks/count?ticketId=${id}`);
+      setBookmarkCount(res.data.count || 0);
     } catch (err) {
       console.error("즐겨찾기 처리 중 오류:", err);
-      setBookmarkMessage(
-        isBookmarked
-          ? "즐겨찾기 삭제에 실패했습니다."
-          : (err.response?.status === 409
-            ? "이미 즐겨찾기에 추가된 티켓입니다!"
-            : "즐겨찾기 추가에 실패했습니다.")
-      );
+      setBookmarkMessage("즐겨찾기 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -111,7 +100,7 @@ function TicketDetailPage() {
   };
 
   const handleBookingClick = () => {
-    axios.post(`/api/tickets/${id}/click`).catch((err) => {
+    axios.post(`/api/tickets/${id}/click`).catch(err => {
       console.error("예매 클릭 로그 저장 실패:", err);
     });
     window.open(ticket.bookingLink, "_blank", "noopener noreferrer");

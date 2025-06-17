@@ -1,6 +1,7 @@
 package com.jose.ticket.domain.board.repository;
 
 import com.jose.ticket.domain.board.entity.Board;
+import com.jose.ticket.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,32 +25,21 @@ public interface PostRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByTicket_IdAndType(Long ticketId, String type);
 
-    // ✅ Hibernate 6 완전 대응: LOWER는 엔티티 필드에만 사용, 파라미터는 그대로
-    @Query(
-            value = """
-
-                    SELECT b.* FROM board b 
-    LEFT JOIN ticket t ON b.ticket_id = t.ticket_id
-    WHERE 
-        (b.title IS NOT NULL AND LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')))
-        OR 
-        (b.content IS NOT NULL AND LOWER(b.content) LIKE LOWER(CONCAT('%', :query, '%')))
-        OR
-        (t.ticket_title IS NOT NULL AND LOWER(t.ticket_title) LIKE LOWER(CONCAT('%', :query, '%')))
-    """,
-            nativeQuery = true
-    )
+    // ✅ 검색 쿼리 (nativeQuery)
+    @Query(value = """
+        SELECT b.* FROM board b 
+        LEFT JOIN ticket t ON b.ticket_id = t.ticket_id
+        WHERE 
+            (b.title IS NOT NULL AND LOWER(b.title) LIKE LOWER(CONCAT('%', :query, '%')))
+            OR 
+            (b.content IS NOT NULL AND LOWER(b.content) LIKE LOWER(CONCAT('%', :query, '%')))
+            OR
+            (t.ticket_title IS NOT NULL AND LOWER(t.ticket_title) LIKE LOWER(CONCAT('%', :query, '%')))
+    """, nativeQuery = true)
     List<Board> searchByKeyword(@Param("query") String query);
 
-    @Query("""
-  SELECT b FROM Board b
-  LEFT JOIN FETCH b.writer
-  ORDER BY b.viewCount DESC
-""")
-    List<Board> findAllOrderByViewCountDesc();
-
-    @Query(
-            value = """
+    // ✅ 인기순 정렬 검색
+    @Query(value = """
         SELECT b.* FROM board b 
         LEFT JOIN ticket t ON b.ticket_id = t.ticket_id
         WHERE 
@@ -59,15 +49,15 @@ public interface PostRepository extends JpaRepository<Board, Long> {
             OR
             (t.ticket_title IS NOT NULL AND LOWER(t.ticket_title) LIKE LOWER(CONCAT('%', :query, '%')))
         ORDER BY b.view_count DESC
-    """,
-            nativeQuery = true
-    )
+    """, nativeQuery = true)
     List<Board> searchByKeywordOrderByViewCount(@Param("query") String query);
-
 
     @Query("SELECT b FROM Board b JOIN FETCH b.writer WHERE b.type = :type ORDER BY b.createdAt DESC")
     List<Board> findByTypeOrderByCreatedAtDesc(@Param("type") String type);
 
     @Query("SELECT b FROM Board b JOIN FETCH b.writer WHERE b.type = :type ORDER BY b.viewCount DESC")
     List<Board> findByTypeOrderByViewCountDesc(@Param("type") String type);
+
+    // ✅ 작성자 기반 게시글 조회 (수정된 부분)
+    List<Board> findByWriter(User writer);
 }

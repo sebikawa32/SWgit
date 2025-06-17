@@ -145,7 +145,6 @@ hr.divider {
   list-style: none !important;
 }
 
-
 /* ─ 공통 버튼 ─ */
 .btn {
   margin-top: 10px;
@@ -214,19 +213,3 @@ hr.divider {
   color: #666;
 }
 
-
-/* ─ 반응형 예시 ─ */
-/*
-@media (max-width: 600px) {
-  .price-row {
-    display: block;
-  }
-  .price-row > strong {
-    display: block;
-    margin-bottom: 4px;
-  }
-  .price-row .price-list-inline {
-    padding-left: 3px !important;
-  }
-}
-*/
