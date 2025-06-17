@@ -21,37 +21,35 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id; // PK
+    private Long id;
 
     @Column(name = "user_userid", unique = true)
-    private String userId; // 로그인 아이디
+    private String userId; // 일반 로그인용 ID
 
     @Column(name = "user_email", nullable = false, unique = true)
-    private String email; // 이메일 (필수)
+    private String email;
 
     @Column(name = "user_password")
-    private String password; // 비밀번호
+    private String password;
 
     @Column(name = "user_nickname")
-    private String nickname; // 닉네임
+    private String nickname;
 
     @Column(name = "user_realname")
-    private String realname; // 실명
+    private String realname;
 
     @Column(name = "user_phone_number", unique = true)
-    private String phoneNumber; // 휴대폰 번호
+    private String phoneNumber;
 
-    @Column(name = "user_provider", nullable = false)
-    private String provider; // 로그인 제공자
+    @Column(name = "user_provider", nullable = true)
+    private String provider; // ex) "GOOGLE", "NAVER", "LOCAL"
 
     @Column(name = "user_provider_id", unique = true)
-    private String providerId; // 제공자 고유 ID
+    private String providerId;
 
     @Column(name = "user_role", nullable = false)
-    private String role;  // 값: "USER", "ADMIN"
+    private String role;
 
-
-    // ✅ 권한 설정: ROLE_USER 또는 ROLE_ADMIN 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role));
@@ -59,26 +57,26 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.userId; // 사용자 식별자 (로그인용)
+        return this.userId != null ? this.userId : this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // 계정 만료 안됨
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // 계정 잠김 아님
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // 비밀번호 만료 안됨
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // 활성화 상태
+        return true;
     }
 }

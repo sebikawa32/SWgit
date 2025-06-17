@@ -20,7 +20,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    // 회원가입 처리
+    // 회원가입 처리 - userId는 유저가 직접 지정하므로 여전히 체크 가능
     public UserResponse signup(UserSignupRequest request) {
         if (userRepository.existsByUserId(request.getUserId()))
             throw new RuntimeException("이미 존재하는 아이디입니다.");
@@ -44,14 +44,14 @@ public class UserService {
         return UserResponse.fromEntity(userRepository.save(user));
     }
 
-    // 로그인 처리
+    // 로그인 처리 - PK(id) 기준으로 토큰 생성
     public TokenResponse login(UserLoginRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
 
-        String token = jwtProvider.createToken(user.getUserId());
+        String token = jwtProvider.createToken(user.getId(), user.getRole());
 
         return new TokenResponse(
                 token,
@@ -61,19 +61,19 @@ public class UserService {
         );
     }
 
-    // 아이디 중복 확인
+    // 아이디 중복 확인은 여전히 userId 기준
     public boolean isUserIdExists(String userId) {
         return userRepository.existsByUserId(userId);
     }
 
-    // 사용자 ID로 조회 (프로필 조회)
-    public UserResponse findById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. id=" + userId));
+    // 사용자 프로필 조회 - PK(id) 기준으로 조회
+    public UserResponse findById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. id=" + id));
         return UserResponse.fromEntity(user);
     }
 
-    // 비밀번호 재설정
+    // 비밀번호 재설정 (email 기준)
     public void updatePassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자를 찾을 수 없습니다."));
@@ -83,10 +83,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // ✅ 사용자 프로필 수정
+    // 사용자 프로필 수정 - PK(id) 기준
     @Transactional
-    public void updateMyProfile(String userId, UserProfileDto dto) {
-        User user = userRepository.findByUserId(userId)
+    public void updateMyProfile(Long id, UserProfileDto dto) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         user.setNickname(dto.getNickname());
@@ -94,10 +94,10 @@ public class UserService {
         user.setPhoneNumber(dto.getPhoneNumber());
     }
 
-    // ✅ 사용자 프로필 조회
+    // 사용자 프로필 조회 - PK(id) 기준
     @Transactional
-    public UserProfileDto getMyProfile(String userId) {
-        User user = userRepository.findByUserId(userId)
+    public UserProfileDto getMyProfile(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return UserProfileDto.builder()
@@ -105,13 +105,14 @@ public class UserService {
                 .nickname(user.getNickname())
                 .realname(user.getRealname())
                 .phoneNumber(user.getPhoneNumber())
+                .provider(user.getProvider())
                 .build();
     }
 
-    // ✅ 비밀번호 변경 + 유효성 검사
+    // 비밀번호 변경 - PK(id) 기준
     @Transactional
-    public void changePassword(String userId, ChangePasswordDto dto) {
-        User user = userRepository.findByUserId(userId)
+    public void changePassword(Long id, ChangePasswordDto dto) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
@@ -125,17 +126,30 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
     }
 
-    // ✅ 회원 탈퇴
+    // 회원 탈퇴 - PK(id) 기준
     @Transactional
-    public void deleteAccount(String userId) {
-        User user = userRepository.findByUserId(userId)
+    public void deleteAccount(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         userRepository.delete(user);
     }
 
-    // ✅ 비밀번호 유효성 검사
+    // 비밀번호 유효성 검사
     private boolean isValidPassword(String password) {
         return password != null &&
                 password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+=\\-{}\\[\\]:;\"'<>,.?/]).{8,}$");
+    }
+
+    // 구글 로그인 추가정보 수정 (PK id 기준)
+    @Transactional
+    public void updateGoogleUserAdditionalInfo(GoogleSignupRequest request) {
+        User user = userRepository.findById(request.getId())  // 여기서 getId() 호출
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + request.getId()));
+
+        user.setNickname(request.getNickname());
+        user.setRealname(request.getRealname());
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        userRepository.save(user);
     }
 }

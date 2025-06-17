@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -52,13 +54,14 @@ public class UserController {
 
     /** 내 정보 조회 API **/
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse> getMyInfo(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse> getMyProfile(@AuthenticationPrincipal User user) {
         if (user == null) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse("인증된 사용자 정보가 없습니다.", null));
         }
-        UserResponse userResponse = userService.findById(user.getId());
-        return ResponseEntity.ok(new ApiResponse("내 정보 조회 성공", userResponse));
+
+        UserProfileDto profile = userService.getMyProfile(user.getId());  // 수정: getUserId() → getId()
+        return ResponseEntity.ok(new ApiResponse("내 정보 조회 성공", profile));
     }
 
     /** 내 정보 수정 API **/
@@ -66,7 +69,7 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateMyInfo(
             @AuthenticationPrincipal User user,
             @RequestBody UserProfileDto dto) {
-        userService.updateMyProfile(user.getUserId(), dto);
+        userService.updateMyProfile(user.getId(), dto);  // 수정
         return ResponseEntity.ok(new ApiResponse("사용자 정보 수정 성공", null));
     }
 
@@ -75,14 +78,14 @@ public class UserController {
     public ResponseEntity<ApiResponse> changePassword(
             @AuthenticationPrincipal User user,
             @RequestBody ChangePasswordDto dto) {
-        userService.changePassword(user.getUserId(), dto);
+        userService.changePassword(user.getId(), dto);  // 수정
         return ResponseEntity.ok(new ApiResponse("비밀번호 변경 성공", null));
     }
 
     /** 회원 탈퇴 API **/
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse> deleteMyAccount(@AuthenticationPrincipal User user) {
-        userService.deleteAccount(user.getUserId());
+        userService.deleteAccount(user.getId());  // 수정
         return ResponseEntity.ok(new ApiResponse("회원 탈퇴 성공", null));
     }
 
@@ -91,7 +94,7 @@ public class UserController {
     public ResponseEntity<ApiResponse> getUserById(
             @PathVariable Long userId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (userDetails == null || !userDetails.getId().equals(userId)) {
+        if (userDetails == null || !Objects.equals(userDetails.getId(), userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new ApiResponse("권한이 없습니다.", null));
         }
@@ -111,5 +114,20 @@ public class UserController {
 
         userService.updatePassword(request.getEmail(), request.getNewPassword());
         return ResponseEntity.ok(new ApiResponse("비밀번호가 성공적으로 변경되었습니다.", null));
+    }
+
+    /** 4단계: 구글 로그인 유저 추가정보 저장 API **/
+    @PutMapping("/me/google-additional-info")
+    public ResponseEntity<ApiResponse> saveGoogleAdditionalInfo(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody UserProfileDto userProfileDto) {
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body(new ApiResponse("로그인 상태가 아닙니다.", null));
+        }
+
+        userService.updateMyProfile(user.getId(), userProfileDto);  // 수정
+
+        return ResponseEntity.ok(new ApiResponse("추가 정보가 성공적으로 저장되었습니다.", null));
     }
 }

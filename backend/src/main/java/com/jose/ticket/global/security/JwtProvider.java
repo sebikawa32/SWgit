@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -35,15 +34,18 @@ public class JwtProvider {
 
     @PostConstruct
     protected void init() {
-        // Base64 디코딩된 키를 사용
         byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(secretKey);
         key = Keys.hmacShaKeyFor(keyBytes);
         log.info("✅ JWT 서명 키 초기화 → {}비트", keyBytes.length * 8);
     }
 
-    /** JWT 토큰 생성 */
-    public String createToken(String userId) {
-        Claims claims = Jwts.claims().setSubject(userId);
+    /**
+     * JWT 토큰 생성 (PK 기준)
+     */
+    public String createToken(Long userId, String role) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
+        claims.put("role", role);
+
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMilliseconds);
 
@@ -55,15 +57,30 @@ public class JwtProvider {
                 .compact();
     }
 
-    /** 인증 정보 추출 */
+    /**
+     * 인증 정보 추출: subject는 반드시 user_id (PK)
+     */
     public Authentication getAuthentication(String token) {
-        String userId = getUserId(token);
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다: " + userId));
+        String subject = getUserId(token);
+        Long userId;
+
+        try {
+            userId = Long.parseLong(subject);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("❌ JWT subject 값이 user_id(Long 타입)이 아닙니다. 잘못된 토큰입니다: " + subject);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다. user_id=" + userId));
+
+        log.info("[JwtProvider] 인증된 User: id={}, userId={}, email={}", user.getId(), user.getUserId(), user.getEmail());
+
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }
 
-    /** 사용자 ID 추출 */
+    /**
+     * 토큰에서 subject (user_id) 추출
+     */
     public String getUserId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -73,7 +90,9 @@ public class JwtProvider {
                 .getSubject();
     }
 
-    /** 요청 헤더에서 토큰 추출 */
+    /**
+     * 요청 헤더에서 토큰 추출 (Bearer ...)
+     */
     public String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
         return (bearer != null && bearer.startsWith(BEARER_PREFIX))
@@ -81,10 +100,12 @@ public class JwtProvider {
                 : null;
     }
 
-    /** 토큰 유효성 검증 */
+    /**
+     * 토큰 유효성 검증
+     */
     public boolean validateToken(String token) {
         if (key == null) {
-            log.error("❌ validateToken() 실패: key가 null입니다. @PostConstruct 호출 여부 확인 필요!");
+            log.error("❌ JWT 키가 초기화되지 않았습니다. @PostConstruct 확인 필요");
             return false;
         }
 
@@ -105,12 +126,4 @@ public class JwtProvider {
         }
         return false;
     }
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-        return Long.parseLong(claims.getSubject()); // subject에 userId 저장된 경우
-    }
-
 }

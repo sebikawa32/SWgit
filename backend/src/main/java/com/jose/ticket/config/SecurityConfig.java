@@ -2,6 +2,8 @@ package com.jose.ticket.config;
 
 import com.jose.ticket.global.security.JwtAuthenticationFilter;
 import com.jose.ticket.global.security.JwtProvider;
+import com.jose.ticket.global.security.CustomOAuth2UserService;
+import com.jose.ticket.global.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +29,8 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,7 +55,7 @@ public class SecurityConfig {
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/users/check-id",
-                                "/api/users/reset-password", // ✅ 비밀번호 재설정용 허용
+                                "/api/users/reset-password",
                                 "/api/tickets/**",
                                 "/api/search",
                                 "/api/search/**",
@@ -60,36 +64,51 @@ public class SecurityConfig {
                                 "/api/bookmarks/count",
                                 "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**",
 
-                                // ✅ GPT 검색 API 경로 추가
+                                // ✅ GPT 검색 API
                                 "/api/chat/**",
-                                //알림 경로
-                                "/api/notifications/**",
-                                "/api/test/dday",
-                                "/api/alerts/**",
-                                "/api/alerts",
-                                "/api/notifications/**",
 
-                                // ✅ 이메일 인증 관련 경로 허용
+                                // ✅ 이메일 인증
                                 "/api/auth/email/send",
                                 "/api/auth/email/verify",
-                                "/api/auth/email/reset-password/**"
+                                "/api/auth/email/reset-password/**",
+
+                                // ✅ 알림
+                                "/api/notifications/**",
+                                "/api/alerts/**",
+                                "/api/alerts",
+                                "/api/test/dday",
+
+                                // ✅ ✅ ✅ 구글 로그인 허용 추가
+                                "/oauth2/**",
+                                "/login/oauth2/**",
+                                "/api/auth/google-login"
                         ).permitAll()
 
-                        // 🔓 게시글 단건 조회(GET) 허용
+                        // 🔓 게시글 단건 조회(GET)
                         .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
 
                         // 🔓 댓글 조회 허용
                         .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
 
-                        // 🔐 댓글 작성은 인증 필요
+                        // 🔐 댓글 작성
                         .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
 
-                        // 🔐 게시글 작성/수정/삭제는 인증 필요
+                        // 🔐 게시글 작성/수정/삭제
                         .requestMatchers("/api/boards/**").authenticated()
 
-                        // 🔐 이외 모든 요청 인증 필요
+                        // 🔐 나머지 모두 인증 필요
                         .anyRequest().authenticated()
                 )
+
+                // ✅ OAuth2 로그인 설정 추가
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2SuccessHandler)
+                )
+
+                // ✅ JWT 필터 등록
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class
