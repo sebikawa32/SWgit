@@ -12,7 +12,7 @@ body, html, #root, .App {
 .content {
   width: 90%;
   max-width: 1000px;
-  margin: 60px auto 20px;
+  margin: 60px auto 20px auto;
   border-radius: 12px;
   padding: 24px;
   padding-top: 0;
@@ -23,7 +23,7 @@ body, html, #root, .App {
   box-shadow: none !important;
 }
 
-/* ─────────── 제목 및 헤더 텍스트 ─────────── */
+/* ─────────── 제목 및 헤더 ─────────── */
 h2 {
   font-size: 1.6rem;
   margin: 16px 0;
@@ -40,7 +40,6 @@ h2 {
   flex-wrap: wrap;
   margin-bottom: 16px;
 }
-
 .category-button {
   background-color: #e4e7ec;
   border: none;
@@ -52,24 +51,25 @@ h2 {
   font-weight: 600;
   transition: all 0.3s ease;
 }
-
 .category-button:hover {
   background-color: #d0d5da;
   color: #111;
 }
-
 .category-button.active {
   background: #333;
   color: #fff;
 }
 
-/* ─────────── 카드 기본 스타일 ─────────── */
+/* ─────────── 카드 기본 ─────────── */
 .event-card-link {
-  flex: 0 0 auto;
+  flex: 1 1 0;
   text-decoration: none;
   color: inherit;
+  min-width: 0;
+  max-width: 20%;
+  display: flex;
+  justify-content: center;
 }
-
 .event-card {
   height: 370px;
   background: #fff;
@@ -79,25 +79,25 @@ h2 {
   position: relative;
   cursor: pointer;
   transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
 .event-card:hover {
   transform: translateY(-3px);
 }
-
 .event-card img {
   width: 100%;
   height: 300px;
   object-fit: cover;
   display: block;
+  border-radius: 0 0 8px 8px;
 }
 
-/* 제목 */
 .card-title {
   text-align: center;
   padding: 4px 6px 0;
 }
-
 .card-title h3 {
   font-size: 0.9rem;
   font-weight: 600;
@@ -107,12 +107,10 @@ h2 {
   white-space: nowrap;
 }
 
-/* 날짜 및 장소 */
 .card-info {
   text-align: center;
   padding: 0 6px;
 }
-
 .card-info p {
   font-size: 0.85rem;
   color: #555;
@@ -128,14 +126,12 @@ h2 {
   padding-top: 90px;
   margin-bottom: 60px;
 }
-
 .banner-container {
   position: relative;
   width: 100%;
   aspect-ratio: 1908 / 508;
   overflow: hidden;
 }
-
 .banner-image {
   position: absolute;
   top: 0;
@@ -147,13 +143,12 @@ h2 {
   transition: opacity 1s ease;
   z-index: 0;
 }
-
 .banner-image.active {
   opacity: 1;
   z-index: 1;
 }
 
-/* ─────────── 랭킹 리스트 🔥 ─────────── */
+/* ─────────── 랭킹 리스트 ─────────── */
 .ranking-list {
   display: flex;
   justify-content: space-between;
@@ -161,17 +156,14 @@ h2 {
   gap: 8px;
   width: 100%;
 }
-
 .ranking-list .event-card-link {
   flex: 1 1 0;
   max-width: calc(20% - 6.4px);
   min-width: 0;
 }
-
 .ranking-list .event-card {
   height: 360px;
 }
-
 .ranking-badge {
   position: absolute;
   top: 8px;
@@ -193,102 +185,225 @@ h2 {
   gap: 16px;
   margin-top: 16px;
 }
-
 .ticket-row {
   display: flex;
   gap: 8px;
   justify-content: space-between;
 }
-
 .ticket-row .event-card-link {
-  flex: 1;
+  flex: 1 1 0;
+  max-width: 20%;
 }
+
+/* ─────────── OPENING 멀티슬라이드(각진 네모, gap 24px, 텍스트 잘림 방지) ─────────── */
+.opening-multi-slider-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 24px 0 8px 0;
+}
+
+.opening-multi-slider-view {
+  width: 1220px;
+  max-width: 100vw;
+  overflow: hidden;
+  border-radius: 0 !important;     /* 네모 */
+  background: #fafbfc;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.opening-multi-slider-track {
+  display: flex;
+  gap: 24px;
+  transition: transform 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+  will-change: transform;
+}
+
+/* 카드 크기 및 높이 조정 부분 */
+.opening-multi-slider-wrapper .event-card-link {
+  min-width: 220px !important;
+  max-width: 220px !important;
+  flex: 0 0 220px !important;
+  margin: 0 !important;
+}
+
+.opening-multi-slider-wrapper .event-card {
+  width: 220px !important;
+  height: 380px !important;  /* 카드 높이 키움 */
+  border-radius: 0 !important;       
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.opening-multi-slider-wrapper .event-card img {
+  width: 100%;
+  height: 300px !important;  /* 이미지 높이 키움 */
+  object-fit: cover;
+  border-radius: 0 !important;
+}
+
+/* 제목, 날짜, 장소 모두 왼쪽정렬 */
+.opening-multi-slider-wrapper .card-title {
+  text-align: left !important;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px 8px 0 8px;
+  overflow: hidden;
+}
+.opening-multi-slider-wrapper .card-title h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 날짜, 장소 텍스트 스타일 */
+.opening-multi-slider-wrapper .card-info {
+  text-align: left !important;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px 12px 8px 12px;
+  box-sizing: border-box;
+}
+.opening-multi-slider-wrapper .card-info p {
+  font-size: 0.96rem;
+  color: #555;
+  margin: 2px 0 0 0;
+  letter-spacing: -0.2px;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;      
+  -webkit-box-orient: vertical;
+}
+
+/* D-day 원형 뱃지 - 크기 키우고 위치 중앙에 더 가깝게 */
+.opening-multi-slider-wrapper .dday-circle-wrapper {
+  position: absolute;
+  top: 50%;              /* 중앙에 가깝게 위치 조정 */
+  left: 50%;
+  width: 90px !important;   /* 크기 키움 */
+  height: 90px !important;  /* 크기 키움 */
+  transform: translate(-50%, 50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.opening-multi-slider-wrapper .dday-svg-circle {
+  width: 90px !important;   /* 크기 키움 */
+  height: 90px !important;  /* 크기 키움 */
+}
+.opening-multi-slider-wrapper .dday-text-overlay {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 20px;          /* 폰트 크기도 조금 키움 */
+  color: #fff;
+  z-index: 3;
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 8px rgba(0,0,0,0.78);
+  pointer-events: none;
+}
+
+/* 슬라이더 버튼/인디케이터 */
+.slider-arrow {
+  border: none;
+  background: #eee;
+  color: #333;
+  font-size: 2rem;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.slider-arrow:disabled {
+  background: #f2f2f2;
+  color: #bbb;
+  cursor: default;
+}
+.slider-indicator {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 15px;
+  color: #888;
+}
+
 
 /* ─────────── 반응형 대응 ─────────── */
-@media (max-width: 1024px) {
-  .event-card-link {
-    width: 200px;
+@media (max-width: 1400px) {
+  .opening-multi-slider-view {
+    width: 980px;
   }
-
-  .event-card {
-    height: 330px;
-  }
-
-  .event-card img {
-    height: 260px;
-  }
-
-  .ranking-list {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .ranking-list .event-card-link {
-    max-width: 45%;
-  }
-
-  .ticket-row {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .ticket-row .event-card-link {
-    flex: 1 1 45%;
+  .opening-multi-slider-wrapper .event-card-link,
+  .opening-multi-slider-wrapper .event-card {
+    min-width: 170px !important;
+    max-width: 170px !important;
+    width: 170px !important;
   }
 }
-.ticket-slider-horizontal {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 12px 0 18px 0;
-  scroll-behavior: smooth;
-}
-
-.ticket-slider-horizontal::-webkit-scrollbar {
-  height: 7px;
-  background: #f2f2f2;
-  border-radius: 10px;
-}
-.ticket-slider-horizontal::-webkit-scrollbar-thumb {
-  background: #e0e0e0;
-  border-radius: 10px;
-}
-
-.ticket-slider-horizontal .event-card-link {
-  flex: 0 0 196px;   /* 고정 폭, 반응형은 아래에서 커버 */
-  max-width: 196px;
-  min-width: 0;
-}
-
-.ticket-slider-horizontal .event-card {
-  height: 355px;
-}
-
-.dday-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background-color: #ff9900;
-  color: #fff;
-  font-size: 0.95rem;
-  font-weight: bold;
-  border-radius: 12px;
-  padding: 4px 11px 4px 11px;
-  z-index: 2;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.13);
-  letter-spacing: -0.5px;
-  opacity: 0.93;
-}
-
-/* 반응형 */
-@media (max-width: 1024px) {
-  .ticket-slider-horizontal .event-card-link {
-    flex: 0 0 45vw;
-    max-width: 45vw;
+@media (max-width: 1200px) {
+  .opening-multi-slider-view {
+    width: 740px;
   }
-  .ticket-slider-horizontal .event-card {
-    height: 260px;
+  .opening-multi-slider-wrapper .event-card-link,
+  .opening-multi-slider-wrapper .event-card {
+    min-width: 130px !important;
+    max-width: 130px !important;
+    width: 130px !important;
+    height: 200px !important;
+  }
+  .opening-multi-slider-wrapper .event-card img {
+    height: 110px;
+  }
+  .opening-multi-slider-wrapper .dday-circle-wrapper,
+  .opening-multi-slider-wrapper .dday-svg-circle {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .opening-multi-slider-wrapper .dday-text-overlay {
+    font-size: 11px !important;
   }
 }
-
+@media (max-width: 800px) {
+  .opening-multi-slider-view {
+    width: 98vw;
+    min-width: 0;
+  }
+  .opening-multi-slider-wrapper .event-card-link,
+  .opening-multi-slider-wrapper .event-card {
+    min-width: 90px !important;
+    max-width: 90px !important;
+    width: 90px !important;
+    height: 120px !important;
+  }
+  .opening-multi-slider-wrapper .event-card img {
+    height: 55px;
+  }
+  .opening-multi-slider-wrapper .dday-circle-wrapper,
+  .opening-multi-slider-wrapper .dday-svg-circle {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .opening-multi-slider-wrapper .dday-text-overlay {
+    font-size: 7px !important;
+  }
+}

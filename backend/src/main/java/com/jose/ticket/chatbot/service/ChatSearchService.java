@@ -25,8 +25,9 @@ public class ChatSearchService {
                 filter.getPriceMax() == null &&
                 filter.getStartDate() == null &&
                 filter.getEndDate() == null &&
-                filter.getTitle() == null) {
-            System.out.println("❌ 주요 필터가 모두 비어 있어 전체 티켓 노출을 방지합니다.");
+                filter.getTitle() == null &&
+                (filter.getBookingProvider() == null || filter.getBookingProvider().isBlank())) {
+            System.out.println("❌ 모든 필터가 null입니다. 전체 티켓 노출을 방지합니다.");
             return List.of();
         }
 
