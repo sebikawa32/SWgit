@@ -3,6 +3,20 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './BoardDetailPage.css';
 
+// UTC → KST 변환 및 YYYY-MM-DD HH:mm:ss 포맷 함수
+function toKST(dateStr) {
+  if (!dateStr) return "";
+  const utc = new Date(dateStr);
+  const kst = new Date(utc.getTime() + 9 * 60 * 60 * 1000);
+  const Y = kst.getFullYear();
+  const M = String(kst.getMonth() + 1).padStart(2, "0");
+  const D = String(kst.getDate()).padStart(2, "0");
+  const h = String(kst.getHours()).padStart(2, "0");
+  const m = String(kst.getMinutes()).padStart(2, "0");
+  const s = String(kst.getSeconds()).padStart(2, "0");
+  return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+}
+
 const BoardDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -121,7 +135,7 @@ const BoardDetail = () => {
 
       <div className="board-meta">
         <div>작성자: {board.nickname}</div>
-        <div>작성일: {new Date(board.createdAt).toLocaleString()}</div>
+        <div>작성일: {toKST(board.createdAt)}</div>
         {board.ticketId && board.ticketTitle && (
           <div>
             연결된 공연:{" "}
@@ -142,7 +156,9 @@ const BoardDetail = () => {
             <li key={c.id}>
               <div className="comment-header-inline">
                 <span className="nickname">{c.nickname}</span>
-                <span className="comment-date">· {new Date(c.createdAt).toLocaleString()}</span>
+                <span className="comment-date">
+                  · {toKST(c.createdAt)}
+                </span>
               </div>
               <div className="comment-content">{c.content}</div>
               {(user?.id === String(c.writerId) || user?.role === 'ADMIN') && (

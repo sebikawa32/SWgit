@@ -10,17 +10,20 @@ function NotificationBell({ userId }) {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // ISO 문자열(UTC) → "YYYY-MM-DD HH:mm:ss" 포맷 함수
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    const Y = date.getFullYear();
-    const M = String(date.getMonth() + 1).padStart(2, "0");
-    const D = String(date.getDate()).padStart(2, "0");
-    const h = String(date.getHours()).padStart(2, "0");
-    const m = String(date.getMinutes()).padStart(2, "0");
-    const s = String(date.getSeconds()).padStart(2, "0");
-    return `${Y}-${M}-${D} ${h}:${m}:${s}`;
-  };
+
+  // UTC → KST 변환 후 YYYY-MM-DD HH:mm:ss 포맷
+const formatDate = (isoString) => {
+  if (!isoString) return "";
+  const utc = new Date(isoString);
+  const kst = new Date(utc.getTime() + 9 * 60 * 60 * 1000);
+  const Y = kst.getFullYear();
+  const M = String(kst.getMonth() + 1).padStart(2, "0");
+  const D = String(kst.getDate()).padStart(2, "0");
+  const h = String(kst.getHours()).padStart(2, "0");
+  const m = String(kst.getMinutes()).padStart(2, "0");
+  const s = String(kst.getSeconds()).padStart(2, "0");
+  return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+};
 
   // 실시간 알림 받기
   useSseNotification(userId, (noti) => {
