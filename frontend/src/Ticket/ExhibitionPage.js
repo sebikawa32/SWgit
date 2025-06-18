@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Ticket.css';
+import HotTicketSlider from './HotTicketSlider';
 
 const ExhibitionPage = () => {
   const [tickets, setTickets] = useState([]);
   const [popularExhibitions, setPopularExhibitions] = useState([]);
+  const [failedPopularIds, setFailedPopularIds] = useState([]);
+  const [failedMainIds, setFailedMainIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const pageSize = 30;
@@ -19,13 +22,35 @@ const ExhibitionPage = () => {
     return `${year}.${month}.${day}`;
   };
 
+  const getValidPopularExhibitions = () =>
+    popularExhibitions
+      .filter(exhibition =>
+        exhibition.imageUrl &&
+        exhibition.imageUrl.trim() !== "" &&
+        !failedPopularIds.includes(exhibition.id)
+      )
+      .slice(0, 5);
+
+  const getValidTickets = () =>
+    tickets
+      .filter(ticket =>
+        ticket.imageUrl &&
+        ticket.imageUrl.trim() !== "" &&
+        !failedMainIds.includes(ticket.id)
+      );
+
+  const handleImageError = (ticketId, type) => {
+    if (type === "popular") setFailedPopularIds(prev => [...prev, ticketId]);
+    if (type === "main") setFailedMainIds(prev => [...prev, ticketId]);
+  };
+
   // 전체 전시 리스트
   const fetchTickets = async (page) => {
     try {
       const res = await axios.get(`/api/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
-      // 이미지 없는 전시 빼고 보여주기
-      setTickets(res.data.content.filter(t => t.imageUrl && t.imageUrl.trim() !== ""));
+      setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
+      setFailedMainIds([]);
     } catch (err) {
       console.error('❌ 전시 티켓 불러오기 오류:', err);
     }
@@ -34,8 +59,11 @@ const ExhibitionPage = () => {
   // 인기 전시 리스트 (최소 10개 이상 받아와서 이미지 있는 것만 5개 보여주기)
   const fetchPopularExhibitions = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular?categoryId=2&size=15');
-      setPopularExhibitions(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 5));
+      const res = await axios.get('/api/tickets/popular', {
+        params: { categoryId: 2, size: 10 }
+      });
+      setPopularExhibitions(res.data);
+      setFailedPopularIds([]);
     } catch (err) {
       console.error('🔥 인기 전시 불러오기 오류:', err);
     }
@@ -91,45 +119,30 @@ const ExhibitionPage = () => {
 
   return (
     <div className="concert-page">
-      {/* 🔥 인기 전시 섹션 */}
-      <section className="popular-concerts">
-        <h2>Hot</h2>
-        <div className="popular-concerts-grid">
-          {popularExhibitions.length === 0 ? (
-            <p>인기 전시 정보 준비 중입니다.</p>
-          ) : (
-            popularExhibitions.map((exhibition, index) => (
-              <Link to={`/ticket/${exhibition.id}`} key={exhibition.id} className="concert-card-link">
-                <div className="concert-card">
-                  <div className="ranking-badge">{`${index + 1}위`}</div>
-                  <div className="concert-card-image-wrapper">
-                    <img src={exhibition.imageUrl} alt={exhibition.title} />
-                  </div>
-                  <div className="concert-info">
-                    <h2>{exhibition.title}</h2>
-                    <p>{formatDate(exhibition.eventStartDatetime)} ~ {formatDate(exhibition.eventEndDatetime)}</p>
-                    <p>{exhibition.venue}</p>
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+      <h2 className="concert-title">WHAT'S Hot</h2>
+      {/* Hot 섹션 - 인기 전시 슬라이더 */}
+      <section className="popular-concerts" style={{ marginBottom: '48px' }}>
+        <HotTicketSlider tickets={getValidPopularExhibitions()} />
       </section>
 
+      {/* Hot - Exhibition 사이 구분선 */}
       <hr className="section-divider" />
-
-      <h1>Exhibition</h1>
-
-      {tickets.length === 0 ? (
-        <p>전시 데이터가 없습니다.</p>
+      <section style={{ marginBottom: '100px' }}></section>
+      <h1 className="concert-title">EXHIBITION</h1>
+      <section style={{ marginBottom: '70px' }}></section>
+      {getValidTickets().length === 0 ? (
+        <p style={{ textAlign: "center" }}>전시 데이터가 없습니다.</p>
       ) : (
         <div className="concert-grid">
-          {tickets.map((ticket) => (
+          {getValidTickets().map((ticket) => (
             <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="concert-card-link">
               <div className="concert-card">
                 <div className="concert-card-image-wrapper">
-                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <img
+                    src={ticket.imageUrl}
+                    alt={ticket.title}
+                    onError={() => handleImageError(ticket.id, "main")}
+                  />
                 </div>
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>

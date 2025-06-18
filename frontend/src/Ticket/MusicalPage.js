@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Ticket.css';
+import HotTicketSlider from './HotTicketSlider';
 
 const MusicalPage = () => {
   const [tickets, setTickets] = useState([]);
   const [popularMusicals, setPopularMusicals] = useState([]);
+  const [failedPopularIds, setFailedPopularIds] = useState([]);
+  const [failedMainIds, setFailedMainIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const pageSize = 30;
@@ -19,24 +22,48 @@ const MusicalPage = () => {
     return `${year}.${month}.${day}`;
   };
 
-  // 전체 뮤지컬 리스트 (이미지 없는거 제거)
+  const getValidPopularMusicals = () =>
+    popularMusicals
+      .filter(musical =>
+        musical.imageUrl &&
+        musical.imageUrl.trim() !== "" &&
+        !failedPopularIds.includes(musical.id)
+      )
+      .slice(0, 5);
+
+  const getValidTickets = () =>
+    tickets
+      .filter(ticket =>
+        ticket.imageUrl &&
+        ticket.imageUrl.trim() !== "" &&
+        !failedMainIds.includes(ticket.id)
+      );
+
+  const handleImageError = (ticketId, type) => {
+    if (type === "popular") setFailedPopularIds(prev => [...prev, ticketId]);
+    if (type === "main") setFailedMainIds(prev => [...prev, ticketId]);
+  };
+
+  // 전체 뮤지컬 리스트
   const fetchTickets = async (page) => {
     try {
       const res = await axios.get(`/api/tickets/sorted/page?categoryId=4&page=${page}&size=${pageSize}`);
-      setTickets(res.data.content.filter(t => t.imageUrl && t.imageUrl.trim() !== ""));
+      setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
+      setFailedMainIds([]);
     } catch (err) {
       console.error('❌ 뮤지컬 티켓 불러오기 오류:', err);
     }
   };
 
-  // 인기 뮤지컬 리스트 (최소 10개 이상 받아서 이미지 있는 것만 5개)
+  // 인기 뮤지컬 리스트
   const fetchPopularMusicals = async () => {
     try {
       const res = await axios.get('/api/tickets/popular', {
-        params: { categoryId: 4, size: 15 },
+        params: { categoryId: 4, size: 10 },
       });
-      setPopularMusicals(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== "").slice(0, 5));
+      setPopularMusicals(res.data);
+      setFailedPopularIds([]);
     } catch (err) {
       console.error('🔥 인기 뮤지컬 불러오기 오류:', err);
     }
@@ -92,45 +119,28 @@ const MusicalPage = () => {
 
   return (
     <div className="concert-page">
-      {/* 🔥 인기 뮤지컬 섹션 */}
-      <section className="popular-concerts">
-        <h2>Hot</h2>
-        <div className="popular-concerts-grid">
-          {popularMusicals.length === 0 ? (
-            <p>인기 뮤지컬 정보 준비 중입니다.</p>
-          ) : (
-            popularMusicals.map((musical, index) => (
-              <Link to={`/ticket/${musical.id}`} key={musical.id} className="concert-card-link">
-                <div className="concert-card">
-                  <div className="ranking-badge">{`${index + 1}위`}</div>
-                  <div className="concert-card-image-wrapper">
-                    <img src={musical.imageUrl} alt={musical.title} />
-                  </div>
-                  <div className="concert-info">
-                    <h2>{musical.title}</h2>
-                    <p>{formatDate(musical.eventStartDatetime)} ~ {formatDate(musical.eventEndDatetime)}</p>
-                    <p>{musical.venue}</p>
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+      <h2 className="concert-title">WHAT'S Hot</h2>
+      <section className="popular-concerts" style={{ marginBottom: '48px' }}>
+        <HotTicketSlider tickets={getValidPopularMusicals()} />
       </section>
 
       <hr className="section-divider" />
-
-      <h1>Musical</h1>
-
-      {tickets.length === 0 ? (
-        <p>뮤지컬 데이터가 없습니다.</p>
+      <section style={{ marginBottom: '100px' }}></section>
+      <h1 className="concert-title">MUSICAL</h1>
+      <section style={{ marginBottom: '70px' }}></section>
+      {getValidTickets().length === 0 ? (
+        <p style={{ textAlign: "center" }}>뮤지컬 데이터가 없습니다.</p>
       ) : (
         <div className="concert-grid">
-          {tickets.map((ticket) => (
+          {getValidTickets().map((ticket) => (
             <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="concert-card-link">
               <div className="concert-card">
                 <div className="concert-card-image-wrapper">
-                  <img src={ticket.imageUrl} alt={ticket.title} />
+                  <img
+                    src={ticket.imageUrl}
+                    alt={ticket.title}
+                    onError={() => handleImageError(ticket.id, "main")}
+                  />
                 </div>
                 <div className="concert-info">
                   <h2>{ticket.title}</h2>
