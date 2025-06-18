@@ -200,7 +200,7 @@ const HomePage = () => {
     const format = (dateStr) => {
       if (!dateStr) return '';
       const date = new Date(dateStr);
-      const year = String(date.getFullYear()).slice(2);
+      const year = String(date.getFullYear()).slice();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}.${month}.${day}`;
@@ -414,6 +414,9 @@ const HomePage = () => {
             ))}
           </div>
         </section>
+
+        <section style={{ marginBottom: '100px' }}></section>
+        
       </main>
     </>
   );
