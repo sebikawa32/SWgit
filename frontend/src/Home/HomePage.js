@@ -291,7 +291,7 @@ const HomePage = () => {
           navigate(`/chat/search?query=${encoded}`, { state: { results: data } });
         }} />
 
-        <hr style={{ margin: '50px 0' }} />
+        <hr style={{ margin: '100px 0' }} />
 
         <section>
           <h2>RANKING</h2>

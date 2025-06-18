@@ -80,14 +80,14 @@ h2 {
   box-shadow: 0 4px 18px rgba(0,0,0,0.08);
   position: relative;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease;  /*움찔효과*/
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
 }
 .event-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-3px); /*움찔효과*/
 }
 .event-card img {
   width: 100%;
@@ -182,8 +182,8 @@ h2 {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #ff8c00;
-  color: rgb(255, 255, 255);
+  background-color: #ff8400 !important;
+  color: rgb(255, 255, 255)!important;
   font-weight: bold;
   font-size: 0.98rem;
   padding: 5px 12px;
@@ -363,6 +363,8 @@ h2 {
     height: 120px !important;
   }
 }
+
+/* 1200px 이하 */
 @media (max-width: 1200px) {
   .opening-multi-slider-view {
     width: 740px;
@@ -380,6 +382,7 @@ h2 {
   .opening-multi-slider-wrapper .event-card img {
     height: 70px !important;
   }
+  /* 오프닝 뱃지용만! */
   .opening-multi-slider-wrapper .dday-circle-wrapper,
   .opening-multi-slider-wrapper .dday-svg-circle {
     width: 40px !important;
@@ -389,6 +392,8 @@ h2 {
     font-size: 11px !important;
   }
 }
+
+/* 800px 이하 */
 @media (max-width: 800px) {
   .opening-multi-slider-view {
     width: 98vw;
@@ -407,6 +412,7 @@ h2 {
   .opening-multi-slider-wrapper .event-card img {
     height: 55px !important;
   }
+  /* 오프닝 뱃지용만! */
   .opening-multi-slider-wrapper .dday-circle-wrapper,
   .opening-multi-slider-wrapper .dday-svg-circle {
     width: 24px !important;
