@@ -205,7 +205,7 @@ const HomePage = () => {
         <hr style={{ margin: '50px 0' }} />
 
         <section>
-          <h2>COMING SOON</h2>
+          <h2>OPENING</h2>
           <div className="ticket-slider-horizontal">
             {comingSoonTickets.map(ticket => (
               <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">

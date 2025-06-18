@@ -41,7 +41,8 @@ const BoardDetail = () => {
         setBoard(boardRes.data);
 
         try {
-          const commentRes = await axios.get(`http://localhost:8080/api/comments/board/${id}`, { headers });
+          // ✅ 댓글 조회 API 경로 수정
+          const commentRes = await axios.get(`http://localhost:8080/api/comments?boardId=${id}`, { headers });
           setComments(commentRes.data);
         } catch (commentErr) {
           console.error("❌ 댓글 조회 실패", commentErr);
@@ -125,7 +126,6 @@ const BoardDetail = () => {
 
   return (
     <div className="board-detail-container">
-      {/* 제목 + 버튼 한 줄 */}
       <div className="board-title-row">
         <h1>{board.title}</h1>
         {isOwnerOrAdmin && (
