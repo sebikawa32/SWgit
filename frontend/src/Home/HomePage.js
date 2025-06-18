@@ -30,13 +30,13 @@ const bannerImages = [
 ];
 
 const bannerLinks = [
-  '/ticket/32603',
-  'ticket/39020',
-  '/ticket/33136',
-  '/ticket/32901',
-  'ticket/39020',
-  'ticket/61986',
-  'ticket/61985',
+  '/ticket/32603',   /*위키드 */
+  '/ticket/39020',  /*이세계 */
+  '/ticket/33136', /*매디슨 */
+  '/ticket/32901', /*팬텀 */
+  '/ticket/61986', /*카더가든*/
+  '/ticket/61987',  /*데이먼스*/
+  '/ticket/61985', /*재즈페스티벌*/
 
 ];
 
