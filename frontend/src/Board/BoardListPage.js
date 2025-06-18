@@ -12,11 +12,14 @@ const BoardList = ({ type = "general", ticketId }) => {
 
   const userRole = localStorage.getItem('role'); // ✅ 사용자 역할 확인용
 
+  // ticketId 유효성 확인
+  const hasValidTicketId = ticketId !== undefined && ticketId !== null;
+
   useEffect(() => {
     const fetchBoards = async () => {
       try {
         const sortParam = type !== 'notice' ? `&sort=${sort}` : "";
-        const url = ticketId
+        const url = hasValidTicketId
           ? `/api/boards/tickets/${ticketId}/boards?type=${type}`
           : `/api/boards?type=${type}${sortParam}`;
 
@@ -32,7 +35,7 @@ const BoardList = ({ type = "general", ticketId }) => {
   }, [type, ticketId, sort]);
 
   const handleWriteClick = () => {
-    const query = `?type=${type}` + (ticketId ? `&ticketId=${ticketId}` : '');
+    const query = `?type=${type}` + (hasValidTicketId ? `&ticketId=${ticketId}` : '');
     navigate(`/boards/new${query}`);
   };
 
@@ -50,7 +53,7 @@ const BoardList = ({ type = "general", ticketId }) => {
 
       {/* 정렬 및 글쓰기 */}
       <div className="board-list-controls">
-        {type !== 'notice' && !ticketId ? (
+        {type !== 'notice' && !hasValidTicketId ? (
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}

@@ -15,16 +15,18 @@ function LoginPage({ setIsLoggedIn }) {
       .then(async (res) => {
         alert("로그인 성공!");
         const { token, userId: userPk, role } = res.data.data;
+
+        // ✅ 저장 및 전역 axios 설정
         localStorage.setItem("accessToken", token);
         localStorage.setItem("userId", userPk);
         localStorage.setItem("role", role);
         localStorage.setItem("provider", "LOCAL");
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
         setIsLoggedIn(true);
 
         try {
-          const meRes = await axios.get("http://localhost:8080/api/users/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const meRes = await axios.get("http://localhost:8080/api/users/me");
           const profile = meRes.data.data;
           localStorage.setItem("nickname", profile.nickname || "");
           navigate("/", { replace: true });
@@ -47,19 +49,19 @@ function LoginPage({ setIsLoggedIn }) {
       const res = await axios.post("http://localhost:8080/api/auth/google-login", { idToken });
       const { token, userId: userPk, role, nickname, provider } = res.data;
 
+      // ✅ 저장 및 전역 axios 설정
       localStorage.setItem("accessToken", token);
       localStorage.setItem("tempGoogleToken", token);
       localStorage.setItem("userId", userPk);
       localStorage.setItem("role", role);
       localStorage.setItem("nickname", nickname);
       localStorage.setItem("provider", provider);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       setIsLoggedIn(true);
 
       try {
-        const meRes = await axios.get("http://localhost:8080/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const meRes = await axios.get("http://localhost:8080/api/users/me");
         const profile = meRes.data.data;
         const needsAdditionalInfo =
           !profile.nickname || !profile.realname || !profile.phoneNumber;

@@ -3,6 +3,7 @@ package com.jose.ticket.domain.user.service;
 import com.jose.ticket.domain.user.dto.*;
 import com.jose.ticket.domain.user.entity.User;
 import com.jose.ticket.domain.user.repository.UserRepository;
+import com.jose.ticket.domain.bookmark.repository.BookmarkRepository; // ✅ 추가
 import com.jose.ticket.global.exception.PasswordMismatchException;
 import com.jose.ticket.global.security.JwtProvider;
 import jakarta.transaction.Transactional;
@@ -17,10 +18,10 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BookmarkRepository bookmarkRepository; // ✅ 주입
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    // 회원가입 처리 - userId는 유저가 직접 지정하므로 여전히 체크 가능
     public UserResponse signup(UserSignupRequest request) {
         if (userRepository.existsByUserId(request.getUserId()))
             throw new RuntimeException("이미 존재하는 아이디입니다.");
@@ -44,7 +45,6 @@ public class UserService {
         return UserResponse.fromEntity(userRepository.save(user));
     }
 
-    // 로그인 처리 - PK(id) 기준으로 토큰 생성
     public TokenResponse login(UserLoginRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
@@ -61,19 +61,16 @@ public class UserService {
         );
     }
 
-    // 아이디 중복 확인은 여전히 userId 기준
     public boolean isUserIdExists(String userId) {
         return userRepository.existsByUserId(userId);
     }
 
-    // 사용자 프로필 조회 - PK(id) 기준으로 조회
     public UserResponse findById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. id=" + id));
         return UserResponse.fromEntity(user);
     }
 
-    // 비밀번호 재설정 (email 기준)
     public void updatePassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 사용자를 찾을 수 없습니다."));
@@ -83,7 +80,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 사용자 프로필 수정 - PK(id) 기준
     @Transactional
     public void updateMyProfile(Long id, UserProfileDto dto) {
         User user = userRepository.findById(id)
@@ -94,7 +90,6 @@ public class UserService {
         user.setPhoneNumber(dto.getPhoneNumber());
     }
 
-    // 사용자 프로필 조회 - PK(id) 기준
     @Transactional
     public UserProfileDto getMyProfile(Long id) {
         User user = userRepository.findById(id)
@@ -109,7 +104,6 @@ public class UserService {
                 .build();
     }
 
-    // 비밀번호 변경 - PK(id) 기준
     @Transactional
     public void changePassword(Long id, ChangePasswordDto dto) {
         User user = userRepository.findById(id)
@@ -126,30 +120,52 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
     }
 
-    // 회원 탈퇴 - PK(id) 기준
+    /** ✅ 회원 탈퇴 - 관련 북마크 먼저 삭제 후 유저 삭제 **/
     @Transactional
     public void deleteAccount(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        userRepository.delete(user);
+
+        bookmarkRepository.deleteByUserId(id);  // 🔥 북마크 먼저 삭제
+        userRepository.delete(user);            // 🔥 그 후 유저 삭제
     }
 
-    // 비밀번호 유효성 검사
     private boolean isValidPassword(String password) {
         return password != null &&
                 password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+=\\-{}\\[\\]:;\"'<>,.?/]).{8,}$");
     }
 
-    // 구글 로그인 추가정보 수정 (PK id 기준)
     @Transactional
     public void updateGoogleUserAdditionalInfo(GoogleSignupRequest request) {
-        User user = userRepository.findById(request.getId())  // 여기서 getId() 호출
+        User user = userRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + request.getId()));
 
         user.setNickname(request.getNickname());
         user.setRealname(request.getRealname());
         user.setPhoneNumber(request.getPhoneNumber());
 
+        userRepository.save(user);
+    }
+
+    public void disconnectGoogle(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 🔒 일반 로그인 정보가 없는 경우 → 계정 삭제
+        boolean isGoogleOnlyAccount =
+                user.getProvider() != null && user.getProvider().equalsIgnoreCase("google")
+                        && user.getUserId() == null
+                        && user.getPassword() == null;
+
+        if (isGoogleOnlyAccount) {
+            // 즐겨찾기 등 연관 엔티티 먼저 정리 필요 시 처리
+            userRepository.delete(user);
+            return;
+        }
+
+        // 🔄 일반 계정 정보가 있는 경우 → 단순 연동 해제만 수행
+        user.setProvider(null);
+        user.setProviderId(null);
         userRepository.save(user);
     }
 }

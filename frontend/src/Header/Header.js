@@ -24,8 +24,21 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
-    const storedNickname = localStorage.getItem("nickname") || "";
-    setNickname(storedNickname);
+
+    if (token) {
+      axios.get("/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const newNickname = res.data?.data?.nickname;
+        setNickname(newNickname);
+        localStorage.setItem("nickname", newNickname);
+      })
+      .catch((err) => {
+        console.error("닉네임 조회 실패:", err);
+        setNickname("");
+      });
+    }
   }, [externalIsLoggedIn]);
 
   useEffect(() => {
@@ -66,9 +79,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
     fetchPopularKeywords();
     setShowDropdown(true);
   };
-  const handleInputBlur = () => {
-    setTimeout(() => setIsInputFocused(false), 120);
-  };
+  const handleInputBlur = () => setTimeout(() => setIsInputFocused(false), 120);
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
     fetchPopularKeywords();
@@ -79,9 +90,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
     fetchPopularKeywords();
     setShowDropdown(true);
   };
-  const handleInputMouseLeave = () => {
-    setIsInputHovered(false);
-  };
+  const handleInputMouseLeave = () => setIsInputHovered(false);
   const handleDropdownMouseEnter = () => setIsDropdownHovered(true);
   const handleDropdownMouseLeave = () => setIsDropdownHovered(false);
 
@@ -149,25 +158,15 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
               autoComplete="off"
             />
             <button className="search-btn" onClick={handleSearch} type="button">
-              {/* 변경된 돋보기 아이콘 */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-search"
-                viewBox="0 0 16 16"
-              >
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                   className="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
               </svg>
             </button>
             {shouldShowDropdown && (
-              <ul
-                className="search-dropdown"
-                ref={dropdownRef}
-                onMouseEnter={handleDropdownMouseEnter}
-                onMouseLeave={handleDropdownMouseLeave}
-              >
+              <ul className="search-dropdown" ref={dropdownRef}
+                  onMouseEnter={handleDropdownMouseEnter}
+                  onMouseLeave={handleDropdownMouseLeave}>
                 {popularKeywords.map((item, idx) => (
                   <li key={idx} onClick={() => handleKeywordClick(item.keyword)}>
                     <span style={{ fontWeight: 600, color: "#c0c0c0" }}>{idx + 1}위</span>&nbsp;
@@ -187,15 +186,9 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
                 <span className="user-greeting">{nickname}님</span>
                 <div className="my-menu">
                   <button className="my-btn" type="button">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="white"
-                      className="bi bi-caret-down-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                         fill="white" className="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
                     </svg>
                   </button>
                   <div className="my-dropdown">

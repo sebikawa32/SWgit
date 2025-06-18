@@ -24,13 +24,20 @@ const bannerImages = [
   '/images/banner2.jpeg',
   '/images/banner3.jpeg',
   '/images/banner4.jpeg',
+  '/images/banner5.png',
+  '/images/banner6.png',
+  '/images/banner7.png',
 ];
 
 const bannerLinks = [
   '/ticket/32603',
-  '',
+  'ticket/39020',
   '/ticket/33136',
   '/ticket/32901',
+  'ticket/39020',
+  'ticket/61986',
+  'ticket/61985',
+
 ];
 
 const HomePage = () => {

@@ -10,79 +10,43 @@ function UserProfilePage() {
     realname: '',
     phoneNumber: '',
     provider: '',
+    userId: '',
+    password: '',
   });
 
   const [editMode, setEditMode] = useState(false);
   const [editSuccess, setEditSuccess] = useState(false);
-
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-  });
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '' });
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState({
-    current: false,
-    new: false,
-    confirm: false,
-  });
+  const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [validationError, setValidationError] = useState('');
 
-  const fetchProfile = () => {
+  useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    axios.get('/api/users/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => {
-        const userData = res.data?.data || {};
-        setProfile(userData);
-      })
-      .catch(err => {
-        console.error('프로필 조회 실패:', err);
-      });
-  };
-
-  useEffect(() => {
-    fetchProfile();
+    axios.get('/api/users/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setProfile(res.data?.data || {}))
+      .catch(err => console.error('프로필 조회 실패:', err));
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
-  };
+  const handleChange = e => setProfile(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handlePasswordChange = e => setPasswordData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const validatePassword = pw => pw.length >= 8 && /[a-zA-Z]/.test(pw) && /\d/.test(pw);
 
   const handleSave = () => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    axios.put('/api/users/me', profile, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    axios.put('/api/users/me', profile, { headers: { Authorization: `Bearer ${token}` } })
       .then(() => {
         setEditSuccess(true);
         setEditMode(false);
         setTimeout(() => setEditSuccess(false), 3000);
       })
-      .catch(err => {
-        console.error('정보 수정 실패:', err);
-      });
-  };
-
-  const handleCancel = () => {
-    fetchProfile();
-    setEditMode(false);
-  };
-
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 8 && /[a-zA-Z]/.test(password) && /\d/.test(password);
+      .catch(err => console.error('정보 수정 실패:', err));
   };
 
   const handleChangePassword = () => {
@@ -118,6 +82,39 @@ function UserProfilePage() {
       });
   };
 
+  const handleDeleteAccount = () => {
+    if (!window.confirm('정말 회원 탈퇴하시겠습니까?')) return;
+
+    const token = localStorage.getItem('accessToken');
+    axios.delete('/api/users/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then(() => {
+        alert('회원 탈퇴가 완료되었습니다.');
+        localStorage.removeItem('accessToken');
+        window.location.href = '/';
+      })
+      .catch(err => console.error('회원 탈퇴 실패:', err));
+  };
+
+  const handleDisconnectGoogle = () => {
+    const isGoogleOnlyUser = (profile.provider || '').toLowerCase() === 'google' && !profile.userId && !profile.password;
+    if (!window.confirm(
+      isGoogleOnlyUser
+        ? '구글 연동을 해제하면 계정이 삭제됩니다. 계속하시겠습니까?'
+        : '구글 연동을 해제하시겠습니까?'
+    )) return;
+
+    const token = localStorage.getItem('accessToken');
+    axios.delete('/api/users/me/disconnect-google', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(() => {
+        alert(isGoogleOnlyUser ? '구글 연동 해제와 함께 계정이 삭제되었습니다.' : '구글 연동이 해제되었습니다.');
+        localStorage.removeItem('accessToken');
+        window.location.href = '/';
+      })
+      .catch(err => console.error('구글 연동 해제 실패:', err));
+  };
+
   const isGoogleUser = (profile.provider || '').toLowerCase() === 'google';
   const isIncomplete = !profile.nickname || !profile.realname || !profile.phoneNumber;
 
@@ -125,35 +122,31 @@ function UserProfilePage() {
     <div className="userprofile-container">
       <h2>내 프로필</h2>
 
-      {isGoogleUser && (
-        isIncomplete ? (
-          <div className="google-warning-box">
-            <p>🔔 구글 연동 계정입니다. 추가 정보를 등록해주세요.</p>
-            <button onClick={() => setEditMode(true)}>정보 등록하기</button>
+      {isGoogleUser && isIncomplete && (
+        <div className="google-warning-box">
+          <div className="warning-icon-text">
+            <span role="img" aria-label="alert" className="warning-emoji"></span>
+            <p>구글 연동 계정입니다. <strong>추가 정보를 등록해주세요.</strong></p>
           </div>
-        ) : (
-          <p style={{ color: 'gray' }}>이 계정은 구글 연동 계정입니다. 비밀번호 변경은 불가능합니다.</p>
-        )
+          <button className="primary-button" onClick={() => setEditMode(true)}>정보 등록하기</button>
+        </div>
       )}
 
       <div className="userprofile-form">
         <label>이메일</label>
         <input type="email" value={profile.email} readOnly />
-
         <label>닉네임</label>
         {editMode ? (
           <input type="text" name="nickname" value={profile.nickname} onChange={handleChange} />
         ) : (
           <p>{profile.nickname}</p>
         )}
-
         <label>이름</label>
         {editMode ? (
           <input type="text" name="realname" value={profile.realname} onChange={handleChange} />
         ) : (
           <p>{profile.realname}</p>
         )}
-
         <label>전화번호</label>
         {editMode ? (
           <input type="text" name="phoneNumber" value={profile.phoneNumber} onChange={handleChange} />
@@ -164,7 +157,7 @@ function UserProfilePage() {
         {editMode ? (
           <div className="button-group">
             <button onClick={handleSave}>저장</button>
-            <button onClick={handleCancel}>취소</button>
+            <button onClick={() => setEditMode(false)}>취소</button>
           </div>
         ) : (
           !isIncomplete && <button onClick={() => setEditMode(true)}>수정하기</button>
@@ -224,6 +217,27 @@ function UserProfilePage() {
           {validationError && <p className="error-msg">{validationError}</p>}
         </div>
       )}
+
+      {isGoogleUser && (
+        <div className="userprofile-form">
+          <h3>비밀번호 변경</h3>
+          <div className="password-disabled-msg">
+            이 계정은 <strong>구글 연동 계정</strong>입니다. 비밀번호 변경은 불가능합니다.
+          </div>
+        </div>
+      )}
+
+      <hr style={{ margin: '40px 0' }} />
+
+      <div className="userprofile-form">
+        <h3>계정 관리</h3>
+        <div className="account-actions">
+          <button className="danger" onClick={handleDeleteAccount}>회원 탈퇴하기</button>
+          {isGoogleUser && (
+            <button className="danger" onClick={handleDisconnectGoogle}>구글 연동 해제</button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

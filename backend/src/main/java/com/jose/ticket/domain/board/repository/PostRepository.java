@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Board, Long> {
@@ -60,4 +61,7 @@ public interface PostRepository extends JpaRepository<Board, Long> {
 
     // ✅ 작성자 기반 게시글 조회 (수정된 부분)
     List<Board> findByWriter(User writer);
+
+    @Query("SELECT b FROM Board b LEFT JOIN FETCH b.writer LEFT JOIN FETCH b.ticket WHERE b.id = :id")
+    Optional<Board> findByIdWithWriterAndTicket(@Param("id") Long id);
 }

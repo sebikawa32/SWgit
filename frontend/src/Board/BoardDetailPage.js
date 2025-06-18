@@ -33,24 +33,27 @@ const BoardDetail = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
+    const headers = { Authorization: token ? `Bearer ${token}` : '' };
 
-    axios.get(`http://localhost:8080/api/boards/${id}`, {
-      headers: { Authorization: token ? `Bearer ${token}` : '' },
-    })
-      .then(res => setBoard(res.data))
-      .catch(err => {
-        console.error("❌ 게시글 조회 실패", err);
+    const fetchBoardAndComments = async () => {
+      try {
+        const boardRes = await axios.get(`http://localhost:8080/api/boards/${id}`, { headers });
+        setBoard(boardRes.data);
+
+        try {
+          const commentRes = await axios.get(`http://localhost:8080/api/comments/board/${id}`, { headers });
+          setComments(commentRes.data);
+        } catch (commentErr) {
+          console.error("❌ 댓글 조회 실패", commentErr);
+          setComments([]); // fallback
+        }
+      } catch (boardErr) {
+        console.error("❌ 게시글 조회 실패", boardErr);
         setError('게시글을 불러오지 못했습니다.');
-      });
+      }
+    };
 
-    axios.get(`http://localhost:8080/api/comments?boardId=${id}`, {
-      headers: { Authorization: token ? `Bearer ${token}` : '' },
-    })
-      .then(res => setComments(res.data))
-      .catch(err => {
-        console.error("❌ 댓글 조회 실패", err);
-        setError('댓글을 불러오지 못했습니다.');
-      });
+    fetchBoardAndComments();
   }, [id]);
 
   const handleCommentSubmit = () => {

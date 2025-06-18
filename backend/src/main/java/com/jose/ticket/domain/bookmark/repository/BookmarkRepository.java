@@ -3,6 +3,7 @@ package com.jose.ticket.domain.bookmark.repository;
 import com.jose.ticket.domain.bookmark.entity.Bookmark;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -32,4 +33,8 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     // 특정 유저가 티켓을 북마크했는지 여부
     boolean existsByUserIdAndTicketId(Long userId, Long ticketId);
+
+    // ✅ 회원 탈퇴 시 사용자 ID 기준으로 전체 북마크 삭제
+    @Transactional
+    void deleteByUserId(Long userId);
 }

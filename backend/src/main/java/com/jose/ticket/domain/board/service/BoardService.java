@@ -82,9 +82,11 @@ public class BoardService {
         return saved;
     }
 
+    // 게시글 상세 조회 - ticket이 없어도 가능하게 LEFT JOIN FETCH 사용
     public Optional<Board> getBoardById(Long id) {
-        return postRepository.findById(id);
+        return postRepository.findByIdWithWriterAndTicket(id);
     }
+
 
     public Board updateBoard(Long id, BoardRequest request, User loginUser) {
         Board board = postRepository.findById(id)

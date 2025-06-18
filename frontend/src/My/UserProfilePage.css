@@ -116,3 +116,71 @@
   color: #444;
   padding-left: 4px;
 }
+
+/* ─────────── 계정 관리 버튼 간격 ─────────── */
+.userprofile-form .danger + .danger {
+  margin-top: 12px;
+}
+
+/* ─────────── 계정 관리 버튼 컨테이너 ─────────── */
+.account-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.account-actions .danger {
+  width: 180px !important;
+  padding: 12px 0 !important;
+  text-align: center;
+  margin: 0 !important;
+}
+
+/* ─────────── 구글 연동 안내 박스 ─────────── */
+.google-warning-box {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.warning-icon-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: #856404;
+}
+
+.warning-emoji {
+  font-size: 20px;
+}
+
+/* ─────────── 기본 파란 버튼 (등록하기 등) ─────────── */
+.primary-button {
+  background-color: #000000;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-color: #626262;
+}
+
+/* ─────────── 비밀번호 변경 불가 안내 박스 ─────────── */
+.password-disabled-msg {
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #666;
+}

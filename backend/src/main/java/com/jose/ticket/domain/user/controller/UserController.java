@@ -130,4 +130,16 @@ public class UserController {
 
         return ResponseEntity.ok(new ApiResponse("추가 정보가 성공적으로 저장되었습니다.", null));
     }
+
+    /** 구글 연동 해제 API **/
+    @DeleteMapping("/me/disconnect-google")
+    public ResponseEntity<ApiResponse> disconnectGoogle(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse("로그인이 필요합니다.", null));
+        }
+
+        userService.disconnectGoogle(user.getId());
+        return ResponseEntity.ok(new ApiResponse("구글 연동이 해제되었습니다.", null));
+    }
 }
