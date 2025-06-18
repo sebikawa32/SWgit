@@ -4,23 +4,24 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* 챗봇 아이콘 */
 .chatbot-icon {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
 }
 
 /* 검색 입력창 */
 .chat-search-input {
-  width: 60%;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  width: 450px;                /* 가로를 고정값으로(예: 320px) */
+  max-width: 95vw;             /* 모바일에서 깨지지 않게 */
+  padding: 1.2rem 1.1rem;      /* 세로 높이 UP */
+  font-size: 1.1rem;
   border: 1.5px solid #ccc;
-  border-radius: 12px; /* ✅ 둥글네모 모양 */
+  border-radius: 18px;         /* 더 도톰한 둥글네모 */
   background: #fafafa;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
