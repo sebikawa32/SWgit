@@ -5,19 +5,23 @@ import com.jose.ticket.global.security.JwtProvider;
 import com.jose.ticket.global.security.CustomOAuth2UserService;
 import com.jose.ticket.global.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.UserInfoEndpointConfig;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -49,8 +53,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
-                        // 🔓 인증 없이 접근 가능한 API 경로
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
@@ -63,52 +65,37 @@ public class SecurityConfig {
                                 "/api/keywords/popular",
                                 "/api/bookmarks/count",
                                 "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**",
-
-                                // ✅ GPT 검색 API
                                 "/api/chat/**",
-
-                                // ✅ 이메일 인증
                                 "/api/auth/email/send",
                                 "/api/auth/email/verify",
                                 "/api/auth/email/reset-password/**",
-
-                                // ✅ 알림
                                 "/api/notifications/**",
                                 "/api/alerts/**",
                                 "/api/alerts",
                                 "/api/test/dday",
-
-                                // ✅ ✅ ✅ 구글 로그인 허용 추가
                                 "/oauth2/**",
                                 "/login/oauth2/**",
-                                "/api/auth/google-login"
+                                "/api/auth/google-login",
+                                // actuator health 엔드포인트 추가
+                                "/actuator/health"
                         ).permitAll()
-
-                        // 🔓 게시글 단건 조회(GET)
-                        .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
-
-                        // 🔓 댓글 조회 허용
-                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
-
-                        // 🔐 댓글 작성
-                        .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
-
-                        // 🔐 게시글 작성/수정/삭제
+                        // GET 게시글 단건 조회 허용
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards/**").permitAll()
+                        // GET 댓글 조회 허용
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/comments/**").permitAll()
+                        // POST 댓글 작성
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/comments/**").authenticated()
+                        // 게시글 작성/수정/삭제
                         .requestMatchers("/api/boards/**").authenticated()
-
-                        // 🔐 나머지 모두 인증 필요
+                        // 나머지 요청 인증 필요
                         .anyRequest().authenticated()
                 )
-
-                // ✅ OAuth2 로그인 설정 추가
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2SuccessHandler)
                 )
-
-                // ✅ JWT 필터 등록
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtProvider),
                         UsernamePasswordAuthenticationFilter.class
