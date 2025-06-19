@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 // onNotification: 알림 받았을 때 실행할 함수 (콜백)
 function useSseNotification(userId, onNotification) {
   const eventSourceRef = useRef(null);
+  const apiUrl = process.env.REACT_APP_API_URL;
+  
 
   useEffect(() => {
     if (!userId) {
@@ -17,7 +19,7 @@ function useSseNotification(userId, onNotification) {
       return;
     }
 
-    const url = `http://localhost:8080/api/notifications/subscribe?userId=${userId}`;
+    const url = `${apiUrl}/api/notifications/subscribe?userId=${userId}`;
     console.log(`🔌 SSE 연결 시작 → ${url}`);
 
     const eventSource = new EventSource(url);

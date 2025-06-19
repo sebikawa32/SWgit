@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Header.css";
@@ -23,6 +23,8 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
 
   const navigate = useNavigate();
   const storedUserId = Number(localStorage.getItem("userId"));
+
+  const apiUrl = process.env.REACT_APP_API_URL; // ✅ 환경변수 선언
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -75,7 +77,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   const fetchPopularKeywords = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8080/api/keywords/popular"
+        `${apiUrl}/api/keywords/popular`
       );
       setPopularKeywords(res.data || []);
     } catch (e) {

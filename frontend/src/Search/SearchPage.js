@@ -15,6 +15,8 @@ function SearchPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const apiUrl = process.env.REACT_APP_API_URL; // ✅ 환경변수로 API 주소 선언
+
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('query') || '';
   const categoryId = parseInt(queryParams.get('categoryId') || '0', 10);
@@ -26,10 +28,10 @@ function SearchPage() {
   const [popularKeywords, setPopularKeywords] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/keywords/popular")
+    axios.get(`${apiUrl}/api/keywords/popular`)
       .then(res => setPopularKeywords((res.data || []).slice(0, 6)))
       .catch(() => setPopularKeywords([]));
-  }, []);
+  }, [apiUrl]);
 
   useEffect(() => {
     const trimmedQuery = query.trim();
@@ -43,7 +45,7 @@ function SearchPage() {
 
     const userId = localStorage.getItem("userId");
     if (userId) {
-      axios.post("http://localhost:8080/api/search/log", {
+      axios.post(`${apiUrl}/api/search/log`, {
         userId: Number(userId),
         keyword: trimmedQuery
       }).catch(() => {});
@@ -55,7 +57,7 @@ function SearchPage() {
       params.set("categoryId", categoryId.toString());
     }
 
-    axios.get(`http://localhost:8080/api/search?${params.toString()}`)
+    axios.get(`${apiUrl}/api/search?${params.toString()}`)
       .then(res => {
         setTickets(res.data.tickets || []);
         setBoards(res.data.boards || []);
@@ -65,7 +67,7 @@ function SearchPage() {
         setError("검색 실패");
         setLoading(false);
       });
-  }, [query, categoryId]);
+  }, [query, categoryId, apiUrl]);
 
   const handleCategoryClick = (id) => {
     const params = new URLSearchParams();
@@ -108,13 +110,11 @@ function SearchPage() {
         </div>
       )}
 
-     
-
       <div className="search-summary-bar">
         <strong>"{query}"</strong> 검색 결과 ({tickets.length + boards.length}건)
       </div>
 
- <hr className="search-divider" />
+      <hr className="search-divider" />
 
       <div className="category-buttons">
         {categories.map(cat => (
@@ -128,7 +128,6 @@ function SearchPage() {
         ))}
       </div>
 
-    
       {loading && (
         <div className="loading-spinner">
           <div className="spinner"></div>
@@ -151,19 +150,19 @@ function SearchPage() {
           <div className="event-list-wrapper">
             <div className="event-list">
               {tickets
-              .filter(ticket => ticket.imageUrl && ticket.imageUrl.trim() !== "") 
-              .map(ticket => (
-                <div
-                  key={ticket.id}
-                  className="event-card"
-                  onClick={() => handleTicketClick(ticket.id)}
-                >
-                  <img src={ticket.imageUrl} alt={ticket.title} />
-                  <h3>{ticket.title}</h3>
-                  <p>{ticket.eventStartDatetime?.split('T')[0]} ~ {ticket.eventEndDatetime?.split('T')[0]}</p>
-                  <p>{ticket.venue}</p>
-                </div>
-              ))}
+                .filter(ticket => ticket.imageUrl && ticket.imageUrl.trim() !== "")
+                .map(ticket => (
+                  <div
+                    key={ticket.id}
+                    className="event-card"
+                    onClick={() => handleTicketClick(ticket.id)}
+                  >
+                    <img src={ticket.imageUrl} alt={ticket.title} />
+                    <h3>{ticket.title}</h3>
+                    <p>{ticket.eventStartDatetime?.split('T')[0]} ~ {ticket.eventEndDatetime?.split('T')[0]}</p>
+                    <p>{ticket.venue}</p>
+                  </div>
+                ))}
             </div>
           </div>
         </>
