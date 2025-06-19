@@ -49,6 +49,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // actuator health 엔드포인트 예외 처리
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+
                         // 인증 없이 접근 허용할 경로
                         .requestMatchers(
                                 "/api/users/signup",
@@ -72,9 +75,7 @@ public class SecurityConfig {
                                 "/api/test/dday",
                                 "/oauth2/**",
                                 "/login/oauth2/**",
-                                "/api/auth/google-login",
-                                // 모든 Actuator 관리 엔드포인트 예외 처리
-                                "/actuator/**"
+                                "/api/auth/google-login"
                         ).permitAll()
 
                         // GET 게시글 단건 조회 허용
@@ -85,15 +86,13 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/comments/**").authenticated()
                         // 게시글 작성/수정/삭제
                         .requestMatchers("/api/boards/**").authenticated()
-                        // 그 외 모든 요청은 인증 필요
+                        // 나머지 요청 인증 필요
                         .anyRequest().authenticated()
                 )
-                // OAuth2 로그인 설정 유지
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
-                // JWT 필터 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
