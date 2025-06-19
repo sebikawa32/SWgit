@@ -18,6 +18,9 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
   const [isDropdownHovered, setIsDropdownHovered] = useState(false);
   const dropdownRef = useRef();
 
+  const [isMyMenuActive, setIsMyMenuActive] = useState(false);
+  const myMenuRef = useRef(null);
+
   const navigate = useNavigate();
   const storedUserId = Number(localStorage.getItem("userId"));
 
@@ -26,18 +29,19 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
     setIsLoggedIn(!!token);
 
     if (token) {
-      axios.get("/api/users/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        const newNickname = res.data?.data?.nickname;
-        setNickname(newNickname);
-        localStorage.setItem("nickname", newNickname);
-      })
-      .catch((err) => {
-        console.error("닉네임 조회 실패:", err);
-        setNickname("");
-      });
+      axios
+        .get("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          const newNickname = res.data?.data?.nickname;
+          setNickname(newNickname);
+          localStorage.setItem("nickname", newNickname);
+        })
+        .catch((err) => {
+          console.error("닉네임 조회 실패:", err);
+          setNickname("");
+        });
     }
   }, [externalIsLoggedIn]);
 
@@ -53,6 +57,9 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
       ) {
         setShowDropdown(false);
       }
+      if (myMenuRef.current && !myMenuRef.current.contains(e.target)) {
+        setIsMyMenuActive(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -67,7 +74,9 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
 
   const fetchPopularKeywords = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/keywords/popular");
+      const res = await axios.get(
+        "http://localhost:8080/api/keywords/popular"
+      );
       setPopularKeywords(res.data || []);
     } catch (e) {
       setPopularKeywords([]);
@@ -121,24 +130,53 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
     (isInputFocused || isInputHovered || isDropdownHovered) &&
     popularKeywords.length > 0;
 
+  // 내 메뉴 관련 이벤트
+  const handleMyBtnClick = () => {
+    setIsMyMenuActive((prev) => !prev);
+  };
+  const handleMyMenuMouseEnter = () => {
+    setIsMyMenuActive(true);
+  };
+  const handleMyMenuMouseLeave = () => {
+    setTimeout(() => {
+      setIsMyMenuActive(false);
+    }, 200);
+  };
+
   return (
     <header className="App-header">
       <nav className="navbar">
         <div className="nav-left">
           <Link to="/" className="logo-link">
-            <img src="/logo.jpeg" alt="TicketPlanet Logo" className="logo-image" />
+            <img
+              src="/logo.jpeg"
+              alt="TicketPlanet Logo"
+              className="logo-image"
+            />
           </Link>
         </div>
 
         <div className="nav-center">
           <ul className="nav-links">
-            <li><Link to="/concerts">콘서트</Link></li>
-            <li><Link to="/musicals">뮤지컬</Link></li>
-            <li><Link to="/plays">연극</Link></li>
-            <li><Link to="/exhibitions">전시</Link></li>
+            <li>
+              <Link to="/concerts">콘서트</Link>
+            </li>
+            <li>
+              <Link to="/musicals">뮤지컬</Link>
+            </li>
+            <li>
+              <Link to="/plays">연극</Link>
+            </li>
+            <li>
+              <Link to="/exhibitions">전시</Link>
+            </li>
             <li className="separator">|</li>
-            <li><Link to="/notice">공지사항</Link></li>
-            <li><Link to="/board">게시판</Link></li>
+            <li>
+              <Link to="/notice">공지사항</Link>
+            </li>
+            <li>
+              <Link to="/board">게시판</Link>
+            </li>
           </ul>
         </div>
 
@@ -158,19 +196,30 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
               autoComplete="off"
             />
             <button className="search-btn" onClick={handleSearch} type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                   className="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-search"
+                viewBox="0 0 16 16"
+              >
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
               </svg>
             </button>
             {shouldShowDropdown && (
-              <ul className="search-dropdown" ref={dropdownRef}
-                  onMouseEnter={handleDropdownMouseEnter}
-                  onMouseLeave={handleDropdownMouseLeave}>
+              <ul
+                className="search-dropdown"
+                ref={dropdownRef}
+                onMouseEnter={handleDropdownMouseEnter}
+                onMouseLeave={handleDropdownMouseLeave}
+              >
                 {popularKeywords.map((item, idx) => (
                   <li key={idx} onClick={() => handleKeywordClick(item.keyword)}>
-                    <span style={{ fontWeight: 600, color: "#c0c0c0" }}>{idx + 1}위</span>&nbsp;
-                    {item.keyword}
+                    <span style={{ fontWeight: 600, color: "#c0c0c0" }}>
+                      {idx + 1}위
+                    </span>
+                    &nbsp;{item.keyword}
                   </li>
                 ))}
               </ul>
@@ -182,28 +231,47 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
               <div className="notification-wrapper" ref={bellRef}>
                 <NotificationBell userId={storedUserId} />
               </div>
-              <div className="nickname-wrapper">
+              <div
+                className="nickname-wrapper"
+                ref={myMenuRef}
+                onMouseEnter={handleMyMenuMouseEnter}
+                onMouseLeave={handleMyMenuMouseLeave}
+              >
                 <span className="user-greeting">{nickname}님</span>
-                <div className="my-menu">
-                  <button className="my-btn" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                         fill="white" className="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                <div className={`my-menu ${isMyMenuActive ? "active" : ""}`}>
+                  <button className="my-btn" type="button" onClick={handleMyBtnClick}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="white"
+                      className="bi bi-caret-down-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                     </svg>
                   </button>
                   <div className="my-dropdown">
                     <Link to="/profile">내 프로필</Link>
                     <Link to="/Bookmark">즐겨찾기 목록</Link>
-                    <Link to={`/alarm-settings?userId=${storedUserId}`}>알림 설정</Link>
-                    <button onClick={handleLogout} type="button">로그아웃</button>
+                    <Link to={`/alarm-settings?userId=${storedUserId}`}>
+                      알림 설정
+                    </Link>
+                    <button onClick={handleLogout} type="button">
+                      로그아웃
+                    </button>
                   </div>
                 </div>
               </div>
             </>
           ) : (
             <ul className="nav-links">
-              <li><Link to="/login">로그인</Link></li>
-              <li><Link to="/signup">회원가입</Link></li>
+              <li>
+                <Link to="/login">로그인</Link>
+              </li>
+              <li>
+                <Link to="/signup">회원가입</Link>
+              </li>
             </ul>
           )}
         </div>

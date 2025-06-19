@@ -4,6 +4,8 @@ import axios from 'axios';
 import '../Header/Header.css';
 import ChatSearchBoxForHome from '../Chatbot/ChatSearchBoxForHome';
 import './HomePage.css';
+import HotTicketSlider from '../Ticket/HotTicketSlider'; // 위치 맞게 조정
+
 
 const categories = [
   { id: 1, name: '콘서트' },
@@ -186,7 +188,7 @@ const HomePage = () => {
       .then(res => {
         setRankingTickets(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 5));
       })
-      .catch(err => console.error("🔥 인기 티켓 불러오기 실패:", err));
+      .catch(err => console.error(" 인기 티켓 불러오기 실패:", err));
   }, [selectedRankingCategory]);
 
   useEffect(() => {
@@ -272,16 +274,29 @@ const HomePage = () => {
   return (
     <>
       <section className="banner-slider">
-        <div className="banner-container">
-          {bannerImages.map((src, index) => {
-            const link = bannerLinks[index];
-            const image = (
-              <img key={index} src={src} alt={`배너${index + 1}`} className={`banner-image ${index === currentBannerIndex ? 'active' : ''}`} />
-            );
-            return link ? <Link key={index} to={link}>{image}</Link> : <React.Fragment key={index}>{image}</React.Fragment>;
-          })}
-        </div>
-      </section>
+  <div className="banner-container">
+    {bannerImages.map((src, index) => {
+      const link = bannerLinks[index];
+      const image = (
+        <img key={index} src={src} alt={`배너${index + 1}`}
+          className={`banner-image ${index === currentBannerIndex ? 'active' : ''}`} />
+      );
+      return link ? <Link key={index} to={link}>{image}</Link> : <React.Fragment key={index}>{image}</React.Fragment>;
+    })}
+    {/* 인디케이터 동그라미 */}
+    <div className="banner-indicator">
+      {bannerImages.map((_, idx) => (
+        <button
+          key={idx}
+          className={`banner-dot${idx === currentBannerIndex ? ' active' : ''}`}
+          onClick={() => setCurrentBannerIndex(idx)}
+          aria-label={`배너 ${idx + 1}`}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
 
       <main className="content">
         <h2>AI SEARCH</h2>
@@ -294,38 +309,32 @@ const HomePage = () => {
         <hr style={{ margin: '100px 0' }} />
 
         <section>
-          <h2>RANKING</h2>
-          <section style={{ marginBottom: '50px' }}></section>
-          <div className="category-buttons">
-            {rankingCategories.map(cat => (
-              <button key={cat.id} className={`category-button ${selectedRankingCategory === cat.id ? 'active' : ''}`} onClick={() => setSelectedRankingCategory(cat.id)}>
-                {cat.name}
-              </button>
-            ))}
-          </div>
-          <div className="ranking-list">
-            {rankingTickets.map((ticket, index) => (
-              <Link to={`/ticket/${ticket.id}`} key={ticket.id} className="event-card-link">
-                <div className="event-card">
-                  <div className="ranking-badge">{`${index + 1}위`}</div>
-                  <img src={ticket.imageUrl} alt={ticket.title} />
-                  <div className="card-title"><h3>{ticket.title}</h3></div>
-                  <div className="card-info">
-                    <p>{formatDateRange(ticket.eventStartDatetime, ticket.eventEndDatetime)}</p>
-                    <p>{ticket.venue}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+  <h2>WHAT'S HOT</h2>
+  
+  <section style={{ marginBottom: '50px' }}></section>
+  <div className="category-buttons">
+    {rankingCategories.map(cat => (
+      <button
+        key={cat.id}
+        className={`category-button ${selectedRankingCategory === cat.id ? 'active' : ''}`}
+        onClick={() => setSelectedRankingCategory(cat.id)}
+      >
+        {cat.name}
+      </button>
+      
+    ))}
+  </div>
+  <section style={{ marginBottom: '100px' }}></section>
+  <HotTicketSlider tickets={rankingTickets} />
+</section>
 
-        <hr style={{ margin: '50px 0' }} />
+
+        <hr style={{ margin: '70px 0' }} />
 
         {/* OPENING 슬라이드 섹션 */}
         <section>
           <h2>OPENING</h2>
-          <section style={{ marginBottom: '50px' }}></section>
+          <section style={{ marginBottom: '70px' }}></section>
           <div className="opening-multi-slider-wrapper" style={{ justifyContent: 'center' }}>
             <button
               onClick={handlePrev}
