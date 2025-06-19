@@ -37,4 +37,8 @@ public class UserAlertSetting {
     @Column(name = "email_enabled", nullable = false)
     private boolean emailEnabled = false;
 
+    // ✅ 추가: 알림 발송 여부 (0=미발송, 1=발송)
+    @Column(name = "alert_sent", nullable = false)
+    private boolean alertSent = false;
+
 }
