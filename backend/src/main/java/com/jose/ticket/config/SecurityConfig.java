@@ -10,10 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.UserInfoEndpointConfig;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -53,6 +49,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 인증 없이 접근 허용할 경로
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
@@ -76,9 +73,10 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/login/oauth2/**",
                                 "/api/auth/google-login",
-                                // actuator health 엔드포인트 추가
-                                "/actuator/health"
+                                // 모든 Actuator 관리 엔드포인트 예외 처리
+                                "/actuator/**"
                         ).permitAll()
+
                         // GET 게시글 단건 조회 허용
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards/**").permitAll()
                         // GET 댓글 조회 허용
@@ -87,19 +85,16 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/comments/**").authenticated()
                         // 게시글 작성/수정/삭제
                         .requestMatchers("/api/boards/**").authenticated()
-                        // 나머지 요청 인증 필요
+                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
+                // OAuth2 로그인 설정 유지
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtProvider),
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                // JWT 필터 적용
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
