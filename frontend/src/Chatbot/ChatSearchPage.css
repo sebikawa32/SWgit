@@ -1,8 +1,9 @@
 /* ─────────── GPT 검색 결과 페이지 전체 컨테이너 ─────────── */
 .chat-search-result-page {
-  padding: 150px 20px 40px;
+  padding: 100px 40px 60px;
   max-width: 1200px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* ─────────── 챗봇 고양이 + 말풍선 ─────────── */
@@ -15,34 +16,36 @@
   padding: 0 12px;
 }
 
+/* 챗봇 고양이 이미지 크게 */
 .chat-cat-image {
-  width: 60px;
-  height: 60px;
+  width: 80px;   /* 기존 60px → 100px */
+  height: 80px;  /* 기존 60px → 100px */
   object-fit: contain;
 }
 
+/* 말풍선 크기 키우기 */
 .chat-balloon {
   background-color: #f6f6f6;
-  padding: 14px 18px;
-  border-radius: 18px;
+  padding: 28px 38px;     /* 기존 14px 18px → 28px 38px */
+  border-radius: 28px;    /* 좀 더 둥글게 */
   position: relative;
-  max-width: 600px;
-  min-height: 40px;
-  font-size: 1.1rem;
+  max-width: 700px;       /* 기존 600px → 850px */
+  min-height: 50px;       /* 기존 40px → 70px */
+  font-size: 1.2rem;      /* 기존 1.1rem → 1.4rem */
   font-weight: 500;
   color: #333;
   white-space: pre-wrap;
   word-break: keep-all;
-  line-height: 1.4;
+  line-height: 1.6;       /* 줄 간격도 약간 넓게 */
   box-sizing: border-box;
 }
 
 .chat-balloon::before {
   content: "";
   position: absolute;
-  left: -8px;
-  top: 18px;
-  border-width: 8px;
+  left: -16px;           /* 꼬리 위치 약간 조정 */
+  top: 38px;             /* 꼬리 위치 약간 조정 */
+  border-width: 16px;    /* 꼬리 크기도 키움 */
   border-style: solid;
   border-color: transparent #f6f6f6 transparent transparent;
 }
@@ -50,39 +53,41 @@
 /* ─────────── 검색 결과 그리드 ─────────── */
 .chat-search-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 20px;
-  justify-content: start;
-  max-width: 1000px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  justify-items: center;
+  max-width: 1100px;
   margin: 0 auto;
+  padding-bottom: 40px;
 }
 
-/* ─────────── 카드 스타일 ─────────── */
+/* ─────────── 카드 스타일 (콘서트 카드 스타일 기반) ─────────── */
 .chat-search-card {
   position: relative;
-  width: 180px;
-  height: 360px;
-  background: white;
-  border-radius: 8px;
+  width: 200px;
+  height: 400px;
+  background: #fff;
+  border-radius: 0px;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .chat-search-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-18px);
+  box-shadow: 0 16px 32px rgba(71,70,68,0.14);
 }
 
+/* ─────────── 카드 내 이미지 영역 (3:4 비율) ─────────── */
 .chat-search-card .concert-card-image-wrapper {
   position: relative;
   width: 100%;
   padding-top: 133%;
   overflow: hidden;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
   background-color: #f0f0f0;
 }
 
@@ -93,32 +98,59 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
 }
 
+/* ─────────── 카드 내 텍스트 정보 ─────────── */
 .chat-search-card .concert-info {
-  padding: 10px;
+  padding: 12px;
 }
 
 .chat-search-card .concert-info h2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 1rem;
   margin: 0 0 6px 0;
   color: #333;
-  height: 40px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  height: auto;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  font-weight: 600;
 }
 
 .chat-search-card .concert-info p {
-  margin: 3px 0;
-  font-size: 0.85rem;
+  margin: 0;
+  font-size: 0.88rem;
   color: #555;
   line-height: 1.2;
-  height: 20px;
+  height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* (선택) 카드 간격/반응형 대응 */
+@media (max-width: 1200px) {
+  .chat-search-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .chat-search-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .chat-search-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .chat-search-card {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 350px;
+  }
 }

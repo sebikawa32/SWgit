@@ -16,6 +16,7 @@ const BoardCreatePage = () => {
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
+  // 1. 티켓 목록을 먼저 받아온다
   useEffect(() => {
     axios.get('/api/tickets/summaries')
       .then(res => {
@@ -24,6 +25,26 @@ const BoardCreatePage = () => {
       })
       .catch(err => console.error('티켓 목록 불러오기 실패', err));
   }, []);
+
+  // 2. 티켓 목록이 변경될 때마다 쿼리스트링(ticketId, ticketTitle)로 자동 선택
+  useEffect(() => {
+    const ticketIdFromQuery = searchParams.get("ticketId");
+    const ticketTitleFromQuery = searchParams.get("ticketTitle");
+    if (
+      tickets.length > 0 &&
+      ticketIdFromQuery &&
+      !selectedTicket // 이미 선택되어 있지 않을 때만
+    ) {
+      const found = tickets.find(t => String(t.id) === String(ticketIdFromQuery));
+      if (found) {
+        setSelectedTicket(found);
+        setSearchKeyword(found.title);
+      } else if (ticketTitleFromQuery) {
+        setSelectedTicket({ id: ticketIdFromQuery, title: ticketTitleFromQuery });
+        setSearchKeyword(ticketTitleFromQuery);
+      }
+    }
+  }, [tickets, searchParams, selectedTicket]);
 
   useEffect(() => {
     const filtered = tickets.filter(ticket =>
@@ -79,7 +100,6 @@ const BoardCreatePage = () => {
   return (
     <div className="board-create-container">
       <h1>게시글 작성</h1>
-
       <div className="form-row">
         <label>티켓 검색</label>
         <div className="ticket-search-wrapper">
@@ -88,6 +108,7 @@ const BoardCreatePage = () => {
             placeholder="티켓 제목을 입력하세요"
             value={searchKeyword}
             onChange={e => setSearchKeyword(e.target.value)}
+            disabled={!!selectedTicket}
           />
           {filteredTickets.length > 0 && searchKeyword && !selectedTicket && (
             <ul className="search-dropdown">
@@ -110,7 +131,6 @@ const BoardCreatePage = () => {
           </div>
         )}
       </div>
-
       <div className="form-row">
         <label>제목</label>
         <input
@@ -120,7 +140,6 @@ const BoardCreatePage = () => {
           onChange={e => setTitle(e.target.value)}
         />
       </div>
-
       <div className="form-row">
         <label>내용</label>
         <textarea
@@ -129,7 +148,6 @@ const BoardCreatePage = () => {
           onChange={e => setContent(e.target.value)}
         />
       </div>
-
       <div className="button-row">
         <button onClick={handleSubmit}>등록</button>
       </div>

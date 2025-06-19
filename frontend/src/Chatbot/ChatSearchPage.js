@@ -35,6 +35,7 @@ const ChatSearchPage = () => {
 
   return (
     <div className="chat-search-result-page">
+      <section style={{ marginBottom: '70px' }}></section>
       {/* 🐱 챗봇 캐릭터 + 말풍선 */}
       <div className="chatbot-message-wrapper">
         <img
@@ -46,6 +47,8 @@ const ChatSearchPage = () => {
       </div>
 
       {/* 🔶 검색 결과 목록 */}
+       <section style={{ marginBottom: '70px' }}></section>
+       <hr style={{ margin: '50px 0' }} />
       {results ? (
         results.length > 0 ? (
           <div className="chat-search-grid">
