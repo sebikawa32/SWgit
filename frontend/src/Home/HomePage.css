@@ -203,12 +203,18 @@ h2 {
   top: 10px;
   left: 10px;
   background-color: #ff8400 !important;
-  color: rgb(255, 255, 255)!important;
+  color: #fff !important;
   font-weight: bold;
-  font-size: 0.98rem;
-  padding: 5px 12px;
-  border-radius: 16px;
+  font-size: 2rem;   /* 원하면 더 키워도 됨 */
+  width: 100px;          /* 원하는 만큼 숫자 키우기 */
+  height: 100px;
+  padding: 0;
+  border-radius: 50%;   /* 완전한 원 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1;
+  box-sizing: border-box; /* 혹시 안 될 때를 위한 추가 */
 }
 
 /* ─────────── 랜덤 티켓 2줄 (5개씩) ─────────── */

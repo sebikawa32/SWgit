@@ -11,7 +11,7 @@ spring:
       mail.smtp.starttls.required: true
 
   datasource:
-    url: jdbc:mysql://43.201.218.86:3306/ticketplanet?serverTimezone=UTC
+    url: jdbc:mysql://172.31.46.212:3306/ticketplanet?serverTimezone=UTC
     username: jojinse
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,6 +24,12 @@ spring:
       hibernate:
         format_sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
 jwt:
   secret: "d0w2aksxbTVzUDl2UnQzeFpjOFF5Rm5Ic1VkR2JYRWo="

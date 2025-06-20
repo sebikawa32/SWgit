@@ -220,7 +220,7 @@ const HomePage = () => {
     start.setHours(0, 0, 0, 0);
     const diffTime = start - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays === 0 ? 'Today' : `D-${diffDays}`;
+    return diffDays === 0 ? 'Day' : `D-${diffDays}`;
   };
 
   const getDDayPercent = (startDate) => {
