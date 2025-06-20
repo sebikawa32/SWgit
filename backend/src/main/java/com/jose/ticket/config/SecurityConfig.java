@@ -4,6 +4,9 @@ import com.jose.ticket.global.security.JwtAuthenticationFilter;
 import com.jose.ticket.global.security.JwtProvider;
 import com.jose.ticket.global.security.CustomOAuth2UserService;
 import com.jose.ticket.global.security.OAuth2SuccessHandler;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -37,7 +37,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    // 커스텀 인증 실패 진입점 - 401 Unauthorized 응답
+    // 401 Unauthorized 응답 커스텀 진입점
     public static class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         @Override
         public void commence(HttpServletRequest request,
@@ -65,10 +65,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // actuator 전체 예외 처리
+                        // actuator 하위 경로 전체 인증 없이 허용
                         .requestMatchers("/actuator/**").permitAll()
 
-                        // 인증 없이 접근 허용할 경로
+                        // 인증 없이 허용할 경로들
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
@@ -98,23 +98,26 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards/**").permitAll()
                         // GET 댓글 조회 허용
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/comments/**").permitAll()
-                        // POST 댓글 작성
+                        // POST 댓글 작성은 인증 필요
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/comments/**").authenticated()
-                        // 게시글 작성/수정/삭제
+                        // 게시글 작성/수정/삭제는 인증 필요
                         .requestMatchers("/api/boards/**").authenticated()
-                        // 나머지 요청 인증 필요
+                        // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
-                // 인증 실패 시 401 반환하도록 설정
+                // 인증 실패시 401 응답
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 )
+                // OAuth2 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
-                // JWT 필터 등록
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                // 익명 사용자 접근 활성화
+                .anonymous();
 
         return http.build();
     }
