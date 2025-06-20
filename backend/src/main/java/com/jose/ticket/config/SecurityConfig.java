@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -37,13 +39,14 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    // 401 Unauthorized 응답 커스텀 진입점
+    // 커스텀 인증 실패 진입점 - 401 Unauthorized 응답
     public static class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         @Override
         public void commence(HttpServletRequest request,
                              HttpServletResponse response,
                              org.springframework.security.core.AuthenticationException authException)
                 throws IOException, ServletException {
+            System.out.println("❌ 인증 실패 진입점 호출: " + authException.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
     }
@@ -65,8 +68,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // actuator 하위 경로 전체 인증 없이 허용
-                        .requestMatchers("/actuator/**").permitAll()
+                        // actuator 전체 경로 인증 없이 허용
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
 
                         // 인증 없이 허용할 경로들
                         .requestMatchers(
@@ -98,26 +101,21 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards/**").permitAll()
                         // GET 댓글 조회 허용
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/comments/**").permitAll()
-                        // POST 댓글 작성은 인증 필요
+                        // POST 댓글 작성 인증 필요
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/comments/**").authenticated()
-                        // 게시글 작성/수정/삭제는 인증 필요
+                        // 게시글 작성/수정/삭제 인증 필요
                         .requestMatchers("/api/boards/**").authenticated()
-                        // 나머지 요청은 인증 필요
+                        // 나머지 요청 인증 필요
                         .anyRequest().authenticated()
                 )
-                // 인증 실패시 401 응답
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 )
-                // OAuth2 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
-                // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-                // 익명 사용자 접근 활성화
-                .anonymous();
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
