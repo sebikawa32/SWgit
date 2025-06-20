@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -70,6 +69,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // actuator 전체 경로 인증 없이 허용
                         .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+                        // 커스텀 헬스체크 경로 인증 없이 허용
+                        .requestMatchers("/health-check").permitAll()
 
                         // 인증 없이 허용할 경로들
                         .requestMatchers(
