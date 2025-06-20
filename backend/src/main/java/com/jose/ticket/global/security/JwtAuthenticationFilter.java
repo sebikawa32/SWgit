@@ -28,6 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         System.out.println("🔵 [JwtFilter] 요청 URI: " + uri);
 
+        // ✅ [추가] actuator health/info는 무조건 인증 생략 (헬스체크용)
+        if (uri.equals("/actuator/health") || uri.equals("/actuator/info")) {
+            System.out.println("🔓 [Actuator Health/Info] 인증 생략 처리됨");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // ✅ 1. [여기에 추가] GPT 대화형 검색 요청은 인증 생략
         if (request.getMethod().equals("POST") && uri.equals("/api/chat/search")) {
             System.out.println("🔓 [GPT 검색] 인증 생략 처리됨");
