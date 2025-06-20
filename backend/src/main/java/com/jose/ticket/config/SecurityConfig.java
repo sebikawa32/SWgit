@@ -49,8 +49,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // actuator health 엔드포인트 예외 처리
-                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        // ✅ actuator 하위 전체 예외 처리 (헬스체크/프로메테우스 등 모두 포함)
+                        .requestMatchers("/actuator/**").permitAll()
 
                         // 인증 없이 접근 허용할 경로
                         .requestMatchers(
