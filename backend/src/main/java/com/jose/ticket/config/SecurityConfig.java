@@ -69,22 +69,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // actuator 전체 경로 인증 없이 허용
                         .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
-                        // 커스텀 헬스체크 경로 인증 없이 허용
                         .requestMatchers("/health-check").permitAll()
 
-                        // 인증 없이 허용할 경로들
+                        // 인증 없이 허용할 경로들 (POST/PUT/DELETE도 포함)
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/users/login",
                                 "/api/users/check-id",
                                 "/api/users/reset-password",
-                                "/api/tickets/**",
                                 "/api/search",
                                 "/api/search/**",
                                 "/api/keywords/popular/**",
                                 "/api/keywords/popular",
                                 "/api/bookmarks/count",
-                                "/api/boards", "/api/boards/", "/api/boards?**", "/api/boards/tickets/**",
                                 "/api/chat/**",
                                 "/api/auth/email/send",
                                 "/api/auth/email/verify",
@@ -98,15 +95,16 @@ public class SecurityConfig {
                                 "/api/auth/google-login"
                         ).permitAll()
 
-                        // GET 게시글 단건 조회 허용
+                        // 티켓 및 게시판 등 **GET 메서드**는 누구나 허용
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/tickets/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards/**").permitAll()
-                        // GET 댓글 조회 허용
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/comments/**").permitAll()
-                        // POST 댓글 작성 인증 필요
+
+                        // 게시글/댓글 작성/수정/삭제 등은 인증 필요
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/comments/**").authenticated()
-                        // 게시글 작성/수정/삭제 인증 필요
                         .requestMatchers("/api/boards/**").authenticated()
-                        // 나머지 요청 인증 필요
+
+                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
