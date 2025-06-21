@@ -26,7 +26,7 @@ const Bookmark = () => {
           return;
         }
 
-        const res = await axios.get("/bookmarks", {
+        const res = await axios.get("/api/bookmarks", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -47,7 +47,7 @@ const Bookmark = () => {
 
   const handleRemove = async (ticketId) => {
     try {
-      await axios.delete("/bookmarks", {
+      await axios.delete("/api/bookmarks", {
         params: { ticketId },
         headers: {
           Authorization: `Bearer ${token}`,

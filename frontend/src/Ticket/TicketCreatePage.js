@@ -1,3 +1,4 @@
+// src/pages/TicketCreatePage.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,7 @@ const TicketCreatePage = () => {
   const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken');
     try {
-      await axios.post('/tickets', ticket, {
+      await axios.post('/api/tickets', ticket, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

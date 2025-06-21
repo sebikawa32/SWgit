@@ -10,9 +10,7 @@ const BoardList = ({ type = "general", ticketId }) => {
   const postsPerPage = 10;
   const navigate = useNavigate();
 
-  const userRole = localStorage.getItem('role'); // ✅ 사용자 역할 확인용
-
-  // ticketId 유효성 확인
+  const userRole = localStorage.getItem('role');
   const hasValidTicketId = ticketId !== undefined && ticketId !== null;
 
   useEffect(() => {
@@ -20,8 +18,8 @@ const BoardList = ({ type = "general", ticketId }) => {
       try {
         const sortParam = type !== 'notice' ? `&sort=${sort}` : "";
         const url = hasValidTicketId
-          ? `/boards/tickets/${ticketId}/boards?type=${type}`
-          : `/boards?type=${type}${sortParam}`;
+          ? `/api/boards/tickets/${ticketId}/boards?type=${type}`
+          : `/api/boards?type=${type}${sortParam}`;
 
         const res = await axios.get(url);
         setBoards(res.data);
@@ -46,12 +44,10 @@ const BoardList = ({ type = "general", ticketId }) => {
 
   return (
     <div className="board-list-container">
-      {/* 제목 */}
       <div className="board-title-wrapper">
         <h1 className="board-title">{type === 'notice' ? '공지사항' : '게시글'}</h1>
       </div>
 
-      {/* 정렬 및 글쓰기 */}
       <div className="board-list-controls">
         {type !== 'notice' && !hasValidTicketId ? (
           <select
@@ -73,7 +69,6 @@ const BoardList = ({ type = "general", ticketId }) => {
         )}
       </div>
 
-      {/* 게시글 테이블 */}
       <table className="board-table">
         <thead>
           <tr>
@@ -102,7 +97,6 @@ const BoardList = ({ type = "general", ticketId }) => {
         </tbody>
       </table>
 
-      {/* 페이지네이션 */}
       <div className="pagination">
         <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
           이전

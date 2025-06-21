@@ -5,8 +5,7 @@ import "./GoogleSignupPage.css";
 
 function GoogleSignupPage() {
   const navigate = useNavigate();
-
-  const token = localStorage.getItem("tempGoogleToken"); // 임시 저장된 토큰
+  const token = localStorage.getItem("tempGoogleToken");
 
   const [formData, setFormData] = useState({
     nickname: "",
@@ -30,7 +29,7 @@ function GoogleSignupPage() {
 
     try {
       await axios.put(
-        "/users/me/google-additional-info",  // ✅ 수정된 경로
+        "/api/users/me/google-additional-info",  // ✅ 수정된 경로
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -38,7 +37,7 @@ function GoogleSignupPage() {
       );
       alert("회원가입이 완료되었습니다.");
       localStorage.removeItem("tempGoogleToken");
-      navigate("/"); // 홈으로 이동
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "회원가입 중 오류가 발생했습니다.");
     }
@@ -47,7 +46,6 @@ function GoogleSignupPage() {
   return (
     <div className="google-signup-wrapper">
       <h2>추가 회원정보 입력</h2>
-      {/* 아이디는 구글 유저에게 필요 없으므로 제거 */}
       <input
         type="text"
         name="nickname"

@@ -13,8 +13,8 @@ const BoardListMerged = ({ ticketId, ticketTitle }) => {
     const fetchBoards = async () => {
       try {
         const [noticeRes, generalRes] = await Promise.all([
-          axios.get(`/boards/tickets/${ticketId}/boards?type=notice`),
-          axios.get(`/boards/tickets/${ticketId}/boards?type=general`),
+          axios.get(`/api/boards/tickets/${ticketId}/boards?type=notice`),
+          axios.get(`/api/boards/tickets/${ticketId}/boards?type=general`),
         ]);
 
         const notices = noticeRes.data.map(b => ({ ...b, isNotice: true }));

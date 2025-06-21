@@ -26,7 +26,7 @@ function SearchPage() {
   const [popularKeywords, setPopularKeywords] = useState([]);
 
   useEffect(() => {
-    axios.get(`/keywords/popular`)
+    axios.get(`/api/keywords/popular`)
       .then(res => setPopularKeywords((res.data || []).slice(0, 6)))
       .catch(() => setPopularKeywords([]));
   }, []);
@@ -43,7 +43,7 @@ function SearchPage() {
 
     const userId = localStorage.getItem("userId");
     if (userId) {
-      axios.post(`/search/log`, {
+      axios.post(`/api/search/log`, {
         userId: Number(userId),
         keyword: trimmedQuery
       }).catch(() => {});
@@ -55,7 +55,7 @@ function SearchPage() {
       params.set("categoryId", categoryId.toString());
     }
 
-    axios.get(`/search?${params.toString()}`)
+    axios.get(`/api/search?${params.toString()}`)
       .then(res => {
         setTickets(res.data.tickets || []);
         setBoards(res.data.boards || []);

@@ -10,20 +10,19 @@ function NotificationBell({ userId }) {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-
   // UTC → KST 변환 후 YYYY-MM-DD HH:mm:ss 포맷
-const formatDate = (isoString) => {
-  if (!isoString) return "";
-  const utc = new Date(isoString);
-  const kst = new Date(utc.getTime() + 9 * 60 * 60 * 1000);
-  const Y = kst.getFullYear();
-  const M = String(kst.getMonth() + 1).padStart(2, "0");
-  const D = String(kst.getDate()).padStart(2, "0");
-  const h = String(kst.getHours()).padStart(2, "0");
-  const m = String(kst.getMinutes()).padStart(2, "0");
-  const s = String(kst.getSeconds()).padStart(2, "0");
-  return `${Y}-${M}-${D} ${h}:${m}:${s}`;
-};
+  const formatDate = (isoString) => {
+    if (!isoString) return "";
+    const utc = new Date(isoString);
+    const kst = new Date(utc.getTime() + 9 * 60 * 60 * 1000);
+    const Y = kst.getFullYear();
+    const M = String(kst.getMonth() + 1).padStart(2, "0");
+    const D = String(kst.getDate()).padStart(2, "0");
+    const h = String(kst.getHours()).padStart(2, "0");
+    const m = String(kst.getMinutes()).padStart(2, "0");
+    const s = String(kst.getSeconds()).padStart(2, "0");
+    return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+  };
 
   // 실시간 알림 받기
   useSseNotification(userId, (noti) => {
@@ -38,11 +37,11 @@ const formatDate = (isoString) => {
   useEffect(() => {
     if (!userId) return;
     axios
-      .get(`/notifications/${userId}`)
+      .get(`/api/notifications/${userId}`)
       .then((res) => setNotifications(res.data || []))
       .catch((err) => console.error("알림 목록 로드 실패", err));
     axios
-      .get(`/notifications/${userId}/unread-count`)
+      .get(`/api/notifications/${userId}/unread-count`)
       .then((res) => setUnreadCount(res.data || 0))
       .catch((err) => console.error("알림 수 로드 실패", err));
   }, [userId]);
@@ -61,7 +60,7 @@ const formatDate = (isoString) => {
   // 개별 알림 읽음 처리
   const handleRead = (notificationId) => {
     axios
-      .post(`/notifications/${notificationId}/read`)
+      .post(`/api/notifications/${notificationId}/read`)
       .then(() => {
         setNotifications((prev) =>
           prev.map((n) =>
@@ -76,7 +75,7 @@ const formatDate = (isoString) => {
   // 모두 읽음 처리
   const handleMarkAllRead = () => {
     axios
-      .post(`/notifications/${userId}/read-all`)
+      .post(`/api/notifications/${userId}/read-all`)
       .then(() => {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
         setUnreadCount(0);
@@ -89,18 +88,13 @@ const formatDate = (isoString) => {
     console.log("알림 클릭!", n);
     if (!n.isRead) handleRead(n.notificationId);
 
-    // 타입별 이동
     if (n.type === "comment") {
-      // 게시글 상세로 이동
       navigate(`/boards/${n.targetId}`);
     } else if (n.type === "d-day") {
-      // 티켓 상세로 이동
       navigate(`/ticket/${n.targetId}`);
     } else if (n.url) {
-      // 혹시 url이 있으면 그대로 이동
       window.location.href = n.url;
     } else {
-      // 기타 알림 분기 (없으면 그냥 닫기)
       setOpen(false);
     }
   };
@@ -119,7 +113,6 @@ const formatDate = (isoString) => {
         }}
         aria-label="알림"
       >
-        {/* 사이즈를 20x20으로 약간 키운 종 모양 아이콘 */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -230,3 +223,4 @@ const formatDate = (isoString) => {
 }
 
 export default NotificationBell;
+ 

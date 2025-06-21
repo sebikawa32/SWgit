@@ -43,7 +43,7 @@ function TicketDetailPage() {
 
   const fetchBookmarkCount = () => {
     axios
-      .get(`/bookmarks/count?ticketId=${id}`)
+      .get(`/api/bookmarks/count?ticketId=${id}`)
       .then(res => setBookmarkCount(res.data.count || 0))
       .catch(() => setBookmarkCount(0));
   };
@@ -52,7 +52,7 @@ function TicketDetailPage() {
     if (!token || !userId) return;
     axios
       .get(
-        `/alerts/check?userId=${userId}&ticketId=${id}`,
+        `/api/alerts/check?userId=${userId}&ticketId=${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then(res => {
@@ -62,9 +62,8 @@ function TicketDetailPage() {
   };
 
   useEffect(() => {
-    // 티켓 정보 로드
     axios
-      .get(`/tickets/${id}`)
+      .get(`/api/tickets/${id}`)
       .then(res => setTicket(res.data))
       .catch(err => {
         console.error("❌ 상세페이지 오류:", err);
@@ -72,24 +71,19 @@ function TicketDetailPage() {
       });
 
     if (token) {
-      // 북마크 상태 체크
       axios
         .get(
-          `/bookmarks/check?ticketId=${id}`,
+          `/api/bookmarks/check?ticketId=${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then(res => {
           if (res.data.exists) setIsBookmarked(true);
         })
         .catch(() => {});
-
-      // 알림 상태 체크
       fetchAlertCheck();
     }
 
-    axios.get(`/bookmarks/count?ticketId=${id}`)
-      .then(res => setBookmarkCount(res.data.count || 0))
-      .catch(() => setBookmarkCount(0));
+    fetchBookmarkCount();
   }, [id]);
 
   const handleToggleBookmark = async () => {
@@ -101,7 +95,7 @@ function TicketDetailPage() {
     try {
       if (!isBookmarked) {
         await axios.post(
-          "/bookmarks",
+          "/api/bookmarks",
           null,
           { params: { ticketId: Number(id) }, headers: { Authorization: `Bearer ${token}` } }
         );
@@ -109,15 +103,13 @@ function TicketDetailPage() {
         setBookmarkMessage("즐겨찾기에 추가되었습니다!");
       } else {
         await axios.delete(
-          "/bookmarks",
+          "/api/bookmarks",
           { params: { ticketId: Number(id) }, headers: { Authorization: `Bearer ${token}` } }
         );
         setIsBookmarked(false);
         setBookmarkMessage("즐겨찾기에서 삭제되었습니다!");
       }
-
-      const res = await axios.get(`/bookmarks/count?ticketId=${id}`);
-      setBookmarkCount(res.data.count || 0);
+      fetchBookmarkCount();
     } catch (err) {
       console.error("즐겨찾기 처리 중 오류:", err);
       setBookmarkMessage(
@@ -136,14 +128,13 @@ function TicketDetailPage() {
       navigate("/login");
       return;
     }
-    // 이미 설정된 경우에도 메시지 띄우기
     if (isAlertSet) {
       setAlertMessage("이미 설정되었습니다!");
       return;
     }
     try {
       await axios.post(
-        `/alerts?userId=${userId}`,
+        `/api/alerts?userId=${userId}`,
         { ticketId: Number(id), alertMinutes: 1440, emailEnabled: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -164,7 +155,7 @@ function TicketDetailPage() {
   };
 
   const handleBookingClick = () => {
-    axios.post(`/tickets/${id}/click`).catch(err => {
+    axios.post(`/api/tickets/${id}/click`).catch(err => {
       console.error("예매 클릭 로그 저장 실패:", err);
     });
     window.open(ticket.bookingLink, "_blank", "noopener noreferrer");
@@ -177,14 +168,8 @@ function TicketDetailPage() {
     <main className="ticket-detail-container">
       <div className="ticket-detail-content">
         <div className="image-and-heart">
-          <img
-            src={ticket.imageUrl}
-            alt={ticket.title}
-            className="ticket-detail-image"
-          />
-
+          <img src={ticket.imageUrl} alt={ticket.title} className="ticket-detail-image" />
           <div className="action-row">
-            {/* 즐겨찾기 그룹 */}
             <div className="heart-group">
               <div className="heart-row" onClick={handleToggleBookmark}>
                 {isBookmarked ? (
@@ -197,8 +182,6 @@ function TicketDetailPage() {
               </div>
               {bookmarkMessage && <span className="bookmark-message">{bookmarkMessage}</span>}
             </div>
-
-            {/* 알림 설정 그룹 */}
             <div className="alert-group">
               <button className="alert-button" onClick={handleSetAlert}>
                 <i className={`bi ${isAlertSet ? "bi-bell-fill" : "bi-bell-slash-fill"} bell-icon`} />
@@ -214,7 +197,6 @@ function TicketDetailPage() {
           <hr className="divider" />
           <p><strong>공연기간</strong> {formatDate(ticket.eventStartDatetime)} ~ {formatDate(ticket.eventEndDatetime)}</p>
           <p><strong>장소</strong> {ticket.venue}</p>
-
           <div className="price-row">
             <strong>가격</strong>
             <ul className="price-list-inline">
@@ -223,11 +205,9 @@ function TicketDetailPage() {
                 : <li>무료</li>}
             </ul>
           </div>
-
           <p><strong>관람 연령</strong> {ticket.ageLimit || "전체관람가"}</p>
           <p><strong>공연 시간</strong> {ticket.eventTime || "예매 링크 참조"}</p>
           <p><strong>예매처</strong> {ticket.bookingProvider}</p>
-
           {ticket.bookingLink && (
             <button onClick={handleBookingClick} className="btn btn-booking">
               예매 링크 바로가기
@@ -249,9 +229,7 @@ function TicketDetailPage() {
               ? ticket.descriptionUrl.map((url, idx) => (
                   <img key={idx} src={url} alt={`상세 설명 ${idx + 1}`} style={{ width: "100%", marginTop: "16px" }} />
                 ))
-              : (
-                  <img src={ticket.descriptionUrl} alt="상세 설명" style={{ width: "100%", marginTop: "16px" }} />
-                )}
+              : <img src={ticket.descriptionUrl} alt="상세 설명" style={{ width: "100%", marginTop: "16px" }} />}
           </div>
         )}
         {activeTab === "map" && <MapEmbed venue={ticket.venue} />}

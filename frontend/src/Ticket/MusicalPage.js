@@ -47,7 +47,7 @@ const MusicalPage = () => {
   // 전체 뮤지컬 리스트
   const fetchTickets = async (page) => {
     try {
-      const res = await axios.get(`/tickets/sorted/page?categoryId=4&page=${page}&size=${pageSize}`);
+      const res = await axios.get(`/api/tickets/sorted/page?categoryId=4&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
       setFailedMainIds([]);
@@ -59,7 +59,7 @@ const MusicalPage = () => {
   // 인기 뮤지컬 리스트
   const fetchPopularMusicals = async () => {
     try {
-      const res = await axios.get('/tickets/popular', {
+      const res = await axios.get('/api/tickets/popular', {
         params: { categoryId: 4, size: 10 },
       });
       setPopularMusicals(res.data);

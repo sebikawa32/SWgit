@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // ✅ 추가
+import { useNavigate } from 'react-router-dom';
 import './ChatSearchBoxForHome.css';
 
 function ChatSearchBoxForHome({ onResults }) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ✅ 추가
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,7 +15,7 @@ function ChatSearchBoxForHome({ onResults }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('/chat/search', {
+      const response = await axios.post('/api/chat/search', {
         message: query,
       });
 
@@ -24,13 +24,12 @@ function ChatSearchBoxForHome({ onResults }) {
       if (typeof onResults === 'function') {
         onResults(response.data, query);
       } else {
-        // ✅ navigate로 /chat-search 경로로 이동하며, 상태 전달
         navigate(`/chat/search?query=${encodeURIComponent(query)}`, {
-  state: {
-    results: response.data,
-    query: query,
-  },
-});
+          state: {
+            results: response.data,
+            query: query,
+          },
+        });
       }
     } catch (error) {
       console.error('❌ GPT 검색 오류 (AxiosError):', error);

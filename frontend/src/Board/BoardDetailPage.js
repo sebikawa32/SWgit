@@ -37,11 +37,11 @@ const BoardDetail = () => {
 
     const fetchBoardAndComments = async () => {
       try {
-        const boardRes = await axios.get(`/boards/${id}`, { headers });
+        const boardRes = await axios.get(`/api/boards/${id}`, { headers });
         setBoard(boardRes.data);
 
         try {
-          const commentRes = await axios.get(`/comments?boardId=${id}`, { headers });
+          const commentRes = await axios.get(`/api/comments?boardId=${id}`, { headers });
           setComments(commentRes.data);
         } catch (commentErr) {
           console.error("❌ 댓글 조회 실패", commentErr);
@@ -69,7 +69,7 @@ const BoardDetail = () => {
       return;
     }
 
-    axios.post(`/comments`, {
+    axios.post(`/api/comments`, {
       content: newComment,
       boardId: id
     }, {
@@ -89,7 +89,7 @@ const BoardDetail = () => {
     const token = localStorage.getItem('accessToken');
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
 
-    axios.delete(`/comments/${commentId}`, {
+    axios.delete(`/api/comments/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
@@ -105,7 +105,7 @@ const BoardDetail = () => {
     const token = localStorage.getItem('accessToken');
     if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
 
-    axios.delete(`/boards/${id}`, {
+    axios.delete(`/api/boards/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {

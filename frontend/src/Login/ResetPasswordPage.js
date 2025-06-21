@@ -32,12 +32,12 @@ function ResetPasswordPage() {
     border: "1px solid #ccc",
     fontSize: "16px",
     backgroundColor: "#fcfcfc",
-    boxSizing: "border-box"
+    boxSizing: "border-box",
   };
 
   const inputWithEyeStyle = {
     ...inputStyle,
-    paddingRight: "44px"
+    paddingRight: "44px",
   };
 
   const eyeIconStyle = {
@@ -47,12 +47,12 @@ function ResetPasswordPage() {
     transform: "translateY(-50%)",
     cursor: "pointer",
     color: "#888",
-    fontSize: "18px"
+    fontSize: "18px",
   };
 
   const inputWrapperStyle = {
     position: "relative",
-    width: "100%"
+    width: "100%",
   };
 
   const buttonStyle = {
@@ -65,7 +65,7 @@ function ResetPasswordPage() {
     cursor: "pointer",
     fontSize: "16px",
     marginTop: "16px",
-    transition: "background-color 0.2s ease"
+    transition: "background-color 0.2s ease",
   };
 
   const isValidPassword = (password) => {
@@ -78,7 +78,7 @@ function ResetPasswordPage() {
 
   const sendAuthCode = () => {
     axios
-      .post(`/auth/email/reset-password/send`, { email })
+      .post(`/api/auth/email/reset-password/send`, { email })
       .then(() => {
         alert("인증코드를 전송했습니다.");
         setStep(2);
@@ -88,7 +88,7 @@ function ResetPasswordPage() {
 
   const verifyCode = () => {
     axios
-      .post(`/auth/email/reset-password/verify`, { email, code })
+      .post(`/api/auth/email/reset-password/verify`, { email, code })
       .then(() => {
         alert("인증 성공");
         setStep(3);
@@ -108,10 +108,10 @@ function ResetPasswordPage() {
     }
 
     axios
-      .post(`/users/reset-password`, {
+      .post(`/api/users/reset-password`, {
         email,
         newPassword,
-        passwordConfirm
+        passwordConfirm,
       })
       .then(() => {
         alert("비밀번호가 변경되었습니다. 로그인해 주세요.");
