@@ -32,7 +32,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
 
     if (token) {
       axios
-        .get("/api/users/me", {
+        .get("/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -76,9 +76,7 @@ function Header({ isLoggedIn: externalIsLoggedIn }) {
 
   const fetchPopularKeywords = async () => {
     try {
-      const res = await axios.get(
-        `${apiUrl}/api/keywords/popular`
-      );
+      const res = await axios.get('/keywords/popular');
       setPopularKeywords(res.data || []);
     } catch (e) {
       setPopularKeywords([]);

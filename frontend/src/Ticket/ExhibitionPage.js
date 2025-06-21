@@ -50,7 +50,7 @@ const ExhibitionPage = () => {
   // 전체 전시 리스트
   const fetchTickets = async (page) => {
     try {
-      const res = await axios.get(`${apiUrl}/api/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
+      const res = await axios.get(`${apiUrl}/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
       setFailedMainIds([]);
@@ -62,7 +62,7 @@ const ExhibitionPage = () => {
   // 인기 전시 리스트 (최소 10개 이상 받아와서 이미지 있는 것만 5개 보여주기)
   const fetchPopularExhibitions = async () => {
     try {
-      const res = await axios.get(`${apiUrl}/api/tickets/popular`, {
+      const res = await axios.get(`${apiUrl}/tickets/popular`, {
         params: { categoryId: 2, size: 10 }
       });
       setPopularExhibitions(res.data);

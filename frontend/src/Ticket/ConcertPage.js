@@ -47,7 +47,7 @@ const ConcertPage = () => {
 
   const fetchTickets = async (page) => {
     try {
-      const res = await axios.get(`/api/tickets/sorted/page?categoryId=1&page=${page}&size=${pageSize}`);
+      const res = await axios.get(`/tickets/sorted/page?categoryId=1&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
     } catch (err) {
@@ -57,7 +57,7 @@ const ConcertPage = () => {
 
   const fetchPopularConcerts = async () => {
     try {
-      const res = await axios.get('/api/tickets/popular', {
+      const res = await axios.get('/tickets/popular', {
         params: { categoryId: 1, size: 10 },
       });
       setPopularConcerts(res.data);

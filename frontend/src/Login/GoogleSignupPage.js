@@ -30,7 +30,7 @@ function GoogleSignupPage() {
 
     try {
       await axios.put(
-        "/api/users/me/google-additional-info",  // ✅ 수정된 경로
+        "/users/me/google-additional-info",  // ✅ 수정된 경로
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

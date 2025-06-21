@@ -17,7 +17,7 @@ const BoardEditPage = () => {
   });
 
   useEffect(() => {
-    axios.get(`/api/boards/${id}`)
+    axios.get(`/boards/${id}`)
       .then(res => {
         setBoard({
           title: res.data.title,
@@ -39,7 +39,7 @@ const BoardEditPage = () => {
       ticketId: board.ticketId || null,
     };
 
-    axios.put(`/api/boards/${id}`, payload, {
+    axios.put(`/boards/${id}`, payload, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {

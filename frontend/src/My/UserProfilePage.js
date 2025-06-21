@@ -27,7 +27,7 @@ function UserProfilePage() {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    axios.get('/api/users/me', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get('/users/me', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setProfile(res.data?.data || {}))
       .catch(err => console.error('프로필 조회 실패:', err));
   }, []);
@@ -40,7 +40,7 @@ function UserProfilePage() {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    axios.put('/api/users/me', profile, { headers: { Authorization: `Bearer ${token}` } })
+    axios.put('/users/me', profile, { headers: { Authorization: `Bearer ${token}` } })
       .then(() => {
         setEditSuccess(true);
         setEditMode(false);
@@ -65,7 +65,7 @@ function UserProfilePage() {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    axios.post('/api/users/me/change-password', passwordData, {
+    axios.post('/users/me/change-password', passwordData, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
@@ -86,7 +86,7 @@ function UserProfilePage() {
     if (!window.confirm('정말 회원 탈퇴하시겠습니까?')) return;
 
     const token = localStorage.getItem('accessToken');
-    axios.delete('/api/users/me', { headers: { Authorization: `Bearer ${token}` } })
+    axios.delete('/users/me', { headers: { Authorization: `Bearer ${token}` } })
       .then(() => {
         alert('회원 탈퇴가 완료되었습니다.');
         localStorage.removeItem('accessToken');
@@ -104,7 +104,7 @@ function UserProfilePage() {
     )) return;
 
     const token = localStorage.getItem('accessToken');
-    axios.delete('/api/users/me/disconnect-google', {
+    axios.delete('/users/me/disconnect-google', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {

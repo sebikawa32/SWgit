@@ -79,7 +79,7 @@ function ResetPasswordPage() {
 
   const sendAuthCode = () => {
     axios
-      .post(`${apiUrl}/api/auth/email/reset-password/send`, { email })
+      .post(`${apiUrl}/auth/email/reset-password/send`, { email })
       .then(() => {
         alert("인증코드를 전송했습니다.");
         setStep(2);
@@ -89,7 +89,7 @@ function ResetPasswordPage() {
 
   const verifyCode = () => {
     axios
-      .post(`${apiUrl}/api/auth/email/reset-password/verify`, { email, code })
+      .post(`${apiUrl}/auth/email/reset-password/verify`, { email, code })
       .then(() => {
         alert("인증 성공");
         setStep(3);
@@ -109,7 +109,7 @@ function ResetPasswordPage() {
     }
 
     axios
-      .post(`${apiUrl}/api/users/reset-password`, {
+      .post(`${apiUrl}/users/reset-password`, {
         email,
         newPassword,
         passwordConfirm

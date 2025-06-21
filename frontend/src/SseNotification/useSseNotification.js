@@ -19,7 +19,7 @@ function useSseNotification(userId, onNotification) {
       return;
     }
 
-    const url = `${apiUrl}/api/notifications/subscribe?userId=${userId}`;
+    const url = `${apiUrl}/notifications/subscribe?userId=${userId}`;
     console.log(`🔌 SSE 연결 시작 → ${url}`);
 
     const eventSource = new EventSource(url);

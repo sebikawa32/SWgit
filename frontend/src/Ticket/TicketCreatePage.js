@@ -27,7 +27,7 @@ const TicketCreatePage = () => {
   const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken');
     try {
-      await axios.post(`${apiUrl}/api/tickets`, ticket, {
+      await axios.post(`${apiUrl}/tickets`, ticket, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

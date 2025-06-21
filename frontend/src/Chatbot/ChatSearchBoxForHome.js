@@ -15,7 +15,7 @@ function ChatSearchBoxForHome({ onResults }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/chat/search', {
+      const response = await axios.post('/chat/search', {
         message: query,
       });
 

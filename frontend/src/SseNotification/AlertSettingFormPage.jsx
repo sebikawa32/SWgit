@@ -24,7 +24,7 @@ export default function AlertSettingFormPage() {
   // 전체 티켓 목록 (제목 매핑용)
   useEffect(() => {
     axios
-      .get(`${apiUrl}/api/tickets`)
+      .get(`${apiUrl}/tickets`)
       .then(res => setTickets(Array.isArray(res.data) ? res.data : res.data.tickets || []))
       .catch(console.error);
   }, []);
@@ -32,7 +32,7 @@ export default function AlertSettingFormPage() {
   // 내 알림 목록
   const fetchAlerts = () => {
     axios
-      .get(`${apiUrl}/api/alerts?userId=${userId}`)
+      .get(`${apiUrl}/alerts?userId=${userId}`)
       .then(res => setAlerts(res.data || []))
       .catch(console.error);
   };
@@ -79,7 +79,7 @@ export default function AlertSettingFormPage() {
     }
     try {
       await axios.post(
-        `${apiUrl}/api/alerts?userId=${userId}`,
+        `${apiUrl}/alerts?userId=${userId}`,
         { ticketId: selectedTicketId, alertMinutes, emailEnabled }
       );
       setSubmitted(true);
@@ -94,7 +94,7 @@ export default function AlertSettingFormPage() {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
       await axios.delete(
-        `${apiUrl}/api/alerts/${alertId}?userId=${userId}`
+        `${apiUrl}/alerts/${alertId}?userId=${userId}`
       );
       fetchAlerts();
     } catch (err) {

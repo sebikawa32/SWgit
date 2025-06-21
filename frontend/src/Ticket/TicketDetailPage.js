@@ -43,7 +43,7 @@ function TicketDetailPage() {
 
   const fetchBookmarkCount = () => {
     axios
-      .get(`/api/bookmarks/count?ticketId=${id}`)
+      .get(`/bookmarks/count?ticketId=${id}`)
       .then(res => setBookmarkCount(res.data.count || 0))
       .catch(() => setBookmarkCount(0));
   };
@@ -52,7 +52,7 @@ function TicketDetailPage() {
     if (!token || !userId) return;
     axios
       .get(
-        `/api/alerts/check?userId=${userId}&ticketId=${id}`,
+        `/alerts/check?userId=${userId}&ticketId=${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then(res => {
@@ -64,7 +64,7 @@ function TicketDetailPage() {
   useEffect(() => {
     // 티켓 정보 로드
     axios
-      .get(`/api/tickets/${id}`)
+      .get(`/tickets/${id}`)
       .then(res => setTicket(res.data))
       .catch(err => {
         console.error("❌ 상세페이지 오류:", err);
@@ -75,7 +75,7 @@ function TicketDetailPage() {
       // 북마크 상태 체크
       axios
         .get(
-          `/api/bookmarks/check?ticketId=${id}`,
+          `/bookmarks/check?ticketId=${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         )
         .then(res => {
@@ -87,7 +87,7 @@ function TicketDetailPage() {
       fetchAlertCheck();
     }
 
-    axios.get(`/api/bookmarks/count?ticketId=${id}`)
+    axios.get(`/bookmarks/count?ticketId=${id}`)
       .then(res => setBookmarkCount(res.data.count || 0))
       .catch(() => setBookmarkCount(0));
   }, [id]);
@@ -101,7 +101,7 @@ function TicketDetailPage() {
     try {
       if (!isBookmarked) {
         await axios.post(
-          "/api/bookmarks",
+          "/bookmarks",
           null,
           { params: { ticketId: Number(id) }, headers: { Authorization: `Bearer ${token}` } }
         );
@@ -109,14 +109,14 @@ function TicketDetailPage() {
         setBookmarkMessage("즐겨찾기에 추가되었습니다!");
       } else {
         await axios.delete(
-          "/api/bookmarks",
+          "/bookmarks",
           { params: { ticketId: Number(id) }, headers: { Authorization: `Bearer ${token}` } }
         );
         setIsBookmarked(false);
         setBookmarkMessage("즐겨찾기에서 삭제되었습니다!");
       }
 
-      const res = await axios.get(`/api/bookmarks/count?ticketId=${id}`);
+      const res = await axios.get(`/bookmarks/count?ticketId=${id}`);
       setBookmarkCount(res.data.count || 0);
     } catch (err) {
       console.error("즐겨찾기 처리 중 오류:", err);
@@ -143,7 +143,7 @@ function TicketDetailPage() {
     }
     try {
       await axios.post(
-        `/api/alerts?userId=${userId}`,
+        `/alerts?userId=${userId}`,
         { ticketId: Number(id), alertMinutes: 1440, emailEnabled: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -164,7 +164,7 @@ function TicketDetailPage() {
   };
 
   const handleBookingClick = () => {
-    axios.post(`/api/tickets/${id}/click`).catch(err => {
+    axios.post(`/tickets/${id}/click`).catch(err => {
       console.error("예매 클릭 로그 저장 실패:", err);
     });
     window.open(ticket.bookingLink, "_blank", "noopener noreferrer");

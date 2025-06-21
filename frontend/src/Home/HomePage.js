@@ -4,8 +4,7 @@ import axios from 'axios';
 import '../Header/Header.css';
 import ChatSearchBoxForHome from '../Chatbot/ChatSearchBoxForHome';
 import './HomePage.css';
-import HotTicketSlider from '../Ticket/HotTicketSlider'; // 위치 맞게 조정
-
+import HotTicketSlider from '../Ticket/HotTicketSlider';
 
 const categories = [
   { id: 1, name: '콘서트' },
@@ -39,11 +38,10 @@ const bannerLinks = [
 const RADIUS = 43;
 const CIRCLE_LENGTH = 2 * Math.PI * RADIUS;
 
-// 오프닝 슬라이더 카드 크기와 gap
-const cardWidth = 220; // px
-const cardHeight = 380; // px (기존 340에서 380으로 변경)
+const cardWidth = 220;
+const cardHeight = 380;
 const cardsPerView = 5;
-const cardGap = 24; // px
+const cardGap = 24;
 
 function OpeningCard({ ticket, percent, getDDay, formatDateRange }) {
   const [offset, setOffset] = useState(CIRCLE_LENGTH);
@@ -77,7 +75,7 @@ function OpeningCard({ ticket, percent, getDDay, formatDateRange }) {
       ref={ref}
       style={{
         width: cardWidth,
-        height: cardHeight, // 변경된 높이 적용
+        height: cardHeight,
         position: 'relative',
         borderRadius: 12,
         boxShadow: '0 4px 18px rgba(0,0,0,0.08)',
@@ -122,7 +120,7 @@ function OpeningCard({ ticket, percent, getDDay, formatDateRange }) {
         alt={ticket.title}
         style={{
           width: '100%',
-          height: 300, // 기존 260에서 300으로 변경
+          height: 300,
           objectFit: 'cover',
           borderRadius: '0 0 12px 12px'
         }}
@@ -161,8 +159,6 @@ const HomePage = () => {
   const [openingAnimating, setOpeningAnimating] = useState(false);
   const slideRef = useRef(null);
 
-  const apiUrl = process.env.REACT_APP_API_URL;
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBannerIndex((prev) => (prev + 1) % bannerImages.length);
@@ -173,7 +169,7 @@ const HomePage = () => {
   useEffect(() => {
     setLoadingAll(true);
     setErrorAll(null);
-      axios.get(`${apiUrl}/api/tickets/category/${selectedCategoryId}`)
+    axios.get(`/tickets/category/${selectedCategoryId}`)
       .then(res => {
         const filtered = res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 10);
         setAllTickets(filtered);
@@ -186,7 +182,7 @@ const HomePage = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    axios.get(`${apiUrl}/api/tickets/popular?categoryId=${selectedRankingCategory}&size=15`)
+    axios.get(`/tickets/popular?categoryId=${selectedRankingCategory}&size=15`)
       .then(res => {
         setRankingTickets(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 5));
       })
@@ -194,7 +190,7 @@ const HomePage = () => {
   }, [selectedRankingCategory]);
 
   useEffect(() => {
-    axios.get(`${apiUrl}/api/tickets/deadline`)
+    axios.get(`/tickets/deadline`)
       .then(res => setComingSoonTickets(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 15)))
       .catch(err => console.error("⏳ Coming Soon 티켓 불러오기 실패:", err));
   }, []);
@@ -235,10 +231,8 @@ const HomePage = () => {
     return 100 - diffDays * 10;
   };
 
-  // 슬라이드 최대 인덱스
   const maxIndex = Math.max(0, comingSoonTickets.length - cardsPerView);
 
-  // 슬라이드 이동
   const handlePrev = () => {
     if (openingAnimating || openingIndex === 0) return;
     setOpeningAnimating(true);
@@ -250,7 +244,6 @@ const HomePage = () => {
     setOpeningIndex(idx => Math.min(maxIndex, idx + 1));
   };
 
-  // 트랜지션 처리 (카드 1장만큼 이동)
   useEffect(() => {
     if (slideRef.current) {
       slideRef.current.style.transition = 'transform 0.5s cubic-bezier(0.55, 0, 0.1, 1)';
@@ -258,7 +251,6 @@ const HomePage = () => {
     }
   }, [openingIndex]);
 
-  // transitionend 이벤트로 애니 락 해제
   useEffect(() => {
     const ref = slideRef.current;
     if (!ref) return;
@@ -276,29 +268,27 @@ const HomePage = () => {
   return (
     <>
       <section className="banner-slider">
-  <div className="banner-container">
-    {bannerImages.map((src, index) => {
-      const link = bannerLinks[index];
-      const image = (
-        <img key={index} src={src} alt={`배너${index + 1}`}
-          className={`banner-image ${index === currentBannerIndex ? 'active' : ''}`} />
-      );
-      return link ? <Link key={index} to={link}>{image}</Link> : <React.Fragment key={index}>{image}</React.Fragment>;
-    })}
-    {/* 인디케이터 동그라미 */}
-    <div className="banner-indicator">
-      {bannerImages.map((_, idx) => (
-        <button
-          key={idx}
-          className={`banner-dot${idx === currentBannerIndex ? ' active' : ''}`}
-          onClick={() => setCurrentBannerIndex(idx)}
-          aria-label={`배너 ${idx + 1}`}
-        />
-      ))}
-    </div>
-  </div>
-</section>
-
+        <div className="banner-container">
+          {bannerImages.map((src, index) => {
+            const link = bannerLinks[index];
+            const image = (
+              <img key={index} src={src} alt={`배너${index + 1}`}
+                className={`banner-image ${index === currentBannerIndex ? 'active' : ''}`} />
+            );
+            return link ? <Link key={index} to={link}>{image}</Link> : <React.Fragment key={index}>{image}</React.Fragment>;
+          })}
+          <div className="banner-indicator">
+            {bannerImages.map((_, idx) => (
+              <button
+                key={idx}
+                className={`banner-dot${idx === currentBannerIndex ? ' active' : ''}`}
+                onClick={() => setCurrentBannerIndex(idx)}
+                aria-label={`배너 ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
 
       <main className="content">
         <h2>AI SEARCH</h2>
@@ -311,25 +301,22 @@ const HomePage = () => {
         <hr style={{ margin: '100px 0' }} />
 
         <section>
-  <h2>WHAT'S HOT</h2>
-  
-  <section style={{ marginBottom: '50px' }}></section>
-  <div className="category-buttons">
-    {rankingCategories.map(cat => (
-      <button
-        key={cat.id}
-        className={`category-button ${selectedRankingCategory === cat.id ? 'active' : ''}`}
-        onClick={() => setSelectedRankingCategory(cat.id)}
-      >
-        {cat.name}
-      </button>
-      
-    ))}
-  </div>
-  <section style={{ marginBottom: '100px' }}></section>
-  <HotTicketSlider tickets={rankingTickets} />
-</section>
-
+          <h2>WHAT'S HOT</h2>
+          <section style={{ marginBottom: '50px' }}></section>
+          <div className="category-buttons">
+            {rankingCategories.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-button ${selectedRankingCategory === cat.id ? 'active' : ''}`}
+                onClick={() => setSelectedRankingCategory(cat.id)}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+          <section style={{ marginBottom: '100px' }}></section>
+          <HotTicketSlider tickets={rankingTickets} />
+        </section>
 
         <hr style={{ margin: '70px 0' }} />
 
@@ -427,7 +414,6 @@ const HomePage = () => {
         </section>
 
         <section style={{ marginBottom: '100px' }}></section>
-        
       </main>
     </>
   );

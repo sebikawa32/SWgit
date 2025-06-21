@@ -20,8 +20,8 @@ const BoardList = ({ type = "general", ticketId }) => {
       try {
         const sortParam = type !== 'notice' ? `&sort=${sort}` : "";
         const url = hasValidTicketId
-          ? `/api/boards/tickets/${ticketId}/boards?type=${type}`
-          : `/api/boards?type=${type}${sortParam}`;
+          ? `/boards/tickets/${ticketId}/boards?type=${type}`
+          : `/boards?type=${type}${sortParam}`;
 
         const res = await axios.get(url);
         setBoards(res.data);

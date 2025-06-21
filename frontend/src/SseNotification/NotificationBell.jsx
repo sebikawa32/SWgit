@@ -38,11 +38,11 @@ const formatDate = (isoString) => {
   useEffect(() => {
     if (!userId) return;
     axios
-      .get(`/api/notifications/${userId}`)
+      .get(`/notifications/${userId}`)
       .then((res) => setNotifications(res.data || []))
       .catch((err) => console.error("알림 목록 로드 실패", err));
     axios
-      .get(`/api/notifications/${userId}/unread-count`)
+      .get(`/notifications/${userId}/unread-count`)
       .then((res) => setUnreadCount(res.data || 0))
       .catch((err) => console.error("알림 수 로드 실패", err));
   }, [userId]);
@@ -61,7 +61,7 @@ const formatDate = (isoString) => {
   // 개별 알림 읽음 처리
   const handleRead = (notificationId) => {
     axios
-      .post(`/api/notifications/${notificationId}/read`)
+      .post(`/notifications/${notificationId}/read`)
       .then(() => {
         setNotifications((prev) =>
           prev.map((n) =>
@@ -76,7 +76,7 @@ const formatDate = (isoString) => {
   // 모두 읽음 처리
   const handleMarkAllRead = () => {
     axios
-      .post(`/api/notifications/${userId}/read-all`)
+      .post(`/notifications/${userId}/read-all`)
       .then(() => {
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
         setUnreadCount(0);

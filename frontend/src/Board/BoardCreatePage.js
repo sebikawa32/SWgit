@@ -18,7 +18,7 @@ const BoardCreatePage = () => {
 
   // 1. 티켓 목록을 먼저 받아온다
   useEffect(() => {
-    axios.get('/api/tickets/summaries')
+    axios.get('/tickets/summaries')
       .then(res => {
         setTickets(res.data);
         setFilteredTickets(res.data);
@@ -78,7 +78,7 @@ const BoardCreatePage = () => {
     }
 
     try {
-      await axios.post("/api/boards", {
+      await axios.post("/boards", {
         title,
         content,
         ticketId: selectedTicket ? Number(selectedTicket.id) : null,
