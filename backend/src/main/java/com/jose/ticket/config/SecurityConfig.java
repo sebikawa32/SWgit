@@ -92,7 +92,8 @@ public class SecurityConfig {
                                 "/api/test/dday",
                                 "/oauth2/**",
                                 "/login/oauth2/**",
-                                "/api/auth/google-login"
+                                "/api/auth/google-login",
+                                "/api/tickets/*/click"
                         ).permitAll()
 
                         // 티켓 및 게시판 등 **GET 메서드**는 누구나 허용
