@@ -31,8 +31,8 @@ const bannerImages = [
 ];
 
 const bannerLinks = [
-  '/ticket/32603', '/ticket/39020', '/ticket/33136',
-  '/ticket/32901', '/ticket/61986', '/ticket/61987', '/ticket/61985',
+  '/ticket/13940', '/ticket/9801', '/ticket/10267',
+  '/ticket/10087', '/ticket/7907', '/ticket/7914', '/ticket/11799',
 ];
 
 const RADIUS = 43;
