@@ -15,8 +15,6 @@ function SearchPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const apiUrl = process.env.REACT_APP_API_URL; // ✅ 환경변수로 API 주소 선언
-
   const queryParams = new URLSearchParams(location.search);
   const query = queryParams.get('query') || '';
   const categoryId = parseInt(queryParams.get('categoryId') || '0', 10);
@@ -28,10 +26,10 @@ function SearchPage() {
   const [popularKeywords, setPopularKeywords] = useState([]);
 
   useEffect(() => {
-    axios.get(`${apiUrl}/keywords/popular`)
+    axios.get(`/keywords/popular`)
       .then(res => setPopularKeywords((res.data || []).slice(0, 6)))
       .catch(() => setPopularKeywords([]));
-  }, [apiUrl]);
+  }, []);
 
   useEffect(() => {
     const trimmedQuery = query.trim();
@@ -45,7 +43,7 @@ function SearchPage() {
 
     const userId = localStorage.getItem("userId");
     if (userId) {
-      axios.post(`${apiUrl}/search/log`, {
+      axios.post(`/search/log`, {
         userId: Number(userId),
         keyword: trimmedQuery
       }).catch(() => {});
@@ -57,7 +55,7 @@ function SearchPage() {
       params.set("categoryId", categoryId.toString());
     }
 
-    axios.get(`${apiUrl}/search?${params.toString()}`)
+    axios.get(`/search?${params.toString()}`)
       .then(res => {
         setTickets(res.data.tickets || []);
         setBoards(res.data.boards || []);
@@ -67,7 +65,7 @@ function SearchPage() {
         setError("검색 실패");
         setLoading(false);
       });
-  }, [query, categoryId, apiUrl]);
+  }, [query, categoryId]);
 
   const handleCategoryClick = (id) => {
     const params = new URLSearchParams();

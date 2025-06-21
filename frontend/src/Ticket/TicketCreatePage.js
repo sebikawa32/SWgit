@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 const TicketCreatePage = () => {
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
   const [ticket, setTicket] = useState({
     title: '',
     price: '',
@@ -27,7 +26,7 @@ const TicketCreatePage = () => {
   const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken');
     try {
-      await axios.post(`${apiUrl}/tickets`, ticket, {
+      await axios.post('/tickets', ticket, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

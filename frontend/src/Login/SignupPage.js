@@ -5,7 +5,6 @@ import "./SignupPage.css";
 
 function SignupPage() {
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   const [form, setForm] = useState({
     userId: "",
@@ -34,7 +33,7 @@ function SignupPage() {
     }
 
     axios
-      .post(`${apiUrl}/users/check-id`, form.userId, {
+      .post(`/users/check-id`, form.userId, {
         headers: { "Content-Type": "application/json" }
       })
       .then(res => {
@@ -56,7 +55,7 @@ function SignupPage() {
     }
 
     axios
-      .post(`${apiUrl}/auth/email/send?email=${form.email}`)
+      .post(`/auth/email/send?email=${form.email}`)
       .then(() => {
         alert("인증 코드가 이메일로 전송되었습니다.");
       })
@@ -67,7 +66,7 @@ function SignupPage() {
 
   const verifyEmailCode = () => {
     axios
-      .post(`${apiUrl}/auth/email/verify?email=${form.email}&code=${emailCode}`)
+      .post(`/auth/email/verify?email=${form.email}&code=${emailCode}`)
       .then(() => {
         alert("이메일 인증 성공!");
         setEmailVerified(true);
@@ -84,7 +83,7 @@ function SignupPage() {
     }
 
     axios
-      .post(`${apiUrl}/users/signup`, form)
+      .post(`/users/signup`, form)
       .then((res) => {
         alert("회원가입 성공!");
         const token = res.data.data.token;

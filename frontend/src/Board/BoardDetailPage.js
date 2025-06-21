@@ -20,7 +20,6 @@ function toKST(dateStr) {
 const BoardDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL; // ✅ 환경변수 선언
 
   const [board, setBoard] = useState(null);
   const [comments, setComments] = useState([]);
@@ -38,12 +37,11 @@ const BoardDetail = () => {
 
     const fetchBoardAndComments = async () => {
       try {
-        const boardRes = await axios.get(`${apiUrl}/boards/${id}`, { headers });
+        const boardRes = await axios.get(`/boards/${id}`, { headers });
         setBoard(boardRes.data);
 
         try {
-          // ✅ 댓글 조회 API 경로 수정
-          const commentRes = await axios.get(`${apiUrl}/comments?boardId=${id}`, { headers });
+          const commentRes = await axios.get(`/comments?boardId=${id}`, { headers });
           setComments(commentRes.data);
         } catch (commentErr) {
           console.error("❌ 댓글 조회 실패", commentErr);
@@ -56,7 +54,7 @@ const BoardDetail = () => {
     };
 
     fetchBoardAndComments();
-  }, [id, apiUrl]);
+  }, [id]);
 
   const handleCommentSubmit = () => {
     const token = localStorage.getItem('accessToken');
@@ -71,7 +69,7 @@ const BoardDetail = () => {
       return;
     }
 
-    axios.post(`${apiUrl}/comments`, {
+    axios.post(`/comments`, {
       content: newComment,
       boardId: id
     }, {
@@ -91,7 +89,7 @@ const BoardDetail = () => {
     const token = localStorage.getItem('accessToken');
     if (!window.confirm("댓글을 삭제하시겠습니까?")) return;
 
-    axios.delete(`${apiUrl}/comments/${commentId}`, {
+    axios.delete(`/comments/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
@@ -107,7 +105,7 @@ const BoardDetail = () => {
     const token = localStorage.getItem('accessToken');
     if (!window.confirm("게시글을 삭제하시겠습니까?")) return;
 
-    axios.delete(`${apiUrl}/boards/${id}`, {
+    axios.delete(`/boards/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {

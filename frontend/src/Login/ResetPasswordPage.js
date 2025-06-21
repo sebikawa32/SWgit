@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 function ResetPasswordPage() {
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL; // ✅ 환경변수로 API 주소 선언
 
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -79,7 +78,7 @@ function ResetPasswordPage() {
 
   const sendAuthCode = () => {
     axios
-      .post(`${apiUrl}/auth/email/reset-password/send`, { email })
+      .post(`/auth/email/reset-password/send`, { email })
       .then(() => {
         alert("인증코드를 전송했습니다.");
         setStep(2);
@@ -89,7 +88,7 @@ function ResetPasswordPage() {
 
   const verifyCode = () => {
     axios
-      .post(`${apiUrl}/auth/email/reset-password/verify`, { email, code })
+      .post(`/auth/email/reset-password/verify`, { email, code })
       .then(() => {
         alert("인증 성공");
         setStep(3);
@@ -109,7 +108,7 @@ function ResetPasswordPage() {
     }
 
     axios
-      .post(`${apiUrl}/users/reset-password`, {
+      .post(`/users/reset-password`, {
         email,
         newPassword,
         passwordConfirm

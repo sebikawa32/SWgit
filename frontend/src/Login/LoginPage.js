@@ -9,11 +9,9 @@ function LoginPage({ setIsLoggedIn }) {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  const apiUrl = process.env.REACT_APP_API_URL;
-
   const onLogin = () => {
     axios
-      .post(`${apiUrl}/users/login`, { userId, password })
+      .post(`/users/login`, { userId, password })
       .then(async (res) => {
         alert("로그인 성공!");
         const { token, userId: userPk, role } = res.data.data;
@@ -27,7 +25,7 @@ function LoginPage({ setIsLoggedIn }) {
         setIsLoggedIn(true);
 
         try {
-          const meRes = await axios.get(`${apiUrl}/users/me`);
+          const meRes = await axios.get(`/users/me`);
           const profile = meRes.data.data;
           localStorage.setItem("nickname", profile.nickname || "");
           navigate("/", { replace: true });
@@ -47,7 +45,7 @@ function LoginPage({ setIsLoggedIn }) {
     console.log("✅ 받은 구글 ID 토큰:", idToken);
 
     try {
-      const res = await axios.post(`${apiUrl}/auth/google-login`, { idToken });
+      const res = await axios.post(`/auth/google-login`, { idToken });
       const { token, userId: userPk, role, nickname, provider } = res.data;
 
       localStorage.setItem("accessToken", token);
@@ -61,7 +59,7 @@ function LoginPage({ setIsLoggedIn }) {
       setIsLoggedIn(true);
 
       try {
-        const meRes = await axios.get(`${apiUrl}/users/me`);
+        const meRes = await axios.get(`/users/me`);
         const profile = meRes.data.data;
         const needsAdditionalInfo =
           !profile.nickname || !profile.realname || !profile.phoneNumber;

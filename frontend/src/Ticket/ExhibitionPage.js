@@ -5,9 +5,6 @@ import './Ticket.css';
 import HotTicketSlider from './HotTicketSlider';
 
 const ExhibitionPage = () => {
-  // 환경변수에서 API 엔드포인트 가져오기 (없으면 빈 문자열)
-  const apiUrl = process.env.REACT_APP_API_URL || "";
-
   const [tickets, setTickets] = useState([]);
   const [popularExhibitions, setPopularExhibitions] = useState([]);
   const [failedPopularIds, setFailedPopularIds] = useState([]);
@@ -50,7 +47,7 @@ const ExhibitionPage = () => {
   // 전체 전시 리스트
   const fetchTickets = async (page) => {
     try {
-      const res = await axios.get(`${apiUrl}/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
+      const res = await axios.get(`/tickets/sorted/page?categoryId=2&page=${page}&size=${pageSize}`);
       setTickets(res.data.content);
       setTotalPages(res.data.totalPages);
       setFailedMainIds([]);
@@ -62,7 +59,7 @@ const ExhibitionPage = () => {
   // 인기 전시 리스트 (최소 10개 이상 받아와서 이미지 있는 것만 5개 보여주기)
   const fetchPopularExhibitions = async () => {
     try {
-      const res = await axios.get(`${apiUrl}/tickets/popular`, {
+      const res = await axios.get('/tickets/popular', {
         params: { categoryId: 2, size: 10 }
       });
       setPopularExhibitions(res.data);
@@ -75,6 +72,7 @@ const ExhibitionPage = () => {
   useEffect(() => {
     fetchTickets(currentPage);
     fetchPopularExhibitions();
+    // eslint-disable-next-line
   }, [currentPage]);
 
   const handlePageChange = (page) => {

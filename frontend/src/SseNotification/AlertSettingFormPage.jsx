@@ -19,12 +19,10 @@ export default function AlertSettingFormPage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionsRef = useRef();
 
-  const apiUrl = process.env.REACT_APP_API_URL; // ✅ 환경변수 선언
-
   // 전체 티켓 목록 (제목 매핑용)
   useEffect(() => {
     axios
-      .get(`${apiUrl}/tickets`)
+      .get(`/tickets`)
       .then(res => setTickets(Array.isArray(res.data) ? res.data : res.data.tickets || []))
       .catch(console.error);
   }, []);
@@ -32,7 +30,7 @@ export default function AlertSettingFormPage() {
   // 내 알림 목록
   const fetchAlerts = () => {
     axios
-      .get(`${apiUrl}/alerts?userId=${userId}`)
+      .get(`/alerts?userId=${userId}`)
       .then(res => setAlerts(res.data || []))
       .catch(console.error);
   };
@@ -79,7 +77,7 @@ export default function AlertSettingFormPage() {
     }
     try {
       await axios.post(
-        `${apiUrl}/alerts?userId=${userId}`,
+        `/alerts?userId=${userId}`,
         { ticketId: selectedTicketId, alertMinutes, emailEnabled }
       );
       setSubmitted(true);
@@ -94,7 +92,7 @@ export default function AlertSettingFormPage() {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
       await axios.delete(
-        `${apiUrl}/alerts/${alertId}?userId=${userId}`
+        `/alerts/${alertId}?userId=${userId}`
       );
       fetchAlerts();
     } catch (err) {
