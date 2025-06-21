@@ -18,7 +18,8 @@ function useSseNotification(userId, onNotification) {
     }
 
     // 프록시 통해서 /notifications/subscribe로만 연결
-    const url = `/notifications/subscribe?userId=${userId}`;
+    const url = ` /api/notifications/subscribe?userId=${userId}`;
+    
     console.log(`🔌 SSE 연결 시작 → ${url}`);
 
     const eventSource = new EventSource(url);
