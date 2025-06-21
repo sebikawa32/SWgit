@@ -169,7 +169,7 @@ const HomePage = () => {
   useEffect(() => {
     setLoadingAll(true);
     setErrorAll(null);
-    axios.get(`/tickets/category/${selectedCategoryId}`)
+    axios.get(`/api/tickets/category/${selectedCategoryId}`)
       .then(res => {
         const filtered = res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 10);
         setAllTickets(filtered);
@@ -182,7 +182,7 @@ const HomePage = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    axios.get(`/tickets/popular?categoryId=${selectedRankingCategory}&size=15`)
+    axios.get(`/api/tickets/popular?categoryId=${selectedRankingCategory}&size=15`)
       .then(res => {
         setRankingTickets(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 5));
       })
@@ -190,7 +190,7 @@ const HomePage = () => {
   }, [selectedRankingCategory]);
 
   useEffect(() => {
-    axios.get(`/tickets/deadline`)
+    axios.get(`/api/tickets/deadline`)
       .then(res => setComingSoonTickets(res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 15)))
       .catch(err => console.error("⏳ Coming Soon 티켓 불러오기 실패:", err));
   }, []);
