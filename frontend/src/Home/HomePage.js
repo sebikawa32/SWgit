@@ -31,7 +31,7 @@ const bannerImages = [
 ];
 
 const bannerLinks = [
-  '/ticket/13940', '/ticket/9801', '/ticket/10267',
+  '/ticket/9870', '/ticket/9801', '/ticket/10267',
   '/ticket/10087', '/ticket/7907', '/ticket/7914', '/ticket/11799',
 ];
 
