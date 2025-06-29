@@ -171,8 +171,9 @@ const HomePage = () => {
     setErrorAll(null);
     axios.get(`/api/tickets/category/${selectedCategoryId}`)
       .then(res => {
-        const filtered = res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '').slice(0, 10);
-        setAllTickets(filtered);
+        const filtered = res.data.filter(t => t.imageUrl && t.imageUrl.trim() !== '');
+        const shuffled = shuffleArray(filtered).slice(0, 10); // 섞은 뒤 10개만 선택
+        setAllTickets(shuffled);
         setLoadingAll(false);
       })
       .catch(() => {
@@ -180,6 +181,7 @@ const HomePage = () => {
         setLoadingAll(false);
       });
   }, [selectedCategoryId]);
+  
 
   useEffect(() => {
     axios.get(`/api/tickets/popular?categoryId=${selectedRankingCategory}&size=15`)
@@ -243,6 +245,16 @@ const HomePage = () => {
     setOpeningAnimating(true);
     setOpeningIndex(idx => Math.min(maxIndex, idx + 1));
   };
+  //랜덤으로 섞는 함수
+  const shuffleArray = (array) => {
+    const newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+  };
+  
 
   useEffect(() => {
     if (slideRef.current) {
